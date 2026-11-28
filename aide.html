@@ -74,7 +74,7 @@
             <ol>
               <li><a href="#confidentialite">Confidentialité</a></li>
               <!-- online --><li><a href="#agent-local">Connecter votre agent IA (MCP)</a></li><!-- /online -->
-              <li><a href="#docker">Version Docker et agents MCP</a></li>
+              <li><a href="#docker">Version Docker et son serveur MCP</a></li>
               <li><a href="#installer-app">Installer sur votre poste (PWA)</a></li>
               <li><a href="#petits-ecrans">Sur téléphone et tablette</a></li>
               <li><a href="#faq">Questions fréquentes</a></li>
@@ -93,10 +93,10 @@
       <div class="hero">
         <h1>Guide de l'éditeur BPMN</h1>
         <!-- online -->
-        <p class="lead">BPMN-Pilot est un éditeur BPMN 2.0 gratuit qui tourne dans votre navigateur, sans compte ni installation. Décrivez un processus, ou joignez une procédure, un tableur, des e-mails : le co-pilote IA le dessine en quelques secondes, et vous relisez. Le dessin à la main reste possible à tout moment.</p>
+        <p class="lead">BPMN-Pilot est un éditeur BPMN 2.0 gratuit qui tourne dans votre navigateur, sans compte ni installation. Décrivez un processus, ou joignez une procédure, un tableur, des e-mails : le co-pilote IA le dessine en quelques secondes, et vous relisez. Votre propre agent IA (Claude Desktop, Claude Code, Cursor…) peut aussi le faire par MCP, avec ce qu'il connaît (messagerie, wiki, base documentaire). Le dessin à la main reste possible à tout moment.</p>
         <!-- /online -->
         <!-- docker -->
-        <p class="lead">BPMN-Pilot est un éditeur BPMN 2.0 gratuit, installé sur votre machine ou votre réseau. Relié par MCP à votre agent IA et à ce qu'il connaît (messagerie, wiki, base documentaire), il dessine et vérifie les processus que l'agent lui décrit, et vous relisez. Le co-pilote intégré et le dessin à la main restent disponibles.</p>
+        <p class="lead">BPMN-Pilot est un éditeur BPMN 2.0 gratuit, installé sur votre machine ou votre réseau. Décrivez un processus, ou joignez une procédure, un tableur, des e-mails : le co-pilote IA le dessine en quelques secondes, et vous relisez. Votre propre agent IA (Claude Desktop, Claude Code, Cursor…) peut aussi le faire par MCP, avec ce qu'il connaît (messagerie, wiki, base documentaire), même sans onglet ouvert. Le dessin à la main reste possible à tout moment.</p>
         <!-- /docker -->
         <div class="cta">
           <a class="btn primary" href="./">Ouvrir l'éditeur</a>
@@ -131,10 +131,10 @@
           <p>Dans draw.io, Lucidchart ou Visio, une forme veut dire ce que son auteur a voulu dire. En BPMN, chaque symbole a un sens fixé : pools et couloirs pour qui fait quoi, événements pour ce qui déclenche ou attend, passerelles pour la façon dont les chemins se séparent et se rejoignent. Le fichier décrit le processus lui-même, pas son image : il se vérifie, se simule, se lit par un agent IA et s'exécute dans un moteur de workflow. Il s'ouvrira encore dans dix ans, dans un autre outil.</p>
         </details>
         <!-- online -->
-        <div class="note">Pas de compte. Vos diagrammes restent dans votre navigateur. Si vous utilisez le co-pilote, seul le fournisseur d'IA les reçoit. Le site mesure sa fréquentation sans cookie (voir <a href="#confidentialite">Confidentialité</a>).</div>
+        <div class="note">Pas de compte. Vos diagrammes restent dans votre navigateur. Si vous utilisez le co-pilote, seul le fournisseur d'IA les reçoit. Votre agent MCP, si vous le reliez, les reçoit par un relais sur votre ordinateur. Le site mesure sa fréquentation sans cookie (voir <a href="#confidentialite">Confidentialité</a>).</div>
         <!-- /online -->
         <!-- docker -->
-        <div class="note">Pas de compte. Vos diagrammes restent dans votre navigateur, ou sur votre serveur si vous les y enregistrez. Si vous utilisez le co-pilote, seul le fournisseur d'IA les reçoit, par votre serveur. Cette version ne mesure pas sa fréquentation.</div>
+        <div class="note">Pas de compte. Vos diagrammes restent dans votre navigateur, ou sur votre serveur si vous les y enregistrez. Si vous utilisez le co-pilote, seul le fournisseur d'IA les reçoit, par votre serveur. Votre agent MCP les reçoit par le serveur MCP de votre installation. Cette version ne mesure pas sa fréquentation.</div>
         <!-- /docker -->
         <figure><img src="/src/help/img/fr-exemple-sketch.webp" width="1600" height="177" alt="Le croquis : Contrat signé, cinq tâches en ligne, Service en production." loading="lazy" /><figcaption>Le croquis du projet SD-WAN.</figcaption></figure>
       </section>
@@ -1088,7 +1088,7 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <li>Vos diagrammes, réglages et clés API restent dans votre navigateur, ou sur votre serveur pour ce que vous y enregistrez. Rien ne part vers l'auteur de l'éditeur.</li>
           <li>Avec le co-pilote, vos messages, le diagramme et vos fichiers passent par votre serveur jusqu'au fournisseur choisi, sous ses propres conditions.</li>
           <li>La dictée reconnaît la voix sur votre appareil.</li>
-          <li>Un agent connecté par MCP lit et modifie le diagramme ouvert. Ce qu'il en fait dépend de l'agent et de son fournisseur.</li>
+          <li>Un agent connecté par MCP, distinct du Co-pilote, lit et modifie le diagramme par votre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.</li>
           <li>Cette version ne mesure pas sa fréquentation et ne charge aucun script tiers.</li>
           </ul>
           <!-- /docker -->
@@ -1110,9 +1110,9 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
       <!-- /online -->
 
       <section id="docker">
-        <h2>Version Docker et agents MCP</h2>
+        <h2>Version Docker et son serveur MCP</h2>
         <!-- online -->
-        <p>L'éditeur existe aussi en version Docker, sur votre machine ou votre réseau. Elle ajoute :</p>
+        <p>L'éditeur existe aussi en version Docker, sur votre machine ou votre réseau. Le dessin, le co-pilote IA et les outils donnés à un agent MCP y sont les mêmes qu'ici. Elle ajoute la souveraineté de vos données, et :</p>
         <!-- /online -->
         <!-- docker -->
         <p>Par rapport à la version en ligne, cette version ajoute :</p>
@@ -1170,10 +1170,10 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
         <details class="faq">
           <summary>Faut-il créer un compte ?</summary>
           <!-- online -->
-          <p>Non. Seul le co-pilote IA demande une clé API chez un fournisseur.</p>
+          <p>Non. Seul le co-pilote IA demande une clé API chez un fournisseur. Un agent MCP garde son propre abonnement, sans clé dans la page.</p>
           <!-- /online -->
           <!-- docker -->
-          <p>Non. Seul le co-pilote IA demande une clé API, sur le serveur ou dans Options.</p>
+          <p>Non. Seul le co-pilote IA demande une clé API, sur le serveur ou dans Options. Un agent MCP garde son propre abonnement.</p>
           <!-- /docker -->
         </details>
         <details class="faq">

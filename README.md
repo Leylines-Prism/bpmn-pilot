@@ -57,15 +57,17 @@ Two ways to use it, your choice:
 **Online: [bpmn.leylines.fr](https://bpmn.leylines.fr)**
 
 Nothing to install, no account: open the link and draw. The AI co-pilot works with your own API key,
-and your diagrams stay in your browser. [Learn more](#use-it-online)
+your MCP agent connects through a small local relay, and your diagrams stay in your browser.
+[Learn more](#use-it-online)
 
 </td>
 <td width="50%" valign="top">
 
 **With Docker: `ghcr.io/leylines-prism/bpmn-pilot`**
 
-At home, on your machine or your server, with the MCP server that connects your agents
-(Claude Code, Claude Desktop, GitHub Copilot) to the editor. [Run it](#run-it-with-docker)
+The same editor, at home, on your machine or your server, for data sovereignty: API keys on the
+server, saving on the server, and a built-in MCP server for your agents, even with no tab open.
+[Run it](#run-it-with-docker)
 
 </td>
 </tr>
@@ -204,7 +206,8 @@ The tools run in an editor tab, which only needs to stay open.
 
 The editor is open to everyone at https://bpmn.leylines.fr (GitHub Pages): no account, nothing to
 install, just a browser. Its [user guide](https://bpmn.leylines.fr/help.html) explains how to draw,
-save, export and use the AI co-pilot. The Help (?) button in the toolbar opens it too.
+save, export, use the AI co-pilot and connect your own agent through MCP. The Help (?) button in the
+toolbar opens it too.
 
 It follows the released versions (the latest `vX.Y.Z` tag) and shows its version in the bottom left corner of the canvas and of the user guide.
 
@@ -431,7 +434,10 @@ Without a proxy login, anyone who finds the address can use the editor and your 
 and a token reduce the risk, they do not remove it. [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 with Cloudflare Access is another way to put a login in front of it, with no open port.
 
-## Connect an agent (MCP)
+## Connect an agent to the Docker version (MCP)
+
+The Docker version has its MCP server built in: no relay to install next to the agent. As online, the
+MCP agent is your own assistant, not the AI co-pilot of the page.
 
 Click the **MCP** badge in the toolbar. The "Connect an agent" window gives the address to use
 (`http://localhost:8080/mcp`, or `https://your-domain/mcp`), and the setting to paste for Claude
@@ -567,6 +573,9 @@ it), unless the table says `mcp/.env`, then run `docker compose up -d --build`.
   JSON, XML, Markdown…), whose text is read in the browser. You can also dictate: speech is recognized on the device (Chrome, Edge 139+ or Firefox 160+), and no audio leaves the browser. The model is chosen in Options. What it adds or changes is outlined on the
   canvas, a pill sums up the changes, and one click shows the before and after or undoes the whole
   answer.
+- **Your own AI agent (MCP)**: Claude Desktop, Claude Code, Cursor or GitHub Copilot in VS Code
+  reads, draws, checks and exports the diagram with the same tools and prompts, online through a local
+  relay or in Docker through its built-in server. It is not the AI co-pilot: no API key in the page.
 - **Interface**: light or dark theme, English or French, resizable side panels. Made for a computer
   screen: on a phone, it is mostly for viewing a diagram.
 

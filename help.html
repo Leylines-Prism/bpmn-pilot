@@ -74,7 +74,7 @@
             <ol>
               <li><a href="#privacy">Privacy</a></li>
               <!-- online --><li><a href="#local-agent">Connect your AI agent (MCP)</a></li><!-- /online -->
-              <li><a href="#docker">Docker version and MCP agents</a></li>
+              <li><a href="#docker">Docker version and its MCP server</a></li>
               <li><a href="#install-app">Install on your device (PWA)</a></li>
               <li><a href="#small-screens">On a phone or tablet</a></li>
               <li><a href="#faq">FAQ</a></li>
@@ -93,10 +93,10 @@
       <div class="hero">
         <h1>BPMN-Pilot guide</h1>
         <!-- online -->
-        <p class="lead">BPMN-Pilot is a free BPMN 2.0 editor that runs in your browser, with no account and nothing to install. Describe a process, or attach a procedure, a spreadsheet or emails: the AI co-pilot draws it in seconds, and you review it. You can draw by hand at any time.</p>
+        <p class="lead">BPMN-Pilot is a free BPMN 2.0 editor that runs in your browser, with no account and nothing to install. Describe a process, or attach a procedure, a spreadsheet or emails: the AI co-pilot draws it in seconds, and you review it. Your own AI agent (Claude Desktop, Claude Code, Cursor…) can do it too through MCP, with what it knows (mail, wiki, document base). You can draw by hand at any time.</p>
         <!-- /online -->
         <!-- docker -->
-        <p class="lead">BPMN-Pilot is a free BPMN 2.0 editor, installed on your machine or network. Connected through MCP to your AI agent and what it knows (mail, wiki, document base), it draws and checks the processes the agent describes, and you review them. The built-in co-pilot and drawing by hand work too.</p>
+        <p class="lead">BPMN-Pilot is a free BPMN 2.0 editor, installed on your machine or network. Describe a process, or attach a procedure, a spreadsheet or emails: the AI co-pilot draws it in seconds, and you review it. Your own AI agent (Claude Desktop, Claude Code, Cursor…) can do it too through MCP, with what it knows (mail, wiki, document base), even with no tab open. You can draw by hand at any time.</p>
         <!-- /docker -->
         <div class="cta">
           <a class="btn primary" href="./">Open the editor</a>
@@ -131,10 +131,10 @@
           <p>In draw.io, Lucidchart or Visio, a shape means whatever its author meant. In BPMN, every symbol has a defined meaning: pools and lanes for who does what, events for what triggers or waits, gateways for how paths split and join. The file describes the process itself, not a picture of it: it can be checked, simulated, read by an AI agent and run by a workflow engine. It will still open in ten years, in another tool.</p>
         </details>
         <!-- online -->
-        <div class="note">No account. Your diagrams stay in your browser. If you use the co-pilot, only the AI provider receives them. The site measures its traffic without cookies (see <a href="#privacy">Privacy</a>).</div>
+        <div class="note">No account. Your diagrams stay in your browser. If you use the co-pilot, only the AI provider receives them. Your MCP agent, if you connect it, receives them through a relay on your computer. The site measures its traffic without cookies (see <a href="#privacy">Privacy</a>).</div>
         <!-- /online -->
         <!-- docker -->
-        <div class="note">No account. Your diagrams stay in your browser, or on your server if you save them there. If you use the co-pilot, only the AI provider receives them, through your server. This version measures no traffic.</div>
+        <div class="note">No account. Your diagrams stay in your browser, or on your server if you save them there. If you use the co-pilot, only the AI provider receives them, through your server. Your MCP agent receives them through your installation's MCP server. This version measures no traffic.</div>
         <!-- /docker -->
         <figure><img src="/src/help/img/en-exemple-sketch.webp" width="1600" height="176" alt="The sketch: Contract signed, five tasks in a row, Service live." loading="lazy" /><figcaption>The sketch of the SD-WAN project.</figcaption></figure>
       </section>
@@ -1088,7 +1088,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li>Your diagrams, settings and API keys stay in your browser, or on your server for what you save there. Nothing goes to the editor's author.</li>
           <li>With the co-pilot, your messages, the diagram and your files go through your server to the chosen provider, under its own terms.</li>
           <li>Dictation recognizes your voice on your device.</li>
-          <li>An agent connected through MCP reads and edits the open diagram. What it does with it depends on the agent and its provider.</li>
+          <li>An agent connected through MCP, separate from the co-pilot, reads and edits the diagram through your server. What it does with it depends on the agent and its provider.</li>
           <li>This version measures no traffic and loads no third-party script.</li>
           </ul>
           <!-- /docker -->
@@ -1110,9 +1110,9 @@ To finish: check the diagram, fix what fails and sum up the process in five line
       <!-- /online -->
 
       <section id="docker">
-        <h2>Docker version and MCP agents</h2>
+        <h2>Docker version and its MCP server</h2>
         <!-- online -->
-        <p>The editor also comes as a Docker version, on your machine or network. It adds:</p>
+        <p>The editor also comes as a Docker version, on your machine or network. Drawing, the AI co-pilot and the tools given to an MCP agent are the same as here. It adds data sovereignty, and:</p>
         <!-- /online -->
         <!-- docker -->
         <p>Compared with the online version, this version adds:</p>
@@ -1170,10 +1170,10 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <details class="faq">
           <summary>Do I need an account?</summary>
           <!-- online -->
-          <p>No. Only the AI co-pilot needs an API key from a provider.</p>
+          <p>No. Only the AI co-pilot needs an API key from a provider. An MCP agent keeps its own subscription, with no key in the page.</p>
           <!-- /online -->
           <!-- docker -->
-          <p>No. Only the AI co-pilot needs an API key, on the server or in Options.</p>
+          <p>No. Only the AI co-pilot needs an API key, on the server or in Options. An MCP agent keeps its own subscription.</p>
           <!-- /docker -->
         </details>
         <details class="faq">

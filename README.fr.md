@@ -59,15 +59,17 @@ Deux façons de l'utiliser, au choix :
 **En ligne : [bpmn.leylines.fr](https://bpmn.leylines.fr)**
 
 Rien à installer, aucun compte : ouvrez le lien et dessinez. Le co-pilote IA marche avec votre propre
-clé API, et vos diagrammes restent dans votre navigateur. [En savoir plus](#lutiliser-en-ligne)
+clé API, votre agent MCP se relie par un petit relais local, et vos diagrammes restent dans votre
+navigateur. [En savoir plus](#lutiliser-en-ligne)
 
 </td>
 <td width="50%" valign="top">
 
 **En Docker : `ghcr.io/leylines-prism/bpmn-pilot`**
 
-Chez vous, sur votre machine ou votre serveur, avec le serveur MCP qui relie vos agents
-(Claude Code, Claude Desktop, GitHub Copilot) à l'éditeur. [Le lancer](#le-lancer-avec-docker)
+Le même éditeur, chez vous, sur votre machine ou votre serveur, pour la souveraineté de vos données :
+clés API sur le serveur, enregistrement sur le serveur, et un serveur MCP intégré pour vos agents,
+même sans onglet ouvert. [Le lancer](#le-lancer-avec-docker)
 
 </td>
 </tr>
@@ -211,8 +213,8 @@ Les outils s'exécutent dans un onglet de l'éditeur, qui doit seulement rester 
 
 L'éditeur est ouvert à tous sur https://bpmn.leylines.fr (GitHub Pages) : sans compte, sans
 installation, juste un navigateur. Son [guide d'utilisation](https://bpmn.leylines.fr/aide.html)
-explique comment dessiner, enregistrer, exporter et se servir du co-pilote IA. Le bouton Aide (?) de
-la barre d'outils l'ouvre aussi.
+explique comment dessiner, enregistrer, exporter, se servir du co-pilote IA et connecter votre propre
+agent par MCP. Le bouton Aide (?) de la barre d'outils l'ouvre aussi.
 
 Il suit les versions publiées (le dernier tag `vX.Y.Z`) et affiche sa version en bas à gauche
 du canevas et du guide d'utilisation.
@@ -458,7 +460,10 @@ Sans connexion au proxy, quiconque trouve l'adresse peut utiliser l'éditeur et 
 connexion et un jeton réduisent le risque, ils ne le suppriment pas. [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 avec Cloudflare Access est une autre façon de placer une connexion devant, sans port ouvert.
 
-## Connecter un agent (MCP)
+## Connecter un agent à la version Docker (MCP)
+
+La version Docker a son serveur MCP intégré : aucun relais à installer à côté de l'agent. Comme en
+ligne, l'agent MCP est votre propre assistant, pas le co-pilote IA de la page.
 
 Cliquez sur le badge **MCP** de la barre d'outils. La fenêtre « Connecter un agent » donne l'adresse à
 utiliser (`http://localhost:8080/mcp`, ou `https://votre-domaine/mcp`), et le réglage à coller pour
@@ -602,6 +607,10 @@ commande `up -d`. Depuis le code source, mettez-les dans un fichier `.env` à c�
   des fichiers texte (CSV, JSON, XML, Markdown…), dont le texte est lu dans le navigateur. On peut aussi dicter : la voix est reconnue sur l'appareil (Chrome, Edge 139+ ou Firefox 160+), sans que le son quitte le navigateur. Le modèle se choisit dans Options. Ce qu'il ajoute ou modifie est
   entouré sur le canevas, une pilule résume les changements, et un clic montre l'avant et l'après ou
   annule toute la réponse.
+- **Votre propre agent IA (MCP)** : Claude Desktop, Claude Code, Cursor ou GitHub Copilot dans VS Code
+  lit, dessine, vérifie et exporte le diagramme avec les mêmes outils et les mêmes prompts, en ligne
+  par un relais local ou en Docker par son serveur intégré. Ce n'est pas le co-pilote IA : aucune clé
+  API dans la page.
 - **Interface** : thème clair ou sombre, anglais ou français, panneaux latéraux redimensionnables.
   Pensé pour un écran d'ordinateur : sur un téléphone, il sert surtout à regarder un diagramme.
 
