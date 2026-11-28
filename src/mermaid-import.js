@@ -70,7 +70,12 @@ export function cleanText(raw) {
     s = s.slice(1, -1).replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1')
       .replace(/(^|[^\w*])\*(?!\s)(.+?)\*/g, '$1$2').replace(/(^|\W)_(?!\s)(.+?)_(?=\W|$)/g, '$1$2')
   }
-  s = s.replace(/<br\s*\/?>/gi, '\n').replace(/<\/?[a-z][^>]*>/gi, '')
+  s = s.replace(/<br\s*\/?>/gi, '\n')
+  // Balises HTML retirées jusqu'à stabilité : « <scr<b>ipt> » ne doit pas laisser « <script> ».
+  for (let prev = null; prev !== s;) {
+    prev = s
+    s = s.replace(/<\/?[a-z][^>]*>/gi, '')
+  }
   s = s.replace(/#(\d+|[a-z]+);/gi, (m, code) => (/^\d+$/.test(code) ? String.fromCodePoint(Math.min(Number(code), 0x10ffff)) : ENTITIES[code.toLowerCase()] ?? m))
   s = s.replace(/\bfa[bsrlk]?:fa-[\w-]+\s*/g, '')
   return s.split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean).join('\n')
