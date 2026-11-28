@@ -5,7 +5,7 @@
 // passent par l'API de modélisation de bpmn-js : elles s'affichent en direct
 // et s'annulent avec Ctrl+Z comme une retouche à la main.
 
-import { agentRefusal, getActiveAi } from './active-ai.js'
+import { ACTIVE_AI_EVENT, agentRefusal, getActiveAi } from './active-ai.js'
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
 import { isBranchFlow } from './probability-panel.js'
 import { isConditionalFlow } from './rules-panel.js'
@@ -81,7 +81,7 @@ export function connectMcpBridge(modeler, url, options = {}) {
     ws.addEventListener('open', () => {
       retryDelay = RETRY_MIN_MS
       setBadge(badge, 'connected', mcpClient)
-      send({ type: 'hello', title: document.title, ...(options.headlessKey ? { headless: options.headlessKey } : {}) })
+      send({ type: 'hello', title: document.title, ai: getActiveAi(), ...(options.headlessKey ? { headless: options.headlessKey } : {}) })
     })
 
     ws.addEventListener('message', async (event) => {
@@ -143,7 +143,9 @@ export function connectMcpBridge(modeler, url, options = {}) {
   }
 
   // Le serveur pilote l'onglet utilisé le plus récemment.
-  const markActive = () => send({ type: 'active' })
+  const markActive = () => send({ type: 'active', ai: getActiveAi() })
+  // Le serveur sait quelle IA l'onglet laisse agir (mode sans écran : l'agent va ailleurs).
+  window.addEventListener(ACTIVE_AI_EVENT, () => send({ type: 'active', ai: getActiveAi() }))
   window.addEventListener('focus', markActive)
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') markActive()

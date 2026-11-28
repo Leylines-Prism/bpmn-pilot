@@ -246,7 +246,8 @@ page to the computer: use Chrome, Edge or Firefox. Details in [relay/README.md](
 agent**. The other one is turned off: with the agent, the co-pilot is greyed out; with the co-pilot,
 the agent's calls are refused with a message that tells it why. Two AIs never edit the diagram at
 the same time. Online, the co-pilot is the default and turning on **Local agent** picks the agent.
-In Docker, the MCP agent is the default, and the headless mode is not affected.
+In Docker, the MCP agent is the default. With the headless mode, picking the co-pilot in your tab
+sends the agent to the invisible tab: each AI then works on its own diagram.
 
 **Not for web assistants.** MCP here is for agents installed on your computer or your network (Claude
 Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…). Assistants used in a browser tab

@@ -12,10 +12,10 @@ const ORIGIN = 'http://editor:8080'
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // Un onglet factice : se relie au pont et répond aux appels avec son nom.
-function fakeTab(port, { name, headless } = {}) {
+function fakeTab(port, { name, headless, ai } = {}) {
   const ws = new WebSocket(`ws://127.0.0.1:${port}/bridge`, { origin: ORIGIN })
   const calls = []
-  ws.on('open', () => ws.send(JSON.stringify({ type: 'hello', title: name, ...(headless ? { headless } : {}) })))
+  ws.on('open', () => ws.send(JSON.stringify({ type: 'hello', title: name, ...(ai ? { ai } : {}), ...(headless ? { headless } : {}) })))
   ws.on('message', (raw) => {
     const msg = JSON.parse(raw.toString())
     if (msg.type !== 'call') return
@@ -106,6 +106,18 @@ test('an open tab is used first, and the invisible tab is never opened', async (
   assert.deepEqual(await s.bridge.call('get_shapes', {}), { from: 'visible' })
   assert.equal(s.renderer.opened, 0)
   assert.equal(s.saved.length, 0)
+  await s.close()
+})
+
+test('an open tab that picked the co-pilot sends the agent to the invisible tab', async () => {
+  const s = await setup()
+  const visible = fakeTab(s.port, { name: 'visible', ai: 'copilot' })
+  s.tabs.push(visible)
+  await visible.ready
+  await wait(30)
+  assert.deepEqual(await s.bridge.call('get_shapes', {}, { from: 'mcp' }), { from: 'invisible' })
+  assert.equal(s.renderer.opened, 1)
+  assert.deepEqual(visible.calls, [])
   await s.close()
 })
 

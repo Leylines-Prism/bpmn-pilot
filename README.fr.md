@@ -255,8 +255,9 @@ l'ordinateur : utilisez Chrome, Edge ou Firefox. Détails dans [relay/README.md]
 **Co-pilote** ou **Agent MCP**. L'autre est coupée : avec l'agent, le co-pilote est grisé ; avec le
 co-pilote, les appels de l'agent sont refusés avec un message qui lui dit pourquoi. Deux IA ne
 modifient jamais le diagramme en même temps. En ligne, le co-pilote est choisi par défaut, et
-activer **Agent local** choisit l'agent. En Docker, l'agent MCP est choisi par défaut, et le mode
-sans écran n'est pas concerné.
+activer **Agent local** choisit l'agent. En Docker, l'agent MCP est choisi par défaut. Avec le mode
+sans écran, choisir le co-pilote dans votre onglet envoie l'agent dans l'onglet invisible : chaque IA
+travaille alors sur son propre diagramme.
 
 **Pas pour les assistants web.** Le MCP sert ici aux agents installés sur votre poste ou votre réseau
 (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…). Les assistants utilisés dans un

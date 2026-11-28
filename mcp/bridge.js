@@ -78,6 +78,7 @@ export class EditorBridge {
         }
         if (!client.headless) client.lastActive = Date.now()
         if (typeof msg.title === 'string') client.title = msg.title
+        if (msg.ai === 'copilot' || msg.ai === 'agent') client.ai = msg.ai
       } else if (msg.type === 'headless-take' && !client.headless && typeof msg.id === 'string') {
         client.lastActive = Date.now()
         this.onHeadlessTake?.(msg.id)
@@ -207,6 +208,13 @@ export class EditorBridge {
       this.sticky = false
     }
     const active = this.#activeSocket()
+    // L'onglet ouvert a choisi le Co-pilote comme IA active : avec le mode sans écran,
+    // l'agent passe par l'onglet invisible, et les deux IA travaillent chacune de leur côté.
+    if (active && active.client.ai === 'copilot' && this.renderer) {
+      const target = await this.#ensureHeadless()
+      this.sticky = true
+      return target
+    }
     if (active || !this.renderer) return active
     const target = await this.#ensureHeadless()
     this.sticky = true
