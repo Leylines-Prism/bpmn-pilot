@@ -92,7 +92,7 @@ export function connectMcpBridge(modeler, url, options = {}) {
         return
       }
       if (msg.type !== 'call') return
-      const tool = tools[msg.tool]
+      const tool = Object.hasOwn(tools, msg.tool) ? tools[msg.tool] : null
       try {
         if (!tool) throw new Error(`Unknown tool: ${msg.tool}`)
         const data = await tool(msg.args || {})
