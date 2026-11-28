@@ -551,7 +551,9 @@ commande `up -d`. Depuis le code source, mettez-les dans un fichier `.env` à c�
 - **Carte à plusieurs niveaux** : une activité d'appel se lie au diagramme de Mes diagrammes qui la
   détaille. Un clic y descend, et un fil d'Ariane fait remonter, en mode Présentation aussi.
 - **Sans IA** : construire un processus depuis un tableau d'étapes (collé depuis Excel, .csv ou .xlsx,
-  colonnes de Visio Data Visualizer lues telles quelles), ou depuis une grille rôles × tâches en atelier.
+  colonnes de Visio Data Visualizer lues telles quelles), depuis une grille rôles × tâches en atelier, ou
+  depuis un flowchart Mermaid (collé, ou fichier .mmd ou .md). Exporter > Code Mermaid rend le diagramme
+  en flowchart, pour un README ou un wiki.
 - **Responsabilités** : personne assignée, systèmes utilisés et RACI de chaque activité, conditions en
   clair sur les branches des décisions. Fiches de procédure en PDF, Markdown ou Word, matrice RACI en Excel,
   et une page de documentation HTML en un seul fichier : le diagramme en lecture seule, où un clic sur un

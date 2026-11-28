@@ -14,6 +14,7 @@ import { checkXml, CHECK_IDS } from '../../src/diagram-checks.js'
 import { parseDmn } from '../../src/dmn/dmn-model.js'
 import { buildTools } from '../../src/ai/tools.js'
 import { createToolSet, runTool } from '../../src/ai/chat-loop.js'
+import { importMermaid, mermaidToDiagram } from '../../src/mermaid-import.js'
 
 const seed = process.env.FC_SEED ? { seed: Number(process.env.FC_SEED) } : {}
 const runs = (numRuns) => ({ numRuns, ...seed })
@@ -164,5 +165,51 @@ test('the co-pilot runs a tool only on valid arguments, and always answers', asy
       assert.equal(result.isError, !valid)
     }),
     runs(3000),
+  )
+})
+
+// ── Import Mermaid ──
+
+// Morceaux de syntaxe Mermaid mêlés au hasard : le parseur ne doit jamais lever d'exception.
+const mermaidBits = fc.constantFrom('A', 'B', 'id1', '-->', '---', '-.->', '==>', '~~~', '<-->', '--x', '--o', '|', '"', '[', ']', '(', ')', '{', '}',
+  '[[', ']]', '((', '))', '[(', ')]', '[/', '/]', '>', '&', ';', '\n', ' ', 'subgraph', 'end', '@{', 'shape:', 'label:', ':::', '%%', '`', '#quot;', '<br>', 'classDef', 'click', 'e1@')
+
+test('the Mermaid import never throws on arbitrary text, and answers with errors or BPMN', () => {
+  fc.assert(
+    fc.property(fc.oneof(fc.string(), fc.array(mermaidBits, { maxLength: 60 }).map((a) => `flowchart LR\n${a.join('')}`)), (text) => {
+      const r = importMermaid(text)
+      assert.ok(Array.isArray(r.errors) && Array.isArray(r.warnings))
+      if (!r.errors.length) assert.match(r.xml, /<bpmn:process /)
+    }),
+    runs(5000),
+  )
+})
+
+// Flowcharts bien formés tirés au hasard : le BPMN produit se lit sans avertissement et se range.
+const SHAPES = ['[t]', '(t)', '{t}', '([t])', '((t))', '(((t)))', '[[t]]', '[(t)]', '[/t/]', '{{t}}', '@{ shape: fork }', '@{ shape: delay, label: "t" }', '@{ shape: comment, label: "t" }']
+const flowchart = fc.record({
+  shapes: fc.array(fc.constantFrom(...SHAPES), { minLength: 1, maxLength: 8 }),
+  links: fc.array(fc.tuple(fc.nat(7), fc.nat(7), fc.constantFrom('-->', '-->|yes|', '-- no -->', '-.->', '---')), { maxLength: 12 }),
+  lanes: fc.array(fc.nat(2), { maxLength: 8 }),
+  mode: fc.constantFrom('lanes', 'subprocesses'),
+}).map(({ shapes, links, lanes, mode }) => {
+  const lines = ['flowchart LR']
+  shapes.forEach((sh, i) => lines.push(`  subgraph G${lanes[i] ?? 0}`, `    n${i}${sh.replace(/t/, `Step ${i}`)}`, '  end'))
+  for (const [a, b, l] of links) lines.push(`  n${a % shapes.length} ${l} n${b % shapes.length}`)
+  return { text: lines.join('\n'), mode }
+})
+
+test('any well-formed flowchart gives valid BPMN that the automatic layout can draw', async () => {
+  await fc.assert(
+    fc.asyncProperty(flowchart, async ({ text, mode }) => {
+      const r = importMermaid(text, { subgraphs: mode })
+      if (!/n\d+(\[[^(/]|\(|\{|@\{ shape: (fork|delay))/.test(text)) return // seulement des données ou des notes : refusé
+      assert.deepEqual(r.errors, [], text)
+      const { warnings } = await moddle.fromXML(r.xml)
+      assert.deepEqual(warnings.map((w) => w.message), [], text)
+      const laid = await mermaidToDiagram(text, { subgraphs: mode })
+      assert.deepEqual(laid.errors, [], text)
+    }),
+    runs(Number(process.env.FC_MERMAID_RUNS) || 150),
   )
 })

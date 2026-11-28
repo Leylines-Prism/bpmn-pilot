@@ -30,6 +30,8 @@ Size guide: task 100×80, event 36×36, gateway 50×50. The x and y coordinates 
 Colors and text formatting: style_elements sets the fill, stroke, text color and font of shapes and connections.
 Use them sparingly and consistently, for example one color per actor or to highlight an exception path.
 To start from scratch or import a complete diagram, use set_diagram_xml.
+When the user gives a Mermaid flowchart (pasted, attached, or from their notes), import it with import_mermaid rather than redrawing it shape by shape,
+then complete what Mermaid cannot express: task types, message, timer and error events, pools and message flows. get_diagram_mermaid gives the diagram as a Mermaid flowchart, for a README or a wiki.
 When the user asks for a file, use export_diagram: the diagram (BPMN, SVG, PNG, PDF) or one of its documents (process report, procedure sheets, HTML documentation page, RACI matrix, user stories, DMN decisions, BPMN for Camunda 8 or 7). To read the diagram yourself, use get_diagram_xml or get_diagram_image instead.
 
 Process analysis: get_process_report gives the findings, and with simulate the token counts per element and per gateway branch.
@@ -216,6 +218,34 @@ export function buildTools(z) {
       inputSchema: {
         xml: z.string().min(1).describe('Complete BPMN 2.0 XML document, with its diagram layout (BPMNDiagram)'),
       },
+    },
+    {
+      name: 'import_mermaid',
+      title: 'Import a Mermaid flowchart',
+      description:
+        'Replaces the whole open diagram with a process converted from a Mermaid flowchart (flowchart or graph), then laid out automatically. ' +
+        'Rectangles become tasks, {decisions} exclusive gateways, ((circles)) and ([stadiums]) start, intermediate or end events according to their links, ' +
+        '[[subroutines]] call activities, [(cylinders)] data stores, [/parallelograms/] and documents data objects, comments text annotations, ' +
+        '@{ shape: fork } parallel gateways, @{ shape: delay } timer events. Link labels become flow names (the conditions after a gateway). ' +
+        'A step with several outgoing links gets a split gateway: exclusive if the links are labelled, parallel otherwise. Missing start and end events are added. ' +
+        'Subgraphs become lanes, or expanded subprocesses with subgraphs "subprocesses". Styles, clicks and the direction are ignored. ' +
+        'Other Mermaid diagrams (sequence, state, class…) are rejected and the diagram stays unchanged. Returns the counts and the warnings, line by line. ' +
+        'The user can undo it in one step.',
+      annotations: edit(true, true),
+      inputSchema: {
+        mermaid: z.string().min(1).max(200000).describe('The Mermaid flowchart, starting with "flowchart" or "graph", or Markdown text holding a ```mermaid block'),
+        subgraphs: z.enum(['lanes', 'subprocesses']).optional().describe('What subgraphs are: roles ("lanes", the default) or steps ("subprocesses")'),
+        name: z.string().max(120).optional().describe('Name of the process, or of its pool when there are lanes. Default: "Process"'),
+      },
+    },
+    {
+      name: 'get_diagram_mermaid',
+      title: 'Read the diagram as Mermaid',
+      description:
+        'Returns the open diagram as a Mermaid flowchart (flowchart LR), for a README, a wiki or a chat that displays Mermaid. ' +
+        'Lanes and pools become subgraphs, message flows and associations dotted links. Positions, colors and the detailed types of tasks and events are lost.',
+      annotations: READ,
+      inputSchema: {},
     },
     {
       name: 'add_shapes',

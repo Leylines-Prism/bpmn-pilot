@@ -26,6 +26,8 @@ import { isAgentStep } from './lint/agent-steps.js'
 import { renderDiagramPng } from './diagram-image.js'
 import { unconnectedNotice } from './unconnected.js'
 import { fitView } from './fit-view.js'
+import { mermaidToDiagram } from './mermaid-import.js'
+import { bpmnToMermaid } from './mermaid-export.js'
 import { T } from './i18n/lang.js'
 import { FONTS, applyFont, applyTextColor, fontOf, hasText, resetText, textColorOf } from './label-style.js'
 import { miningTools } from './mining/mining-tools.js'
@@ -556,6 +558,18 @@ function buildTools(modeler, exportDiagram, processReport, decisions) {
         elements: elementRegistry.filter((e) => e.type !== 'label').length,
         warnings: warnings.map((w) => w.message),
       }
+    },
+
+    async import_mermaid({ mermaid, subgraphs, name }) {
+      const r = await mermaidToDiagram(mermaid, { subgraphs, name: name || T('Process', 'Processus'), T })
+      if (r.errors.length) throw new Error(`${r.errors.join(' ')} Diagram unchanged.`)
+      const { warnings } = await reloadWithCopy(modeler, () => modeler.importXML(r.xml))
+      fitView(canvas)
+      return { imported: true, counts: r.counts, warnings: [...r.warnings, ...warnings.map((w) => w.message)] }
+    },
+
+    get_diagram_mermaid() {
+      return bpmnToMermaid(modeler.getDefinitions())
     },
 
     add_shapes({ shapes }) {
