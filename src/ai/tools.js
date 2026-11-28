@@ -187,6 +187,7 @@ export function buildTools(z) {
         '("Name (2).pdf" is added next to it). The editor also shows the user a Download button: nothing is downloaded unless they click it. ' +
         'With returnFile, the file itself is also returned to you (png as an image, bpmn, svg, dmn, md and html as text, pdf, docx and xlsx as an embedded resource), ' +
         'so you can pass it on or attach it elsewhere; without it, only the file name and size come back. ' +
+        'For a diagram format (bpmn, svg, png, pdf, camunda8, camunda7), elements still lacking a sequence flow do not block the export: the result lists them (unconnected). ' +
         'The diagram itself is not changed. Use it only when the user asks for a file: to read the diagram yourself, use get_diagram_xml or get_diagram_image; to read the report, get_process_report.',
       inputSchema: {
         format: z
@@ -224,7 +225,7 @@ export function buildTools(z) {
         'With x and y, it is placed at that position without a connection. With neither, it is placed to the right of the diagram. ' +
         'A Lane is added at the bottom of its participant, which grows to make room. ' +
         'With "attachTo", the shape becomes a boundary event on a task or subprocess. ' +
-        'Returns the id created for each shape, and for each "key" given. To connect existing shapes, use connect_shapes. ' +
+        'Returns the id created for each shape, and for each "key" given, plus the elements still lacking a sequence flow (unconnected), if any. To connect existing shapes, use connect_shapes. ' +
         'If one shape fails, the whole call is undone. The user can undo the call with Ctrl+Z.',
       annotations: edit(false, false),
       inputSchema: {
@@ -283,7 +284,7 @@ export function buildTools(z) {
       title: 'Connect shapes',
       description:
         'Creates connections between existing shapes. The type follows the BPMN rules: sequence flow within a process, ' +
-        'message flow between participants, association to an annotation. Returns the id of each connection. ' +
+        'message flow between participants, association to an annotation. Returns the id of each connection, plus the elements still lacking a sequence flow (unconnected), if any. ' +
         'Shapes added with "after" in add_shapes are already connected. To rename a connection later, use update_elements; ' +
         'to remove one, remove_elements. The user can undo the call with Ctrl+Z.',
       annotations: edit(false, false),

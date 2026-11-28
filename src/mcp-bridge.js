@@ -24,10 +24,14 @@ import { schemaFromSpec, describeForm, checkForm, canHoldForm } from './forms/fo
 import { eventTriggerProblem } from './lint/event-triggers.js'
 import { isAgentStep } from './lint/agent-steps.js'
 import { renderDiagramPng } from './diagram-image.js'
+import { unconnectedNotice } from './unconnected.js'
 import { fitView } from './fit-view.js'
 import { T } from './i18n/lang.js'
 import { FONTS, applyFont, applyTextColor, fontOf, hasText, resetText, textColorOf } from './label-style.js'
 import { miningTools } from './mining/mining-tools.js'
+
+// Formats de l'outil export_diagram qui portent le diagramme : l'export y signale les éléments sans flux.
+const DIAGRAM_FORMATS = ['bpmn', 'svg', 'png', 'pdf', 'camunda8', 'camunda7']
 
 // Valeurs FEEL (dates, durées) en texte, pour la réponse JSON de l'outil.
 const plain = (v) => (v === null || v === undefined ? null : Array.isArray(v) ? v.map(plain) : typeof v === 'object' ? (Object.getPrototypeOf(v) === Object.prototype ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, plain(x)])) : String(v)) : v)
@@ -524,9 +528,13 @@ function buildTools(modeler, exportDiagram, processReport, decisions) {
     },
 
     // Produit le fichier comme le menu Exporter. Rien ne se télécharge sans clic de l'utilisateur.
-    export_diagram({ format, name, returnFile }) {
+    // Un export du diagramme qui laisse des éléments sans flux réussit, avec un avertissement pour l'agent.
+    async export_diagram({ format, name, returnFile }) {
       if (!exportDiagram) throw new Error('Exporting is not available in this editor.')
-      return exportDiagram({ format, name, returnFile })
+      const result = await exportDiagram({ format, name, returnFile })
+      if (!DIAGRAM_FORMATS.includes(format)) return result
+      const notice = unconnectedNotice(modeler.getDefinitions(), { exporting: true })
+      return notice.unconnected && result && typeof result === 'object' ? { ...result, ...notice } : result
     },
 
     async set_diagram_xml({ xml }) {
@@ -634,7 +642,7 @@ function buildTools(modeler, exportDiagram, processReport, decisions) {
           if (spec.key) entry.key = spec.key
           created.push(entry)
         }
-        return { created }
+        return { created, ...unconnectedNotice(modeler.getDefinitions()) }
       })
     },
 
@@ -651,7 +659,7 @@ function buildTools(modeler, exportDiagram, processReport, decisions) {
           if (spec.name) modeling.updateLabel(connection, spec.name)
           created.push(describe(connection))
         }
-        return { created }
+        return { created, ...unconnectedNotice(modeler.getDefinitions()) }
       })
     },
 
