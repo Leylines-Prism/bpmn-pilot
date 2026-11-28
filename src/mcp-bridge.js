@@ -55,7 +55,9 @@ export function connectMcpBridge(modeler, url, options = {}) {
   try {
     servedByDocker = new URL(url, location.href).host === location.host
   } catch {}
-  const tools = createTools(modeler, options)
+  // options.tools : outils déjà créés pour ce modeler (version en ligne, partagés avec le chat
+  // intégré). Les créer deux fois enregistrerait deux fois leurs commandes.
+  const tools = options.tools || createTools(modeler, options)
   const badge = createBadge()
   const state = { tabId: null, badge }
   let retryDelay = RETRY_MIN_MS

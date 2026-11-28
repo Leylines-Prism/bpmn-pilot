@@ -1035,9 +1035,6 @@ if (import.meta.env.MODE === 'online') {
   }
   // Bouton « Confidentialité », en bas à droite du canevas.
   import('./privacy.js').then(({ setupPrivacy }) => setupPrivacy({ container: document.getElementById('canvas') }))
-  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js')]).then(([{ createTools }, { createChatPanel }]) => {
-    createChatPanel({ mode: 'online', tools: createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi }) })
-  })
   // Agent MCP local : la page se relie au relais que l'utilisateur fait tourner sur son poste
   // (serveur mcp/ lancé par son agent), à l'adresse 127.0.0.1. Seulement sur demande
   // (?mcp=local, mémorisé ; ?mcp=off l'oublie) : sans demande, aucune connexion vers le poste,
@@ -1052,17 +1049,15 @@ if (import.meta.env.MODE === 'online') {
   } catch {
     localMcp = mcpParam === 'local'
   }
-  if (localMcp) {
-    const port = Number(import.meta.env.VITE_LOCAL_MCP_PORT) || 3333
-    import('./mcp-bridge.js').then(({ connectMcpBridge }) => {
-      connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, {
-        exportDiagram: exportForAi,
-        processReport: processReportForAi,
-        decisions: decisions.service,
-        mining: mining.toolApi,
-      })
-    })
-  }
+  // Les mêmes outils servent au chat intégré et à l'agent local.
+  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js')]).then(([{ createTools, connectMcpBridge }, { createChatPanel }]) => {
+    const tools = createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi })
+    createChatPanel({ mode: 'online', tools })
+    if (localMcp) {
+      const port = Number(import.meta.env.VITE_LOCAL_MCP_PORT) || 3333
+      connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, { tools })
+    }
+  })
 } else {
   if (mcpBridgeUrl) {
     Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect.js')]).then(([{ connectMcpBridge }, { createChatPanel }, { setupMcpConnect }]) => {
