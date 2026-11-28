@@ -19,7 +19,7 @@
 
 services:
   editor:
-    image: ghcr.io/leylines-prism/bpmn-pilot:1.4.5
+    image: ghcr.io/leylines-prism/bpmn-pilot:1.4.6
     ports:
       - "${BPMN_BIND:-127.0.0.1}:${BPMN_PORT:-8080}:8080"
     environment:
@@ -38,7 +38,7 @@ services:
   # le crée s'il manque, avec diagrams/ et exports/, et le donne à l'utilisateur du serveur.
   # Sans lui, un dossier créé par Docker appartient à root et le serveur ne peut pas y écrire.
   data-init:
-    image: ghcr.io/leylines-prism/bpmn-pilot-mcp:1.4.5
+    image: ghcr.io/leylines-prism/bpmn-pilot-mcp:1.4.6
     user: "0:0"
     entrypoint:
       - sh
@@ -64,7 +64,7 @@ services:
     restart: "no"
 
   mcp:
-    image: ghcr.io/leylines-prism/bpmn-pilot-mcp:1.4.5
+    image: ghcr.io/leylines-prism/bpmn-pilot-mcp:1.4.6
     environment:
       # Fournisseurs du chat intégré (voir mcp/.env.example pour le détail).
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}

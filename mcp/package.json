@@ -1,6 +1,6 @@
 {
   "name": "bpmn-pilot-mcp",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "private": true,
   "type": "module",
   "description": "Serveur MCP qui pilote l'éditeur BPMN ouvert dans le navigateur",
