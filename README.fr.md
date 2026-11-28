@@ -532,9 +532,16 @@ répond `"browser": true` quand le serveur joint Chromium.
 
 **Dans la version Docker**, le plus sûr est le serveur : le fichier `.env` à côté de
 `docker-compose.image.yml` (ou `mcp/.env` depuis le code source). La clé reste sur le serveur et
-n'arrive jamais au navigateur. Une clé saisie dans la fenêtre Options du co-pilote est gardée dans le
-navigateur comme ci-dessous, puis envoyée à chaque message à votre serveur, qui la transmet au
-fournisseur sans l'enregistrer.
+n'arrive jamais au navigateur.
+
+**Des clés dans le compose coupent la saisie dans le navigateur.** Dès que le serveur a sa propre clé
+ou son propre modèle (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODELS`…), la
+fenêtre Options du co-pilote ne propose plus que « Modèles du serveur » : ni choix de fournisseur, ni
+champ de clé API. Le serveur refuse aussi toute clé ou adresse de fournisseur envoyée par une page :
+aucune clé API ne reste dans un navigateur. Pour laisser les utilisateurs ajouter aussi leurs propres
+fournisseurs (Ollama sur leur machine, par exemple), réglez `BROWSER_KEYS=on`. Sans clé sur le
+serveur, une clé saisie dans Options est gardée dans le navigateur comme ci-dessous, puis envoyée à
+chaque message à votre serveur, qui la transmet au fournisseur sans l'enregistrer.
 
 **Dans le navigateur** (la version en ligne, ou les clés saisies dans Options) :
 
@@ -562,6 +569,7 @@ commande `up -d`. Depuis le code source, mettez-les dans un fichier `.env` à c�
 |---|---|
 | `MISTRAL_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`… (`mcp/.env`) | Clés API du co-pilote IA. Voir `mcp/.env.example`. |
 | `MCP_TOKEN` (`mcp/.env`) | Jeton que les agents doivent envoyer. La fenêtre « Connecter un agent » en génère un. Obligatoire quand `MCP_ALLOWED_HOSTS` contient un autre nom que localhost. |
+| `BROWSER_KEYS` (`mcp/.env`) | Clés API saisies dans le navigateur. Vide (par défaut) : coupées dès que le serveur a ses propres clés ou modèles, Options ne propose alors que les modèles du serveur. `on` les accepte aussi, `off` les refuse toujours. |
 | `MCP_AUTH` (`mcp/.env`) | `off` ouvre `/mcp` sans jeton sous un autre nom que localhost. Seulement sur un réseau de confiance, ou derrière un proxy qui authentifie `/mcp`. |
 | `BPMN_PORT` | Port du site (8080 par défaut). |
 | `BPMN_EDITOR_ORIGINS`, `MCP_ALLOWED_HOSTS` | L'adresse et le nom du site quand il est servi sous un nom de domaine (voir plus haut). |

@@ -502,8 +502,15 @@ answers `"browser": true` when the server reaches Chromium.
 
 **In the Docker version**, the safest place is the server: the `.env` file next to
 `docker-compose.image.yml` (or `mcp/.env` from the source code). The key stays on the server and never
-reaches the browser. A key typed in the co-pilot's Options window is kept in the browser as below,
-then sent with each message to your server, which passes it on to the provider without storing it.
+reaches the browser.
+
+**Keys in the compose turn off keys in the browser.** As soon as the server has a key or a model of
+its own (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODELS`…), the co-pilot's
+Options window only offers "Server models": no provider to pick, no API key field. The server also
+refuses any key or provider address sent by a page, so no API key stays in a browser. To let users
+add their own providers as well (Ollama on their machine, for example), set `BROWSER_KEYS=on`.
+Without any server key, keys typed in Options are kept in the browser as below, then sent with each
+message to your server, which passes them on to the provider without storing them.
 
 **In the browser** (the online version, or keys typed in Options):
 
@@ -529,6 +536,7 @@ it), unless the table says `mcp/.env`, then run `docker compose up -d --build`.
 |---|---|
 | `MISTRAL_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`… (`mcp/.env`) | API keys for the AI co-pilot. See `mcp/.env.example`. |
 | `MCP_TOKEN` (`mcp/.env`) | Token that agents must send. The "Connect an agent" window generates one. Required when `MCP_ALLOWED_HOSTS` holds a name other than localhost. |
+| `BROWSER_KEYS` (`mcp/.env`) | API keys typed in the browser. Empty (default): turned off as soon as the server has its own keys or models, Options then only offers the server models. `on` accepts them as well, `off` always refuses them. |
 | `MCP_AUTH` (`mcp/.env`) | `off` opens `/mcp` without a token under a name other than localhost. Only on a network you trust, or behind a proxy that authenticates `/mcp`. |
 | `BPMN_PORT` | Port of the site (8080 by default). |
 | `BPMN_EDITOR_ORIGINS`, `MCP_ALLOWED_HOSTS` | The address and name of the site when it is served under a domain name (see above). |

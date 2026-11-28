@@ -127,7 +127,7 @@ un nom de domaine ou depuis une autre machine, régler ces variables dans un fic
 
 | Variable | Exemple | Rôle |
 |---|---|---|
-| `CHAT_RELAY` | `off` | `off` coupe les fournisseurs réglés dans la fenêtre Options : le serveur ne propose plus que ses propres modèles et n'appelle jamais une adresse envoyée par une page |
+| `BROWSER_KEYS` | `on` | clés API saisies dans le navigateur (fenêtre Options), relayées par le serveur. Vide : refusées dès que le serveur a ses propres clés ou modèles (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_MODELS`…), et Options ne propose plus que les modèles du serveur. `on` les accepte aussi, `off` les refuse toujours. L'ancien nom `CHAT_RELAY` marche encore |
 | `BPMN_EDITOR_ORIGINS` | `https://bpmn.example.com` | adresses des pages de l'éditeur, avec `http://` ou `https://`, séparées par des virgules. Le WebSocket et le chat n'acceptent qu'elles |
 | `MCP_ALLOWED_HOSTS` | `bpmn.example.com` | noms d'hôte qu'utilisent les clients MCP |
 | `BPMN_BIND` | `0.0.0.0` | interface où le site écoute (`127.0.0.1` par défaut). Utile seulement si le proxy tourne sur une autre machine |
@@ -322,7 +322,7 @@ Elles peuvent aussi être placées dans `mcp/.env`.
 | `MISTRAL_BASE_URL` | `https://api.mistral.ai/v1` | adresse de l'API Mistral. `https://api.eu.mistral.ai/v1` garde le traitement dans l'Union européenne |
 | `MISTRAL_REASONING_EFFORT` | aucune | envoyée telle quelle en `reasoning_effort` (`low`, `medium`, `high`…). Sans elle, chaque modèle garde son réglage par défaut |
 | `CHAT_MODEL` | le premier de la liste | modèle choisi par défaut dans le menu : `anthropic:claude-sonnet-5-5`, `openai:qwen3:14b`, ou l'identifiant seul |
-| `CHAT_RELAY` | `on` | `off` coupe les fournisseurs réglés dans la fenêtre Options : le serveur ne propose plus que ses propres modèles (ci-dessus) et n'appelle jamais une adresse envoyée par une page |
+| `BROWSER_KEYS` | `on` | clés API saisies dans le navigateur (fenêtre Options), relayées par le serveur. Vide : refusées dès que le serveur a ses propres clés ou modèles (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_MODELS`…), et Options ne propose plus que les modèles du serveur. `on` les accepte aussi, `off` les refuse toujours. L'ancien nom `CHAT_RELAY` marche encore |
 | `DIAGRAMS_DIR` | `mcp/data/diagrams` (`/data/diagrams` dans l'image docker) | dossier des diagrammes enregistrés sur le serveur |
 | `VITE_MCP_BRIDGE_URL` (côté éditeur) | `ws://127.0.0.1:3333/bridge` en développement, `/bridge` dans le compose | adresse du pont. Une adresse relative vise le site lui-même |
 

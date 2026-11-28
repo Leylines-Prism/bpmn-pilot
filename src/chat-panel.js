@@ -244,6 +244,8 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
   let checked = false
   let settings = loadSettings()
   let serverModels = [] // { id, label, provider, providerLabel }, envoyés par le serveur
+  // Clés API du navigateur acceptées par le serveur (false si le compose fournit les siennes).
+  let browserKeys = true
   let models = [] // modèles du fournisseur actif : serverModels ou ceux de la fenêtre Options
   let currentId = '' // modèle du co-pilote, choisi dans la fenêtre Options
   // Discussion en cours : sur le serveur ({ id }) ou dans la page ({ messages }).
@@ -308,7 +310,7 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
   // fournisseur testé. Sans choix, ceux du serveur s'il en a. Le modèle du co-pilote
   // se choisit dans Options ; le panneau l'affiche.
   function fillModels() {
-    const useServer = settings.active === 'server' || (!settings.active && serverModels.length > 0)
+    const useServer = !browserKeys || settings.active === 'server' || (!settings.active && serverModels.length > 0)
     models = useServer ? serverModels.map((m) => ({ ...m, source: 'server' })) : userModels(settings)
     const has = (id) => id && models.some((m) => m.id === id)
     currentId = has(settings.defaultModel) ? settings.defaultModel : has(serverDefault) ? serverDefault : models[0]?.id || ''
@@ -402,6 +404,7 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
       const status = await res.json()
       serverModels = Array.isArray(status.models) ? status.models : []
       serverDefault = status.model
+      browserKeys = status.relay !== false
       fillModels()
       announce()
     } catch {
@@ -420,6 +423,7 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
         if (checked) return
         serverModels = Array.isArray(status.models) ? status.models : []
         serverDefault = status.model
+        browserKeys = status.relay !== false
       } catch { return }
     }
     fillModels()
@@ -448,7 +452,7 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
     }
   })
 
-  panel.querySelector('#chat-settings').addEventListener('click', () => options.open(settings, { server: serverModels }))
+  panel.querySelector('#chat-settings').addEventListener('click', () => options.open(settings, { server: serverModels, browserKeys }))
 
   panel.querySelector('#chat-reset').addEventListener('click', () => {
     controller?.abort()

@@ -582,7 +582,9 @@
         <p>Open <span class="uib">Options</span> and choose a provider, with your own API key:</p>
         <!-- /online -->
         <!-- docker -->
-        <p>Open <span class="uib">Options</span>. If the administrator set keys on the server, <span class="ui">Server models</span> heads the list and there is nothing to enter. Otherwise, choose a provider and paste your API key:</p>
+        <p>Open <span class="uib">Options</span>. If the administrator set keys on the server (compose variables), <span class="ui">Server models</span> is the only choice: entering keys in the browser is turned off, and the server refuses any key sent by a page. There is nothing to enter, just pick the model. The administrator can turn key entry back on with <code>BROWSER_KEYS=on</code>.</p>
+        <figure><img src="/src/help/img/en-options-cles-serveur.webp" width="640" height="482" alt="Co-pilot options window: Provider Server models, greyed out, with the note that API keys are provided by the server and entering keys in the browser is turned off, then the choice of the Claude Opus 5.5 model." loading="lazy" /><figcaption>Options when the server provides the keys.</figcaption></figure>
+        <p>Without a key on the server, choose a provider and paste your API key:</p>
         <!-- /docker -->
         <div class="table-wrap">
           <table>
@@ -798,7 +800,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p>Your key goes through neither this site nor its host: it travels from the browser straight to the provider. The <span class="ui">Remember API keys on your device</span> box, in Options, decides where it is kept:</p>
         <!-- /online -->
         <!-- docker -->
-        <p>The safest is to set the keys on the server (see the <a href="https://github.com/Leylines-Prism/bpmn-pilot#readme" target="_blank" rel="noopener">README<svg class="icon-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>): they never reach the browser. A key typed in Options goes through your server without being stored there. In the browser, the <span class="ui">Remember API keys on your device</span> box decides where it is kept:</p>
+        <p>The safest is to set the keys on the server (see the <a href="https://github.com/Leylines-Prism/bpmn-pilot#readme" target="_blank" rel="noopener">README<svg class="icon-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>): they never reach the browser. As soon as a key is set on the server, entering keys in Options is turned off (<code>BROWSER_KEYS</code>). Otherwise, a key typed in Options goes through your server without being stored there. In the browser, the <span class="ui">Remember API keys on your device</span> box decides where it is kept:</p>
         <!-- /docker -->
         <div class="table-wrap">
           <table>
@@ -1173,7 +1175,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <p>No. Only the AI co-pilot needs an API key from a provider. An MCP agent keeps its own subscription, with no key in the page.</p>
           <!-- /online -->
           <!-- docker -->
-          <p>No. Only the AI co-pilot needs an API key, on the server or in Options. An MCP agent keeps its own subscription.</p>
+          <p>No. Only the AI co-pilot needs an API key, on the server or in Options (only if the server provides none). An MCP agent keeps its own subscription.</p>
           <!-- /docker -->
         </details>
         <details class="faq">

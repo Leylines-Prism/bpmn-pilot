@@ -708,6 +708,13 @@ body #chat-input:focus-visible { outline: 2px solid var(--focus-ring); outline-o
 #options-dialog form { display: flex; flex-direction: column; gap: var(--space-3); }
 #options-dialog h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
 #options-dialog .hint { color: var(--ink-muted); font-size: 13px; line-height: 18px; }
+/* Clés fournies par le serveur (BROWSER_KEYS) : ni saisie ni case de mémorisation. */
+#options-dialog .server-only-note { display: none; padding: var(--space-2) var(--space-3); border-left: 3px solid var(--leyline-sky-deep); background: var(--surface-sunken); border-radius: 6px; font-size: 13px; line-height: 18px; }
+#options-dialog.server-keys-only .server-only-note { display: block; }
+#options-dialog.server-keys-only .intro-keys,
+#options-dialog.server-keys-only .server-hint,
+#options-dialog.server-keys-only .keys-row,
+#options-dialog.server-keys-only .privacy { display: none; }
 #options-dialog .providers { display: flex; flex-direction: column; gap: var(--space-2); }
 #options-dialog .provider {
   border: 1px solid var(--line-strong); border-radius: var(--radius-md);
