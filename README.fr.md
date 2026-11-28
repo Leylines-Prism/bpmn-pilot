@@ -143,7 +143,7 @@ Sur un processus d'achat interne à quatre couloirs :
 </tr>
 </table>
 
-BPMN 2.0 est la norme internationale [ISO/IEC 19510](https://www.iso.org/fr/standard/62652.html),
+BPMN 2.0 est la norme internationale ISO/IEC 19510,
 publiée par l'OMG. Un diagramme fait ici se lit de la même façon dans tout éditeur ou moteur conforme,
 et le fichier .bpmn s'y ouvre.
 

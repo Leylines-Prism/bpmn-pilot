@@ -139,7 +139,7 @@ On an internal purchase process with four lanes:
 </tr>
 </table>
 
-BPMN 2.0 is the international standard [ISO/IEC 19510](https://www.iso.org/standard/62652.html),
+BPMN 2.0 is the international standard ISO/IEC 19510,
 published by the OMG. A diagram made here reads the same in any compliant editor or engine, and the
 .bpmn file opens there.
 
