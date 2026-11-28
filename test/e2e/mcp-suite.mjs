@@ -217,6 +217,7 @@ const FILE_CHECKS = {
   png: (b, raw) => raw[0] === 0x89 && raw[1] === 0x50,
   pdf: (b) => b.startsWith('%PDF'),
   dmn: (b) => b.includes('definitions') && b.includes('decision'),
+  forms: (b, raw) => (raw[0] === 0x50 && raw[1] === 0x4b) || b.includes('"components"'),
   camunda8: (b) => b.includes('zeebe') || b.includes('isExecutable="true"'),
   camunda7: (b) => b.includes('camunda') || b.includes('isExecutable="true"'),
   'report-pdf': (b) => b.startsWith('%PDF'),
@@ -229,7 +230,7 @@ const FILE_CHECKS = {
   'stories-md': (b) => b.includes('#'),
   'raci-xlsx': (b, raw) => raw[0] === 0x50 && raw[1] === 0x4b,
 }
-const EXT = { camunda8: 'bpmn', camunda7: 'bpmn', 'report-pdf': 'pdf', 'report-md': 'md', 'report-docx': 'docx', 'sheets-pdf': 'pdf', 'sheets-md': 'md', 'sheets-docx': 'docx', 'doc-html': 'html', 'stories-md': 'md', 'raci-xlsx': 'xlsx' }
+const EXT = { forms: 'form', camunda8: 'bpmn', camunda7: 'bpmn', 'report-pdf': 'pdf', 'report-md': 'md', 'report-docx': 'docx', 'sheets-pdf': 'pdf', 'sheets-md': 'md', 'sheets-docx': 'docx', 'doc-html': 'html', 'stories-md': 'md', 'raci-xlsx': 'xlsx' }
 
 function fileFrom(r) {
   for (const c of r.content || []) {
@@ -410,6 +411,35 @@ async function mcpSuite() {
     await call('link_decision', { elementId: task, decisionId })
   })
 
+  // Formulaires des tâches (form-js).
+  await step('set_task_form (tâche utilisateur)', async () => {
+    const r = await call('set_task_form', {
+      elementId: await idOf('Recevoir la commande'),
+      title: 'Saisir la commande',
+      intro: 'Remplissez **tous** les champs.',
+      fields: [
+        { key: 'client', label: 'Client', required: true },
+        { key: 'montant', label: 'Montant', type: 'number', min: 0 },
+        { key: 'pays', label: 'Pays', type: 'select', values: ['FR', 'BE', 'CH'] },
+        { key: 'urgent', label: 'Urgent', type: 'checkbox' },
+      ],
+    })
+    return text(r).slice(0, 120)
+  })
+  await step('set_task_form (radio sans valeurs refusé)', async () =>
+    call('set_task_form', { elementId: await idOf('Recevoir la commande'), fields: [{ label: 'Choix', type: 'radio' }] }, { expectError: true }))
+  await step('set_task_form (deux champs avec la même clé refusés)', async () =>
+    call('set_task_form', { elementId: await idOf('Recevoir la commande'), fields: [{ key: 'a', label: 'A' }, { key: 'a', label: 'B' }] }, { expectError: true }))
+  await step('set_task_form (élément inconnu refusé)', () => call('set_task_form', { elementId: 'Nope', fields: [{ label: 'A' }] }, { expectError: true }))
+  await step('get_task_forms', async () => {
+    const t = text(await call('get_task_forms'))
+    assert(t.includes('montant') || t.includes('Montant'), t.slice(0, 200))
+  })
+  await step('get_task_forms (schéma complet d’un élément)', async () => {
+    const t = text(await call('get_task_forms', { elementId: await idOf('Recevoir la commande') }))
+    assert(t.includes('components') || t.includes('"type"'), 'schéma form-js absent')
+  })
+
   // Rapport, analyse, journal d'événements.
   await step('get_process_report (avec 100 jetons)', async () => {
     const t = text(await call('get_process_report', { simulate: true }))
@@ -458,7 +488,7 @@ async function mcpSuite() {
   record('Couverture des outils', missing.length === 0, missing.length ? `non appelés : ${missing.join(', ')}` : `${covered.size}/${tools.length}`)
 
   // Prompts : chacun se lit avec des arguments d'exemple et rend un texte.
-  const SAMPLE = { description: 'Un client commande, on vérifie le stock, on expédie ou on refuse.', goal: 'Qualifier la demande', after: '', framework: 'GDPR' }
+  const SAMPLE = { decisionId: 'Decision_1', name: 'Choisir le transporteur', description: 'Un client commande, on vérifie le stock, on expédie ou on refuse.', goal: 'Qualifier la demande', after: '', framework: 'GDPR' }
   for (const p of prompts) {
     await step(`prompt ${p.name}`, async () => {
       const a = {}

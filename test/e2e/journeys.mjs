@@ -157,6 +157,15 @@ async function enableModules(page, patterns) {
   return done.join(' ; ')
 }
 
+// Choisit un profil de palette par le bouton du bas de la palette.
+async function paletteProfile(page, profile) {
+  await page.locator('.bpmn-pilot-palette-profile').click()
+  await page.waitForTimeout(250)
+  await page.locator(`.djs-popup .entry[data-id="profile-${profile}"]`).click()
+  await page.waitForTimeout(250)
+  return page.$$eval('.djs-palette .entry', (els) => els.map((e) => e.dataset.action).filter(Boolean))
+}
+
 const lintText = (page) => page.locator('.bjsl-button').first().textContent().catch(() => '')
 const T = (lang, en, fr) => (lang === 'fr' ? fr : en)
 
@@ -189,6 +198,18 @@ async function p1(browser, lang) {
     n.task = all.find((i) => /Task/.test(i))
     n.end = all.find((i) => /EndEvent/.test(i))
     assert(n.start && n.task && n.end, `diagramme de départ inattendu : ${all.join(', ')}`)
+  })
+  await step('palette Essentiel : seulement début, tâche, passerelle, fin', page, async () => {
+    const entries = await paletteProfile(page, 'essential')
+    const creates = entries.filter((a) => a.startsWith('create.'))
+    const extra = creates.filter((a) => !['create.start-event', 'create.end-event', 'create.exclusive-gateway', 'create.task'].includes(a))
+    assert(!extra.length, `éléments en trop : ${extra.join(', ')}`)
+    assert(creates.length === 4, `palette Essentiel : ${creates.join(', ')}`)
+    await shape(page, n.task).click()
+    const pad = await page.$$eval('.djs-context-pad .entry', (els) => els.map((e) => e.dataset.action))
+    assert(!pad.includes('append.intermediate-event'), 'événement intermédiaire encore proposé dans le menu contextuel')
+    await page.keyboard.press('Escape')
+    return creates.join(', ')
   })
   await step('nommer le début et la première tâche', page, async () => {
     await rename(page, n.start, T(lang, 'Request received', 'Demande reçue'))
@@ -362,6 +383,13 @@ async function p3(browser, lang) {
     const on = await page.evaluate(() => document.querySelector('.bts-toggle-mode.active, .simulation, [class*="token-simulation"]') !== null || /simulation/i.test(document.body.className))
     assert(on, 'simulation non activée')
   })
+  await step('Pilote auto des passerelles', page, async () => {
+    const auto = page.locator('.autopilot-toggle')
+    assert(await auto.count(), 'bouton Pilote auto absent')
+    await auto.click()
+    await page.waitForTimeout(200)
+    assert((await auto.getAttribute('aria-pressed')) === 'true', 'Pilote auto non activé')
+  })
   await step('lancer des jetons et voir la carte de chaleur', page, async () => {
     const run = page.locator('button:visible', { hasText: new RegExp(T(lang, 'tokens|Run', 'jetons|Lancer'), 'i') }).first()
     assert(await run.count(), 'commande pour lancer des jetons absente')
@@ -381,6 +409,23 @@ async function p3(browser, lang) {
     await page.waitForTimeout(600)
     const text = await page.locator('dialog[open]').last().textContent().catch(() => '')
     assert(/transporteur|carrier/i.test(text || ''), 'la décision du diagramme n’apparaît pas')
+  })
+  await step('formulaire d’une tâche utilisateur (form-js)', page, async () => {
+    await enableModules(page, [T(lang, 'forms', 'Formulaires')])
+    const id = await page.$$eval('.djs-element.djs-shape', (els) => els.find((e) => /Recevoir la commande/.test(e.textContent))?.dataset.elementId)
+    assert(id, 'tâche utilisateur « Recevoir la commande » introuvable')
+    await shape(page, id).click()
+    await page.waitForTimeout(300)
+    const header = page.locator('.bio-properties-panel-group-header', { hasText: T(lang, 'Form', 'Formulaire') }).first()
+    assert(await header.count(), 'groupe Formulaire absent du panneau')
+    await header.click()
+    await page.waitForTimeout(300)
+    const group = page.locator('.bio-properties-panel-group', { has: header })
+    const text = ((await group.textContent({ timeout: 3000 })) || '').replace(/\s+/g, ' ')
+    assert(text.length > 20, 'groupe Formulaire vide')
+    const badge = await page.locator('.djs-overlays', { hasText: T(lang, 'Form', 'Formulaire') }).count()
+    assert(badge, 'badge Formulaire absent sur la tâche')
+    return text.slice(0, 140)
   })
   await step('journal d’événements : exemple fourni, colonnes, analyse', page, async () => {
     await menuItem(page, 'btn-expert', 'btn-mining')
@@ -434,6 +479,19 @@ async function p4(browser, lang) {
   const step = journey('P4 Camunda', lang)
   const { context, page } = await openEditor(browser, lang, { expert: true, xml: FIXTURE })
   await step('allumer les modules Camunda et DMN', page, () => enableModules(page, ['Camunda', 'DMN']))
+  await step('palette Camunda 8 : passerelle complexe absente', page, async () => {
+    await paletteProfile(page, 'camunda8')
+    const gw = await page.$$eval('.djs-element.djs-shape', (els) => els.find((e) => e.querySelector('.djs-visual polygon'))?.dataset.elementId)
+    assert(gw, 'aucune passerelle dans le diagramme')
+    await shape(page, gw).click()
+    await page.locator('.djs-context-pad .entry[data-action="replace"]').click()
+    await page.waitForTimeout(300)
+    const entries = await page.$$eval('.djs-popup .entry', (els) => els.map((e) => e.dataset.id))
+    await page.keyboard.press('Escape')
+    assert(entries.length, 'menu Remplacer vide')
+    assert(!entries.some((e) => /complex/.test(e)), 'passerelle complexe encore proposée')
+    return `${entries.length} remplacements proposés`
+  })
   await step('export Camunda 8', page, () =>
     download(page, 'btn-export', 'btn-camunda-8', (raw) => {
       const x = raw.toString('utf8')
