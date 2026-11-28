@@ -214,8 +214,9 @@ export class EditorBridge {
   }
 
   // Exécute un outil dans un onglet et renvoie son résultat : l'onglet
-  // indiqué par tabId (chat intégré), sinon l'onglet actif (clients MCP).
-  async call(tool, args, { tabId } = {}) {
+  // indiqué par tabId (chat intégré), sinon l'onglet actif (clients MCP). from : « mcp »
+  // pour un appel d'agent, que l'onglet refuse si le Co-pilote y est l'IA active.
+  async call(tool, args, { tabId, from } = {}) {
     const target = tabId ? this.#socketById(tabId) : await this.#mcpTarget()
     if (!target) {
       return Promise.reject(
@@ -228,7 +229,7 @@ export class EditorBridge {
     }
     if (target.client.headless) {
       this.renderer.touch()
-      const data = await this.#send(target, tool, args)
+      const data = await this.#send(target, tool, args, from)
       this.renderer.touch()
       try {
         await this.onHeadlessCall?.(tool, (name, a) => this.#send(target, name, a))
@@ -237,10 +238,10 @@ export class EditorBridge {
       }
       return data
     }
-    return this.#send(target, tool, args)
+    return this.#send(target, tool, args, from)
   }
 
-  #send(target, tool, args) {
+  #send(target, tool, args, from) {
     const id = randomUUID()
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -248,7 +249,7 @@ export class EditorBridge {
         reject(new Error(`The editor did not answer within ${CALL_TIMEOUT_MS / 1000} s.`))
       }, CALL_TIMEOUT_MS)
       this.pending.set(id, { resolve, reject, timer, ws: target.ws })
-      target.ws.send(JSON.stringify({ type: 'call', id, tool, args }))
+      target.ws.send(JSON.stringify({ type: 'call', id, tool, args, ...(from ? { from } : {}) }))
     })
   }
 }

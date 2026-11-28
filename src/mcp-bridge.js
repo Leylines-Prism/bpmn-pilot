@@ -5,6 +5,7 @@
 // passent par l'API de modélisation de bpmn-js : elles s'affichent en direct
 // et s'annulent avec Ctrl+Z comme une retouche à la main.
 
+import { agentRefusal, getActiveAi } from './active-ai.js'
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil'
 import { isBranchFlow } from './probability-panel.js'
 import { isConditionalFlow } from './rules-panel.js'
@@ -107,6 +108,8 @@ export function connectMcpBridge(modeler, url, options = {}) {
       if (msg.type !== 'call') return
       const tool = Object.hasOwn(tools, msg.tool) ? tools[msg.tool] : null
       try {
+        // Appel d'un agent MCP alors que le Co-pilote est l'IA active (src/active-ai.js).
+        if (msg.from === 'mcp' && getActiveAi() !== 'agent') throw new Error(agentRefusal())
         if (!tool) throw new Error(`Unknown tool: ${msg.tool}`)
         const data = await tool(msg.args || {})
         send({ type: 'result', id: msg.id, ok: true, data })

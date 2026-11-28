@@ -577,6 +577,15 @@
         <!-- online -->
         <p>The co-pilot uses your API key, entered in <span class="uib">Options</span>. To have your own AI agent (Claude Desktop, Claude Code, Cursor…) draw with its own subscription and context, with no key in the page, see <a href="#local-agent">Connect your AI agent (MCP)</a>.</p>
         <!-- /online -->
+        <h3 id="active-ai">One AI at a time (active AI)</h3>
+        <p>The <span class="ui">AI</span> selector in the toolbar chooses who edits the diagram: <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilot</span> or <span class="uib"><span class="ico" data-icon="plug" aria-hidden="true"></span>MCP agent</span>. The other one is turned off: with the agent, the co-pilot panel is greyed out, and so are its functions in the Expert menu; with the co-pilot, the agent gets a message asking it to have this choice changed. Two AIs therefore never edit the diagram at the same time. The browser remembers the choice.</p>
+        <!-- online -->
+        <p>By default, it is the co-pilot. Turning on <span class="ui">Local agent</span> in the <span class="uib">MCP</span> window picks the agent.</p>
+        <!-- /online -->
+        <!-- docker -->
+        <p>By default, it is the MCP agent. The <a href="#without-browser">headless mode</a> is not affected: it only serves the agent.</p>
+        <!-- /docker -->
+        <figure><img src="/src/help/img/en-ia-active.webp" width="568" height="330" alt="AI selector in the toolbar, MCP agent picked, and the co-pilot panel with the note: Your MCP agent is the active AI, the co-pilot is turned off, and a Use the co-pilot button." loading="lazy" /><figcaption>MCP agent picked: the co-pilot waits.</figcaption></figure>
         <h3>1. Choose an LLM provider</h3>
         <!-- online -->
         <p>Open <span class="uib">Options</span> and choose a provider, with your own API key:</p>
@@ -1103,11 +1112,11 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p><strong>Not to be confused with the <a href="#assistant">AI co-pilot</a>.</strong> The co-pilot is built into the page and calls the provider with the API key entered in <span class="uib">Options</span>. The MCP agent is your own assistant, with its own subscription, model and context (mail, documents, memory): no API key is entered in the page.</p>
         <ol>
           <li>Click <span class="uib">MCP</span> in the toolbar and pick your agent. For Claude Desktop, <span class="uib"><span class="ico" data-icon="save" aria-hidden="true"></span>Download bpmn-pilot.mcpb</span>, then double-click the file: Claude Desktop runs the relay itself, with no Node.js to install. For other agents, copy the line or block shown into their MCP settings (Node.js 20 or later).</li>
-          <li>Turn on <span class="ui">Local agent</span>. Until then, the page opens no connection to your computer. Chrome and Edge ask once to allow access to the local network: accept.</li>
+          <li>Turn on <span class="ui">Local agent</span>: the <a href="#active-ai">active AI</a> switches to MCP agent. Until then, the page opens no connection to your computer. Chrome and Edge ask once to allow access to the local network: accept.</li>
           <li>Ask your agent: "Describe the diagram open in BPMN Pilot." The button then reads "MCP:" followed by the agent's name.</li>
         </ol>
         <figure><img src="/src/help/img/en-agent-local.webp" width="1200" height="1157" alt="Connect an agent window: agent choice (Claude Desktop, Claude Code, VS Code, Cursor), Download bpmn-pilot.mcpb button, Local agent switch on and the line Connected to the local relay." loading="lazy" /><figcaption>The Connect an agent window, local agent connected.</figcaption></figure>
-        <p>The agent works in the tab used last: keep it open while it draws. An export comes back to the agent, or waits in the page behind <span class="uib">Download</span>. Safari blocks the connection from an HTTPS page to the computer: use Chrome, Edge or Firefox. What goes where is detailed in <a href="#privacy">Privacy</a>.</p>
+        <p>The agent works in the tab used last: keep it open while it draws. An export comes back to the agent, or waits in the page behind <span class="uib">Download</span>. Safari blocks the connection from an HTTPS page to the computer: use Chrome, Edge or Firefox. What goes where is detailed in <a href="#privacy">Privacy</a>. It is made for agents installed on your computer. Assistants used in a browser tab (claude.ai, ChatGPT, Le Chat…) run on their vendor's servers and cannot reach your computer: use their desktop app, or an agent such as Claude Code.</p>
       </section>
       <!-- /online -->
 
@@ -1126,6 +1135,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li>a built-in MCP server, with no relay to install next to the agent: Claude Code, Claude Desktop or GitHub Copilot in VS Code draw in the open editor, style, tidy up, undo. The MCP badge in the toolbar gives the address and the settings to paste;</li>
           <li>the headless mode, where the agent works with no tab open.</li>
         </ul>
+        <p>The MCP server is meant for agents installed on a computer or a server of your network. Assistants used in a browser tab (claude.ai, ChatGPT, Le Chat…) cannot reach it: see the <a href="#faq">FAQ</a>.</p>
         <p>The MCP server also gives the agent modeling rules and ready-made prompts, in the agent's prompt menu or as commands (<code>/mcp__bpmn-pilot__review_diagram</code> in Claude Code): <code>model_process</code>, <code>model_collaboration</code>, <code>review_diagram</code>, <code>tidy_diagram</code>, <code>critique_description</code>, <code>add_agent_step</code>, <code>write_user_stories</code>, and for <a href="#bpmn-experts">Expert mode</a> <code>propose_probabilities</code>, <code>rate_ai_potential</code>, <code>analyze_process</code>, <code>assess_compliance</code>, <code>model_from_event_log</code>, <code>fill_decision_table</code>. The <a href="#prompt-examples">prompt examples</a> work too.</p>
         <h3 id="without-browser">Without an open browser (headless mode)</h3>
         <p>By default, the agent draws in an open editor tab. With <code>docker-compose.headless.yml</code> instead of <code>docker-compose.image.yml</code> (see the README), it works with no tab at all: a <code>renderer</code> service, a headless Chromium cut off from the internet and the API keys, opens the editor in an invisible tab, which closes after 5 minutes without a call. Each diagram drawn this way is saved on the server in <span class="uib"><span class="ico" data-icon="library" aria-hidden="true"></span>My diagrams</span>, under a name such as "Agent 2026-11-28 14h05".</p>
@@ -1170,6 +1180,10 @@ To finish: check the diagram, fix what fails and sum up the process in five line
       <section id="faq">
         <h2>FAQ</h2>
         <details class="faq">
+          <summary>Can I connect claude.ai, ChatGPT or Le Chat in the browser?</summary>
+          <p>No. These assistants run on their vendor's servers, which can reach neither your computer nor a private server.<!-- online --> The local relay only listens on your computer.<!-- /online --><!-- docker --> They cannot send the <code>MCP_TOKEN</code> token either, and this version is not made to be published on the internet.<!-- /docker --> Use your assistant's desktop app (Claude Desktop…) or an agent installed on your computer (Claude Code, Cursor, GitHub Copilot in VS Code). The <a href="#assistant">AI co-pilot</a> stays available in the page.</p>
+        </details>
+        <details class="faq">
           <summary>Do I need an account?</summary>
           <!-- online -->
           <p>No. Only the AI co-pilot needs an API key from a provider. An MCP agent keeps its own subscription, with no key in the page.</p>
@@ -1200,13 +1214,13 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <!-- online -->
         <details class="faq">
           <summary>My MCP agent does not draw.</summary>
-          <p>Check in <span class="uib">MCP</span> that <span class="ui">Local agent</span> is on, and that the agent is running: it starts the relay. If the window keeps saying "Waiting for the relay", restart the agent. If it reports that port 3333 is already in use, another agent already runs the relay: close it. In Chrome or Edge, a refused local network access is restored from the padlock in the address bar.</p>
+          <p>Check that the <a href="#active-ai">active AI</a> is <span class="uib">MCP agent</span>, that <span class="ui">Local agent</span> is on in <span class="uib">MCP</span>, and that the agent is running: it starts the relay. If the window keeps saying "Waiting for the relay", restart the agent. If it reports that port 3333 is already in use, another agent already runs the relay: close it. In Chrome or Edge, a refused local network access is restored from the padlock in the address bar.</p>
         </details>
         <!-- /online -->
         <!-- docker -->
         <details class="faq">
           <summary>My MCP agent does not draw.</summary>
-          <p>The agent draws in the last editor tab used: keep it open, or switch to the <a href="#without-browser">headless mode</a>. The badge should read "MCP: ready", then the agent's name once it connects ("MCP: Claude Code"). A click gives the address and settings again.</p>
+          <p>Check that the <a href="#active-ai">active AI</a> is <span class="uib">MCP agent</span>. The agent draws in the last editor tab used: keep it open, or switch to the <a href="#without-browser">headless mode</a>. The badge should read "MCP: ready", then the agent's name once it connects ("MCP: Claude Code"). A click gives the address and settings again.</p>
           <p>A 401 "MCP is closed" error means the editor is served under a name other than localhost, without a token. Generate a token in <span class="ui">Connect an agent</span>, put it in <code>MCP_TOKEN</code>, restart, and paste the setting into the agent again.</p>
         </details>
         <details class="faq">

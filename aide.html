@@ -577,6 +577,15 @@
         <!-- online -->
         <p>Le Co-pilote utilise votre clé API, saisie dans <span class="uib">Options</span>. Pour faire dessiner votre propre agent IA (Claude Desktop, Claude Code, Cursor…) avec son abonnement et son contexte, sans clé dans la page, voir <a href="#agent-local">Connecter votre agent IA (MCP)</a>.</p>
         <!-- /online -->
+        <h3 id="ia-active">Une seule IA à la fois (IA active)</h3>
+        <p>Le sélecteur <span class="ui">IA</span> de la barre d'outils choisit qui modifie le diagramme : <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilote</span> ou <span class="uib"><span class="ico" data-icon="plug" aria-hidden="true"></span>Agent MCP</span>. L'autre est coupée : avec l'agent, le panneau du co-pilote est grisé et ses fonctions du menu Expert aussi ; avec le co-pilote, l'agent reçoit un message qui lui demande de faire changer ce choix. Deux IA ne modifient donc jamais le diagramme en même temps. Le navigateur retient ce choix.</p>
+        <!-- online -->
+        <p>Par défaut, c'est le co-pilote. Activer <span class="ui">Agent local</span> dans la fenêtre <span class="uib">MCP</span> choisit l'agent.</p>
+        <!-- /online -->
+        <!-- docker -->
+        <p>Par défaut, c'est l'agent MCP. Le <a href="#sans-navigateur">mode sans écran</a> n'est pas concerné : il ne sert qu'à l'agent.</p>
+        <!-- /docker -->
+        <figure><img src="/src/help/img/fr-ia-active.webp" width="499" height="330" alt="Sélecteur IA de la barre d'outils, Agent MCP choisi, et le panneau du co-pilote avec la mention : Votre agent MCP est l'IA active, le co-pilote est coupé, et un bouton Utiliser le co-pilote." loading="lazy" /><figcaption>Agent MCP choisi : le co-pilote attend.</figcaption></figure>
         <h3>1. Choisir un fournisseur de LLM</h3>
         <!-- online -->
         <p>Ouvrez <span class="uib">Options</span> et choisissez un fournisseur, avec votre propre clé API :</p>
@@ -1103,11 +1112,11 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
         <p><strong>À ne pas confondre avec le <a href="#assistant">Co-pilote IA</a>.</strong> Le Co-pilote est intégré à la page et appelle le fournisseur avec la clé API saisie dans <span class="uib">Options</span>. L'agent MCP est votre propre assistant, avec son abonnement, son modèle et son contexte (messagerie, documents, mémoire) : aucune clé API n'est saisie dans la page.</p>
         <ol>
           <li>Cliquez sur <span class="uib">MCP</span> dans la barre d'outils et choisissez votre agent. Pour Claude Desktop, <span class="uib"><span class="ico" data-icon="save" aria-hidden="true"></span>Télécharger bpmn-pilot.mcpb</span>, puis double-cliquez sur le fichier : Claude Desktop fait tourner le relais lui-même, sans Node.js à installer. Pour les autres agents, copiez la ligne ou le bloc proposé dans leurs réglages MCP (Node.js 20 ou plus).</li>
-          <li>Activez <span class="ui">Agent local</span>. Jusque-là, la page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser l'accès au réseau local : acceptez.</li>
+          <li>Activez <span class="ui">Agent local</span> : l'<a href="#ia-active">IA active</a> passe à Agent MCP. Jusque-là, la page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser l'accès au réseau local : acceptez.</li>
           <li>Demandez à votre agent : « Décris le diagramme ouvert dans BPMN Pilot. » Le bouton passe à « MCP : » suivi du nom de l'agent.</li>
         </ol>
         <figure><img src="/src/help/img/fr-agent-local.webp" width="1200" height="1187" alt="Fenêtre Connecter un agent : choix de l'agent (Claude Desktop, Claude Code, VS Code, Cursor), bouton Télécharger bpmn-pilot.mcpb, interrupteur Agent local activé et mention Relié au relais local." loading="lazy" /><figcaption>La fenêtre Connecter un agent, agent local relié.</figcaption></figure>
-        <p>L'agent travaille dans le dernier onglet utilisé : gardez-le ouvert pendant qu'il dessine. Un export revient à l'agent, ou attend dans la page derrière <span class="uib">Télécharger</span>. Safari bloque la connexion d'une page HTTPS vers l'ordinateur : utilisez Chrome, Edge ou Firefox. Ce qui circule est détaillé dans <a href="#confidentialite">Confidentialité</a>.</p>
+        <p>L'agent travaille dans le dernier onglet utilisé : gardez-le ouvert pendant qu'il dessine. Un export revient à l'agent, ou attend dans la page derrière <span class="uib">Télécharger</span>. Safari bloque la connexion d'une page HTTPS vers l'ordinateur : utilisez Chrome, Edge ou Firefox. Ce qui circule est détaillé dans <a href="#confidentialite">Confidentialité</a>. C'est fait pour les agents installés sur votre poste. Les assistants utilisés dans un onglet du navigateur (claude.ai, ChatGPT, Le Chat…) tournent sur les serveurs de leur éditeur et ne peuvent pas joindre votre ordinateur : prenez leur application de bureau, ou un agent comme Claude Code.</p>
       </section>
       <!-- /online -->
 
@@ -1126,6 +1135,7 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <li>un serveur MCP intégré, sans relais à installer à côté de l'agent : Claude Code, Claude Desktop ou GitHub Copilot dans VS Code dessinent dans l'éditeur ouvert, mettent en forme, rangent, annulent. Le badge MCP de la barre d'outils donne l'adresse et les réglages à coller ;</li>
           <li>le mode sans écran, où l'agent travaille sans onglet ouvert.</li>
         </ul>
+        <p>Le serveur MCP s'adresse aux agents installés sur un poste ou un serveur de votre réseau. Les assistants utilisés dans un onglet du navigateur (claude.ai, ChatGPT, Le Chat…) ne peuvent pas le joindre : voir les <a href="#faq">questions fréquentes</a>.</p>
         <p>Le serveur MCP donne aussi à l'agent des règles de modélisation et des prompts tout prêts, dans le menu de prompts de l'agent ou en commandes (<code>/mcp__bpmn-pilot__review_diagram</code> dans Claude Code) : <code>model_process</code>, <code>model_collaboration</code>, <code>review_diagram</code>, <code>tidy_diagram</code>, <code>critique_description</code>, <code>add_agent_step</code>, <code>write_user_stories</code>, et pour le <a href="#experts-bpmn">mode Expert</a> <code>propose_probabilities</code>, <code>rate_ai_potential</code>, <code>analyze_process</code>, <code>assess_compliance</code>, <code>model_from_event_log</code>, <code>fill_decision_table</code>. Les <a href="#exemples-prompts">exemples de prompts</a> marchent aussi.</p>
         <h3 id="sans-navigateur">Sans navigateur ouvert (mode sans écran)</h3>
         <p>Par défaut, l'agent dessine dans un onglet ouvert de l'éditeur. Avec <code>docker-compose.headless.yml</code> à la place de <code>docker-compose.image.yml</code> (voir le README), il travaille sans aucun onglet : un service <code>renderer</code>, un Chromium sans écran isolé d'Internet et des clés API, ouvre l'éditeur dans un onglet invisible, qui se ferme après 5 minutes sans appel. Chaque diagramme ainsi dessiné est enregistré sur le serveur dans <span class="uib"><span class="ico" data-icon="library" aria-hidden="true"></span>Mes diagrammes</span>, sous un nom comme « Agent 2026-11-28 14h05 ».</p>
@@ -1170,6 +1180,10 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
       <section id="faq">
         <h2>Questions fréquentes</h2>
         <details class="faq">
+          <summary>Puis-je relier claude.ai, ChatGPT ou Le Chat dans le navigateur ?</summary>
+          <p>Non. Ces assistants tournent sur les serveurs de leur éditeur, qui ne peuvent joindre ni votre ordinateur ni un serveur privé.<!-- online --> Le relais local n'écoute que sur votre ordinateur.<!-- /online --><!-- docker --> Ils ne savent pas non plus envoyer le jeton <code>MCP_TOKEN</code>, et cette version n'est pas faite pour être publiée sur internet.<!-- /docker --> Prenez l'application de bureau de votre assistant (Claude Desktop…) ou un agent installé sur votre poste (Claude Code, Cursor, GitHub Copilot dans VS Code). Le <a href="#assistant">co-pilote IA</a> reste disponible dans la page.</p>
+        </details>
+        <details class="faq">
           <summary>Faut-il créer un compte ?</summary>
           <!-- online -->
           <p>Non. Seul le co-pilote IA demande une clé API chez un fournisseur. Un agent MCP garde son propre abonnement, sans clé dans la page.</p>
@@ -1200,13 +1214,13 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
         <!-- online -->
         <details class="faq">
           <summary>Mon agent MCP ne dessine pas.</summary>
-          <p>Vérifiez dans <span class="uib">MCP</span> que <span class="ui">Agent local</span> est activé, et que l'agent tourne : c'est lui qui démarre le relais. Si la fenêtre reste « En attente du relais », redémarrez l'agent. S'il signale que le port 3333 est déjà pris, un autre agent fait déjà tourner le relais : fermez-le. Dans Chrome ou Edge, l'accès au réseau local refusé se rétablit par le cadenas de la barre d'adresse.</p>
+          <p>Vérifiez que l'<a href="#ia-active">IA active</a> est <span class="uib">Agent MCP</span>, que <span class="ui">Agent local</span> est activé dans <span class="uib">MCP</span>, et que l'agent tourne : c'est lui qui démarre le relais. Si la fenêtre reste « En attente du relais », redémarrez l'agent. S'il signale que le port 3333 est déjà pris, un autre agent fait déjà tourner le relais : fermez-le. Dans Chrome ou Edge, l'accès au réseau local refusé se rétablit par le cadenas de la barre d'adresse.</p>
         </details>
         <!-- /online -->
         <!-- docker -->
         <details class="faq">
           <summary>Mon agent MCP ne dessine pas.</summary>
-          <p>L'agent dessine dans le dernier onglet de l'éditeur utilisé : gardez-le ouvert, ou passez au <a href="#sans-navigateur">mode sans écran</a>. Le badge doit indiquer « MCP : prêt », puis le nom de l'agent dès qu'il se connecte (« MCP : Claude Code »). Un clic redonne l'adresse et les réglages.</p>
+          <p>Vérifiez que l'<a href="#ia-active">IA active</a> est <span class="uib">Agent MCP</span>. L'agent dessine dans le dernier onglet de l'éditeur utilisé : gardez-le ouvert, ou passez au <a href="#sans-navigateur">mode sans écran</a>. Le badge doit indiquer « MCP : prêt », puis le nom de l'agent dès qu'il se connecte (« MCP : Claude Code »). Un clic redonne l'adresse et les réglages.</p>
           <p>Une erreur 401 « MCP is closed » veut dire que l'éditeur est servi sous un autre nom que localhost, sans jeton. Générez un jeton dans <span class="ui">Connecter un agent</span>, mettez-le dans <code>MCP_TOKEN</code>, relancez, et recollez le réglage dans l'agent.</p>
         </details>
         <details class="faq">

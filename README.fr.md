@@ -251,6 +251,19 @@ L'agent a les mêmes outils et les mêmes prompts qu'avec la version Docker. Un 
 ou attend dans la page derrière le bouton Télécharger. Safari bloque la connexion d'une page HTTPS vers
 l'ordinateur : utilisez Chrome, Edge ou Firefox. Détails dans [relay/README.md](relay/README.md).
 
+**Une seule IA à la fois.** Le sélecteur **IA** de la barre d'outils choisit l'IA active :
+**Co-pilote** ou **Agent MCP**. L'autre est coupée : avec l'agent, le co-pilote est grisé ; avec le
+co-pilote, les appels de l'agent sont refusés avec un message qui lui dit pourquoi. Deux IA ne
+modifient jamais le diagramme en même temps. En ligne, le co-pilote est choisi par défaut, et
+activer **Agent local** choisit l'agent. En Docker, l'agent MCP est choisi par défaut, et le mode
+sans écran n'est pas concerné.
+
+**Pas pour les assistants web.** Le MCP sert ici aux agents installés sur votre poste ou votre réseau
+(Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…). Les assistants utilisés dans un
+onglet du navigateur (claude.ai, ChatGPT, Le Chat…) tournent sur les serveurs de leur éditeur : ils
+ne peuvent joindre ni le relais local ni un serveur Docker privé. Prenez plutôt leur application de
+bureau.
+
 La page stable compte son audience de façon anonyme, sans cookie :
 visites (pages d'aide comprises), provenance, version de l'app et usage de chaque fonction (diagramme créé, ouvert
 ou exporté, mode Expert, installation et ouverture en PWA, simulation, carte de chaleur, analyse de journal, mise en page, comparaison, co-pilote ouvert ou utilisé,
@@ -463,7 +476,10 @@ avec Cloudflare Access est une autre façon de placer une connexion devant, sans
 ## Connecter un agent à la version Docker (MCP)
 
 La version Docker a son serveur MCP intégré : aucun relais à installer à côté de l'agent. Comme en
-ligne, l'agent MCP est votre propre assistant, pas le co-pilote IA de la page.
+ligne, l'agent MCP est votre propre assistant, pas le co-pilote IA de la page. Choisissez **Agent
+MCP** dans le sélecteur **IA** de la barre d'outils (le choix par défaut en Docker), et prenez un
+agent installé sur votre poste ou votre réseau : les assistants web (claude.ai, ChatGPT…) ne peuvent
+pas joindre le serveur.
 
 Cliquez sur le badge **MCP** de la barre d'outils. La fenêtre « Connecter un agent » donne l'adresse à
 utiliser (`http://localhost:8080/mcp`, ou `https://votre-domaine/mcp`), et le réglage à coller pour

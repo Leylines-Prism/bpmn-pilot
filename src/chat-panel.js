@@ -24,6 +24,7 @@ import { addDialogClose } from './dialog-close.js'
 import { setChatModel } from './copilot-analysis.js'
 import { MIC_ICON, setupVoiceInput, voiceSupported } from './voice-input.js'
 import { renderMarkdownInto } from './ai/markdown.js'
+import { ACTIVE_AI_EVENT, getActiveAi, setActiveAi } from './active-ai.js'
 
 const TOOL_LABELS = {
   get_shapes: T('reading the diagram', 'lecture du diagramme'),
@@ -158,6 +159,7 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
   panel.id = 'chat-panel'
   panel.innerHTML = `
     <header><span class="chat-title-icon" data-icon="assistant" aria-hidden="true"></span><span class="chat-title"><span class="chat-title-name">${T('AI co-pilot', 'Co-pilote IA')}</span><span class="chat-title-model" hidden></span></span><button class="btn" type="button" id="chat-settings" title="${T('Providers, API keys and models', 'Fournisseurs, clés API et modèles')}">Options</button><button class="btn" type="button" id="chat-reset" title="${T('Start a new conversation; the diagram is kept', 'Commencer une nouvelle discussion ; le diagramme est conservé')}">${T('New chat', 'Nouvelle discussion')}</button></header>
+    <div id="chat-ai-off" role="status" hidden><p>${T('Your MCP agent is the active AI: the co-pilot is turned off, so that two AIs never edit the diagram at the same time.', "Votre agent MCP est l'IA active : le co-pilote est coupé, pour que deux IA ne modifient jamais le diagramme en même temps.")}</p><button type="button" class="btn" id="chat-use-copilot">${T('Use the co-pilot', 'Utiliser le co-pilote')}</button></div>
     <div id="chat-log" aria-live="polite"></div>
     <div id="chat-attachments" hidden></div>
     <div id="chat-destination" hidden></div>
@@ -319,7 +321,8 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
     toggleModel.hidden = !model
     toggle.classList.toggle('has-model', !!model)
     // Entrées du menu Expert qui passent par le Co-pilote (.copilot-only) : grisées sans modèle.
-    document.documentElement.classList.toggle('copilot-ready', !!model)
+    // Coupées aussi quand l'agent MCP est l'IA active (src/active-ai.js).
+    document.documentElement.classList.toggle('copilot-ready', !!model && getActiveAi() === 'copilot')
     // L'icône d'aide à côté de chacune dit pourquoi (index.html, .copilot-help).
     const simulating = document.getElementById('expert-menu')?.classList.contains('simulating')
     for (const entry of document.querySelectorAll('.copilot-only')) entry.disabled = !model || !!simulating
@@ -701,6 +704,16 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
   })
   if (micButton) panel.classList.add('has-mic')
 
+  // IA active : bandeau et saisie coupée quand l'agent MCP est choisi.
+  const aiOff = panel.querySelector('#chat-ai-off')
+  const syncActiveAi = () => {
+    aiOff.hidden = getActiveAi() !== 'agent'
+    fillModels()
+  }
+  panel.querySelector('#chat-use-copilot').addEventListener('click', () => setActiveAi('copilot'))
+  window.addEventListener(ACTIVE_AI_EVENT, syncActiveAi)
+  syncActiveAi()
+
   form.addEventListener('submit', (e) => {
     e.preventDefault()
     if (controller) {
@@ -752,6 +765,10 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
 
   // rewind : relance de la dernière demande, qui remplace son échange dans l'historique.
   async function send(text, attachments = [], { rewind = false, critique = true } = {}) {
+    if (getActiveAi() !== 'copilot') {
+      add('notice', T('Your MCP agent is the active AI. Pick "Co-pilot" in the AI selector of the toolbar to use the co-pilot.', "Votre agent MCP est l'IA active. Choisissez « Co-pilote » dans le sélecteur d'IA de la barre d'outils pour utiliser le co-pilote."))
+      return
+    }
     trackOnce('assistant-utilise')
     usage.messages++
     for (const type of new Set(attachments.map(fileType))) track('assistant-piece-jointe', { type })

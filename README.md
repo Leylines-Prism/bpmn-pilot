@@ -242,6 +242,17 @@ The agent gets the same tools and prompts as with the Docker version. An export 
 agent, or waits in the page behind the Download button. Safari blocks the connection from an HTTPS
 page to the computer: use Chrome, Edge or Firefox. Details in [relay/README.md](relay/README.md).
 
+**One AI at a time.** The **AI** selector in the toolbar picks the active AI: **Co-pilot** or **MCP
+agent**. The other one is turned off: with the agent, the co-pilot is greyed out; with the co-pilot,
+the agent's calls are refused with a message that tells it why. Two AIs never edit the diagram at
+the same time. Online, the co-pilot is the default and turning on **Local agent** picks the agent.
+In Docker, the MCP agent is the default, and the headless mode is not affected.
+
+**Not for web assistants.** MCP here is for agents installed on your computer or your network (Claude
+Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…). Assistants used in a browser tab
+(claude.ai, ChatGPT, Le Chat…) run on their vendor's servers: they cannot reach the local relay, nor
+a private Docker server. Use their desktop app instead.
+
 The stable page measures its audience anonymously, without cookies: visits (help pages included), referrers, app version and the use of each function (diagram created, opened or exported,
 expert mode, installation and opening as a PWA, simulation, heatmap, event log analysis, layout, comparison, co-pilot opened or used, provider connected, attached file types,
 error classes, feedback, prompt examples copied, GitHub and support links, active time by range). No third-party script is loaded: the page sends
@@ -437,7 +448,9 @@ with Cloudflare Access is another way to put a login in front of it, with no ope
 ## Connect an agent to the Docker version (MCP)
 
 The Docker version has its MCP server built in: no relay to install next to the agent. As online, the
-MCP agent is your own assistant, not the AI co-pilot of the page.
+MCP agent is your own assistant, not the AI co-pilot of the page. Pick **MCP agent** in the **AI**
+selector of the toolbar (the default in Docker), and use an agent installed on your computer or
+network: web assistants (claude.ai, ChatGPT…) cannot reach the server.
 
 Click the **MCP** badge in the toolbar. The "Connect an agent" window gives the address to use
 (`http://localhost:8080/mcp`, or `https://your-domain/mcp`), and the setting to paste for Claude

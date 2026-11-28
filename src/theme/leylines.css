@@ -158,6 +158,18 @@ a.btn { text-decoration: none; }
 }
 #mcp-status[data-state="connecting"]::before { background: var(--leyline-sky); }
 #mcp-status { font-family: var(--font-sans); background: transparent; cursor: pointer; }
+/* IA active (src/active-ai.js) : Co-pilote ou Agent MCP, une seule à la fois. */
+#ai-switch { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; padding: 2px; border: 1px solid var(--line); border-radius: var(--radius-pill); margin-right: 6px; }
+#ai-switch .ai-switch-label { font-size: 11px; font-weight: 600; color: var(--ink-muted); padding: 0 4px 0 6px; }
+#ai-switch .btn { font-size: 12px; line-height: 16px; padding: 3px 9px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--ink-muted); }
+#ai-switch .btn[aria-checked="true"] { background: var(--accent); color: var(--on-accent); }
+#ai-switch .btn[aria-checked="true"]::before { background: currentColor; }
+/* Co-pilote coupé quand l'agent MCP est l'IA active. */
+html.ai-agent #btn-chat { opacity: 0.55; }
+#chat-ai-off { margin: var(--space-2) var(--space-3); padding: var(--space-2) var(--space-3); border-left: 3px solid var(--leyline-sky-deep); background: var(--surface-sunken); border-radius: 6px; font-size: 13px; line-height: 18px; }
+#chat-ai-off .btn { margin-top: var(--space-2); border: 1px solid var(--line); }
+@media (max-width: 1400px) { #ai-switch .ai-switch-label { display: none; } }
+html.ai-agent #chat-form { opacity: 0.5; pointer-events: none; }
 #mcp-status:hover { background: var(--surface-sunken); }
 #mcp-status:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 

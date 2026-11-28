@@ -6,6 +6,10 @@ Your AI agent (Claude Code, Cursor, VS Code, Windsurf, Gemini CLI…) starts thi
 
 This is not the AI co-pilot built into the page, which calls a provider with an API key entered in the page. Here your own agent works with its own subscription, model and context, and no API key is entered in the page.
 
+It is made for agents installed on your computer (Claude Desktop, Claude Code, Cursor, VS Code…). Assistants used in a browser tab, such as claude.ai or ChatGPT, run on their vendor's servers and cannot reach the relay.
+
+In the editor, pick **MCP agent** in the **AI** selector of the toolbar: only one AI edits the diagram at a time, and turning on **Local agent** picks the agent for you.
+
 The relay only passes messages between the agent and the tab. It writes nothing to disk, calls no service and accepts no page other than the BPMN Pilot editor.
 
 ## Setup

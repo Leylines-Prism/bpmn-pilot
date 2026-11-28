@@ -18,7 +18,7 @@ export function buildMcpServer({ bridge, tools, prompts, version, log, before = 
         try {
           before()
           bridge.noteMcpCall()
-          const data = await bridge.call(tool.name, args ?? {})
+          const data = await bridge.call(tool.name, args ?? {}, { from: 'mcp' })
           if (isFileResult(data)) return { content: fileContent(data) }
           if (isImageResult(data)) {
             return {
