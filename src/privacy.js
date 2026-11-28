@@ -56,7 +56,9 @@ export function setupPrivacy({ container, env = import.meta.env }) {
           <p>${T('Your diagrams, your settings and your API keys stay in your browser, on your device.',
                  'Vos diagrammes, vos réglages et vos clés API restent dans votre navigateur, sur votre appareil.')}</p>
           <p>${T(`They are not sent to us, nor to the host of this site${hostName}.`,
-                 `Ils ne sont transmis ni à nous ni à l'hébergeur du site${hostName}.`)}</p>`)
+                 `Ils ne sont transmis ni à nous ni à l'hébergeur du site${hostName}.`)}</p>
+          <p>${T('Your own AI agent (MCP), distinct from the AI co-pilot, uses no API key from this page. Once turned on in the MCP window, it exchanges the diagram with this tab through a relay on your computer, through no other server. What it does with it depends on the agent and its provider.',
+                 "Votre propre agent IA (MCP), distinct du Co-pilote IA, n'utilise aucune clé API de cette page. Une fois activé dans la fenêtre MCP, il échange le diagramme avec cet onglet par un relais sur votre ordinateur, sans passer par aucun autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.")}</p>`)
 
   const assistant = section('assistant', T('With the AI co-pilot', "Avec le co-pilote IA"), `
           <p>${T('Your messages, the diagram and your API key are sent from your browser directly to the provider you selected (Anthropic, OpenAI, Mistral, etc.).',
@@ -64,9 +66,7 @@ export function setupPrivacy({ container, env = import.meta.env }) {
           <p>${T("The provider's own terms and privacy policy apply, and it bills you for usage.",
                  "Les conditions d'utilisation et la politique de confidentialité de ce fournisseur s'appliquent, et c'est lui qui vous facture l'usage.")}</p>
           <p>${T('Voice dictation is recognized on your device: neither the sound nor the dictated text leaves the browser until you send the message.',
-                 "La dictée vocale est reconnue sur votre appareil : ni le son ni le texte dicté ne quittent le navigateur avant l'envoi du message.")}</p>
-          <p>${T('A local AI agent (MCP), once turned on in the MCP window, exchanges the diagram with this tab through a relay on your computer, through no other server. What it does with it depends on the agent and its provider.',
-                 "Un agent IA local (MCP), une fois activé dans la fenêtre MCP, échange le diagramme avec cet onglet par un relais sur votre ordinateur, sans passer par aucun autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.")}</p>`)
+                 "La dictée vocale est reconnue sur votre appareil : ni le son ni le texte dicté ne quittent le navigateur avant l'envoi du message.")}</p>`)
 
   // Encadré mis en avant : la clé d'API recommandée pour cet éditeur.
   const responsible = `<section class="pv-section pv-responsible" aria-labelledby="pv-responsible-title">

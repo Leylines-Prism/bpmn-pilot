@@ -42,8 +42,12 @@ export function setupLocalMcpConnect({ badge, onChange }) {
     <form method="dialog">
       <h2>${T('Connect an agent', 'Connecter un agent')}</h2>
       <p class="hint">${T(
-        'An AI agent installed on this computer (Claude Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…) can read and draw in the diagram open in this tab, with the same tools as the built-in AI co-pilot (MCP protocol). The agent starts a small local relay, bpmn-pilot-mcp: the diagram goes from the agent to this tab on your computer, through no other server.',
-        'Un agent IA installé sur cet ordinateur (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…) peut lire et dessiner dans le diagramme ouvert dans cet onglet, avec les mêmes outils que le Co-pilote IA intégré (protocole MCP). L\'agent lance un petit relais local, bpmn-pilot-mcp : le diagramme va de l\'agent à cet onglet sur votre ordinateur, sans passer par aucun autre serveur.',
+        'Your own AI agent, installed on this computer (Claude Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…), can read and draw in the diagram open in this tab, through the MCP protocol. The agent starts a small local relay, bpmn-pilot-mcp: the diagram goes from the agent to this tab on your computer, through no other server.',
+        'Votre propre agent IA, installé sur cet ordinateur (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…), peut lire et dessiner dans le diagramme ouvert dans cet onglet, par le protocole MCP. L\'agent lance un petit relais local, bpmn-pilot-mcp : le diagramme va de l\'agent à cet onglet sur votre ordinateur, sans passer par aucun autre serveur.',
+      )}</p>
+      <p class="hint">${T(
+        '<strong>Not to be confused with the AI co-pilot.</strong> The co-pilot is built into the page and calls the provider with the API key you enter in Options. Here, your agent works with its own subscription, model and context: no API key is entered in this page.',
+        '<strong>À ne pas confondre avec le Co-pilote IA.</strong> Le Co-pilote est intégré à la page et appelle le fournisseur avec la clé API saisie dans Options. Ici, votre agent travaille avec son propre abonnement, son modèle et son contexte : aucune clé API n\'est saisie dans cette page.',
       )}</p>
       <p class="warn" ${safari ? '' : 'hidden'}>${T(
         'Safari blocks the connection from this page to a program on the computer. Use Chrome, Edge or Firefox.',

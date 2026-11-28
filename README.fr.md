@@ -225,10 +225,14 @@ dit ce qui sort du navigateur, et
 
 ### Connecter un agent à la version en ligne
 
-Un agent installé sur votre ordinateur pilote l'éditeur en ligne par un petit relais local,
+Votre propre agent IA, installé sur votre ordinateur, pilote l'éditeur en ligne par un petit relais local,
 `bpmn-pilot-mcp`, que l'agent lance lui-même. Le relais ne fait que passer les messages entre l'agent
 et l'onglet, sur `127.0.0.1` : le diagramme ne passe par aucun autre serveur, et le relais n'écrit rien
 sur le disque.
+
+Ce n'est pas le Co-pilote IA. Le Co-pilote est intégré à la page et appelle le fournisseur avec la clé API
+saisie dans Options. L'agent MCP est votre propre assistant, avec son abonnement, son modèle et son
+contexte : aucune clé API n'est saisie dans la page.
 
 1. Installez le relais dans votre agent :
    - **Claude Desktop** : téléchargez `bpmn-pilot.mcpb` dans la [dernière version publiée](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)

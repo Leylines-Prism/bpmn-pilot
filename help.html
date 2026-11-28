@@ -574,6 +574,9 @@
         <p><span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>AI co-pilot</span> opens a chat. Describe the process, and the co-pilot draws it in the editor. It also edits the open diagram, colors it, tidies it up and checks it. Everything can be retouched by hand afterwards.</p>
         <figure class="fig-anim"><p class="fig-title">The co-pilot draws a process</p><img src="/docs/demo.gif" width="1200" height="675" alt="The AI co-pilot draws an online order process with two pools and four lanes" loading="lazy" /><figcaption>A request in plain language, and the diagram builds itself in the editor.</figcaption></figure>
 
+        <!-- online -->
+        <p>The co-pilot uses your API key, entered in <span class="uib">Options</span>. To have your own AI agent (Claude Desktop, Claude Code, Cursor…) draw with its own subscription and context, with no key in the page, see <a href="#local-agent">Connect your AI agent (MCP)</a>.</p>
+        <!-- /online -->
         <h3>1. Choose an LLM provider</h3>
         <!-- online -->
         <p>Open <span class="uib">Options</span> and choose a provider, with your own API key:</p>
@@ -1074,7 +1077,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li>Your diagrams, settings and API keys stay in your browser. Neither we nor the host (GitHub Pages) can access them.</li>
           <li>With the co-pilot, your messages, the diagram, your files and your key go straight to the chosen provider, under its own terms.</li>
           <li>Dictation recognizes your voice on your device.</li>
-          <li>A <a href="#local-agent">local agent</a> (MCP), if you turn it on, exchanges the diagram with the tab through a relay on your computer, with no other server. What it does with it depends on the agent and its provider.</li>
+          <li>Your <a href="#local-agent">local AI agent</a> (MCP), distinct from the co-pilot, if you turn it on, exchanges the diagram with the tab through a relay on your computer, with no other server. What it does with it depends on the agent and its provider.</li>
           <li>GitHub Pages keeps technical logs, including your IP address.</li>
           <li>The stable site measures its audience without cookies, following the <a href="https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience" target="_blank" rel="noopener">recommendations of the CNIL</a> (the French data protection authority, page in French) for audience measurement exempt from consent. The IP address only serves to locate the country, region and city, and is not recorded. Collected: the page viewed, the referrer, the device and a few actions without their content (create, open, export, use the co-pilot, provider type, active time in ranges, click on the support link). "Do Not Track" and "Global Privacy Control" turn the measurement off.</li>
           <li>The site loads no third-party script.</li>
@@ -1094,13 +1097,14 @@ To finish: check the diagram, fix what fails and sum up the process in five line
       <!-- online -->
       <section id="local-agent">
         <h2>Connect your AI agent (MCP)</h2>
-        <p>An AI agent installed on your computer (Claude Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…) reads and draws in the diagram open in this tab, with the same tools and prompts as in the <a href="#docker">Docker version</a>. It goes through a small local relay, <code>bpmn-pilot-mcp</code>, that it starts itself: the diagram goes from the agent to the tab on your computer, through no other server, and the relay writes nothing to disk.</p>
+        <p>Your own AI agent, installed on your computer (Claude Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…), reads and draws in the diagram open in this tab, with the same tools and prompts as in the <a href="#docker">Docker version</a>. It goes through a small local relay, <code>bpmn-pilot-mcp</code>, that it starts itself: the diagram goes from the agent to the tab on your computer, through no other server, and the relay writes nothing to disk.</p>
+        <p><strong>Not to be confused with the <a href="#assistant">AI co-pilot</a>.</strong> The co-pilot is built into the page and calls the provider with the API key entered in <span class="uib">Options</span>. The MCP agent is your own assistant, with its own subscription, model and context (mail, documents, memory): no API key is entered in the page.</p>
         <ol>
           <li>Click <span class="uib">MCP</span> in the toolbar and pick your agent. For Claude Desktop, <span class="uib"><span class="ico" data-icon="save" aria-hidden="true"></span>Download bpmn-pilot.mcpb</span>, then double-click the file: Claude Desktop runs the relay itself, with no Node.js to install. For other agents, copy the line or block shown into their MCP settings (Node.js 20 or later).</li>
           <li>Turn on <span class="ui">Local agent</span>. Until then, the page opens no connection to your computer. Chrome and Edge ask once to allow access to the local network: accept.</li>
           <li>Ask your agent: "Describe the diagram open in BPMN Pilot." The button then reads "MCP:" followed by the agent's name.</li>
         </ol>
-        <figure><img src="/src/help/img/en-agent-local.webp" width="1200" height="1083" alt="Connect an agent window: agent choice (Claude Desktop, Claude Code, VS Code, Cursor), Download bpmn-pilot.mcpb button, Local agent switch on and the line Connected to the local relay." loading="lazy" /><figcaption>The Connect an agent window, local agent connected.</figcaption></figure>
+        <figure><img src="/src/help/img/en-agent-local.webp" width="1200" height="1157" alt="Connect an agent window: agent choice (Claude Desktop, Claude Code, VS Code, Cursor), Download bpmn-pilot.mcpb button, Local agent switch on and the line Connected to the local relay." loading="lazy" /><figcaption>The Connect an agent window, local agent connected.</figcaption></figure>
         <p>The agent works in the tab used last: keep it open while it draws. An export comes back to the agent, or waits in the page behind <span class="uib">Download</span>. Safari blocks the connection from an HTTPS page to the computer: use Chrome, Edge or Firefox. What goes where is detailed in <a href="#privacy">Privacy</a>.</p>
       </section>
       <!-- /online -->

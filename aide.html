@@ -574,6 +574,9 @@
         <p><span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilote IA</span> ouvre une discussion. Décrivez le processus, le co-pilote le dessine dans l'éditeur. Il modifie aussi le schéma ouvert, le colore, le range et le vérifie. Tout se retouche ensuite à la main.</p>
         <figure class="fig-anim"><p class="fig-title">Le co-pilote dessine un processus</p><img src="/docs/demo.fr.gif" width="1200" height="675" alt="Le co-pilote IA dessine un processus de commande en ligne avec deux bassins et quatre couloirs" loading="lazy" /><figcaption>Une demande en langage courant, et le schéma se construit dans l'éditeur.</figcaption></figure>
 
+        <!-- online -->
+        <p>Le Co-pilote utilise votre clé API, saisie dans <span class="uib">Options</span>. Pour faire dessiner votre propre agent IA (Claude Desktop, Claude Code, Cursor…) avec son abonnement et son contexte, sans clé dans la page, voir <a href="#agent-local">Connecter votre agent IA (MCP)</a>.</p>
+        <!-- /online -->
         <h3>1. Choisir un fournisseur de LLM</h3>
         <!-- online -->
         <p>Ouvrez <span class="uib">Options</span> et choisissez un fournisseur, avec votre propre clé API :</p>
@@ -1074,7 +1077,7 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <li>Vos diagrammes, réglages et clés API restent dans votre navigateur. Ni nous ni l'hébergeur (GitHub Pages) n'y avons accès.</li>
           <li>Avec le co-pilote, vos messages, le diagramme, vos fichiers et votre clé partent directement chez le fournisseur choisi, sous ses propres conditions.</li>
           <li>La dictée reconnaît la voix sur votre appareil.</li>
-          <li>Un <a href="#agent-local">agent local</a> (MCP), si vous l'activez, échange le diagramme avec l'onglet par un relais sur votre ordinateur, sans autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.</li>
+          <li>Votre <a href="#agent-local">agent IA local</a> (MCP), distinct du Co-pilote, si vous l'activez, échange le diagramme avec l'onglet par un relais sur votre ordinateur, sans autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.</li>
           <li>GitHub Pages garde des journaux techniques, dont votre adresse IP.</li>
           <li>Le site stable mesure son audience sans cookie, selon les <a href="https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience" target="_blank" rel="noopener">recommandations de la CNIL</a> pour l'audience exemptée de consentement. L'adresse IP sert seulement à situer le pays, la région et la ville, et n'est pas enregistrée. Sont collectés la page vue, la provenance, l'appareil et quelques actions sans leur contenu (créer, ouvrir, exporter, utiliser le co-pilote, type de fournisseur, durée d'usage par tranche, clic vers la page de soutien). « Do Not Track » et « Global Privacy Control » coupent la mesure.</li>
           <li>Le site ne charge aucun script tiers.</li>
@@ -1094,13 +1097,14 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
       <!-- online -->
       <section id="agent-local">
         <h2>Connecter votre agent IA (MCP)</h2>
-        <p>Un agent IA installé sur votre ordinateur (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…) lit et dessine dans le diagramme ouvert dans cet onglet, avec les mêmes outils et les mêmes prompts que dans la <a href="#docker">version Docker</a>. Il passe par un petit relais local, <code>bpmn-pilot-mcp</code>, qu'il lance lui-même : le diagramme va de l'agent à l'onglet sur votre ordinateur, sans passer par aucun autre serveur, et le relais n'écrit rien sur le disque.</p>
+        <p>Votre propre agent IA, installé sur votre ordinateur (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…), lit et dessine dans le diagramme ouvert dans cet onglet, avec les mêmes outils et les mêmes prompts que dans la <a href="#docker">version Docker</a>. Il passe par un petit relais local, <code>bpmn-pilot-mcp</code>, qu'il lance lui-même : le diagramme va de l'agent à l'onglet sur votre ordinateur, sans passer par aucun autre serveur, et le relais n'écrit rien sur le disque.</p>
+        <p><strong>À ne pas confondre avec le <a href="#assistant">Co-pilote IA</a>.</strong> Le Co-pilote est intégré à la page et appelle le fournisseur avec la clé API saisie dans <span class="uib">Options</span>. L'agent MCP est votre propre assistant, avec son abonnement, son modèle et son contexte (messagerie, documents, mémoire) : aucune clé API n'est saisie dans la page.</p>
         <ol>
           <li>Cliquez sur <span class="uib">MCP</span> dans la barre d'outils et choisissez votre agent. Pour Claude Desktop, <span class="uib"><span class="ico" data-icon="save" aria-hidden="true"></span>Télécharger bpmn-pilot.mcpb</span>, puis double-cliquez sur le fichier : Claude Desktop fait tourner le relais lui-même, sans Node.js à installer. Pour les autres agents, copiez la ligne ou le bloc proposé dans leurs réglages MCP (Node.js 20 ou plus).</li>
           <li>Activez <span class="ui">Agent local</span>. Jusque-là, la page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser l'accès au réseau local : acceptez.</li>
           <li>Demandez à votre agent : « Décris le diagramme ouvert dans BPMN Pilot. » Le bouton passe à « MCP : » suivi du nom de l'agent.</li>
         </ol>
-        <figure><img src="/src/help/img/fr-agent-local.webp" width="1200" height="1083" alt="Fenêtre Connecter un agent : choix de l'agent (Claude Desktop, Claude Code, VS Code, Cursor), bouton Télécharger bpmn-pilot.mcpb, interrupteur Agent local activé et mention Relié au relais local." loading="lazy" /><figcaption>La fenêtre Connecter un agent, agent local relié.</figcaption></figure>
+        <figure><img src="/src/help/img/fr-agent-local.webp" width="1200" height="1187" alt="Fenêtre Connecter un agent : choix de l'agent (Claude Desktop, Claude Code, VS Code, Cursor), bouton Télécharger bpmn-pilot.mcpb, interrupteur Agent local activé et mention Relié au relais local." loading="lazy" /><figcaption>La fenêtre Connecter un agent, agent local relié.</figcaption></figure>
         <p>L'agent travaille dans le dernier onglet utilisé : gardez-le ouvert pendant qu'il dessine. Un export revient à l'agent, ou attend dans la page derrière <span class="uib">Télécharger</span>. Safari bloque la connexion d'une page HTTPS vers l'ordinateur : utilisez Chrome, Edge ou Firefox. Ce qui circule est détaillé dans <a href="#confidentialite">Confidentialité</a>.</p>
       </section>
       <!-- /online -->

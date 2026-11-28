@@ -215,10 +215,14 @@ some providers (OpenAI) refuse calls from a web page. The "Privacy" link on the 
 
 ### Connect an agent to the online version
 
-An agent installed on your computer drives the online editor through a small local relay,
+Your own AI agent, installed on your computer, drives the online editor through a small local relay,
 `bpmn-pilot-mcp`, that the agent starts itself. The relay only passes messages between the agent
 and the tab, on `127.0.0.1`: the diagram goes through no other server, and the relay writes nothing
 to disk.
+
+It is not the AI co-pilot. The co-pilot is built into the page and calls the provider with the API key
+you enter in Options. The MCP agent is your own assistant, with its own subscription, model and context:
+no API key is entered in the page.
 
 1. Install the relay in your agent:
    - **Claude Desktop**: download `bpmn-pilot.mcpb` from the [latest release](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)

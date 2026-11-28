@@ -2,7 +2,9 @@
 
 Local MCP relay for [BPMN Pilot](https://bpmn.leylines.fr), a BPMN 2.0 editor that runs in the browser.
 
-Your AI agent (Claude Code, Cursor, VS Code, Windsurf, Gemini CLI…) starts this relay and talks to it over stdio. The BPMN Pilot page open in a browser on the same computer connects to it at `ws://127.0.0.1:3333`, and the agent then reads, draws, lays out, checks and exports the diagram open in that tab, with the same tools as the built-in AI co-pilot.
+Your AI agent (Claude Code, Cursor, VS Code, Windsurf, Gemini CLI…) starts this relay and talks to it over stdio. The BPMN Pilot page open in a browser on the same computer connects to it at `ws://127.0.0.1:3333`, and the agent then reads, draws, lays out, checks and exports the diagram open in that tab.
+
+This is not the AI co-pilot built into the page, which calls a provider with an API key entered in the page. Here your own agent works with its own subscription, model and context, and no API key is entered in the page.
 
 The relay only passes messages between the agent and the tab. It writes nothing to disk, calls no service and accepts no page other than the BPMN Pilot editor.
 
