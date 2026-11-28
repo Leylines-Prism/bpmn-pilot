@@ -91,6 +91,8 @@ import { setupDocSearch } from './doc/doc-search.js'
 import { setupTableDialog } from './table-dialog.js'
 import { rowsToXlsx } from './sheet-io.js'
 import { setupGridDialog } from './grid-dialog.js'
+import { setupMermaidDialog, setupMermaidExport } from './mermaid-dialog.js'
+import { looksLikeMermaid } from './mermaid-import.js'
 import { EXPERT_ASKS } from './ai/prompts.js'
 
 const EMPTY_DIAGRAM = `<?xml version="1.0" encoding="UTF-8"?>
@@ -352,9 +354,17 @@ async function importFile(file) {
   }
   // Un .dmn déposé sur l'éditeur rejoint les décisions du diagramme ouvert (mode Expert).
   if (/\.dmn$/i.test(file.name)) return decisions.importDmnFile(file)
+  // Un fichier Mermaid (.mmd, .mermaid, ou .md qui contient un bloc mermaid) ouvre la fenêtre Depuis Mermaid.
+  if (/\.(mmd|mermaid|md|markdown)$/i.test(file.name)) {
+    const content = await file.text()
+    if (/\.(mmd|mermaid)$/i.test(file.name) || looksLikeMermaid(content)) {
+      mermaidDialog.openWith(content, { name: file.name.replace(/\.(mmd|mermaid|md|markdown)$/i, '') })
+      return
+    }
+  }
   if (!/\.(bpmn|xml)$/i.test(file.name)) {
     track('fichier-invalide', { cause: 'format' })
-    alert(T('Unsupported format: choose a .bpmn or .xml file.', 'Format non pris en charge : choisissez un fichier .bpmn ou .xml.'))
+    alert(T('Unsupported format: choose a .bpmn, .xml or .mmd file.', 'Format non pris en charge : choisissez un fichier .bpmn, .xml ou .mmd.'))
     return
   }
   const failure = await importAndReport(await file.text(), file.name)
@@ -374,6 +384,11 @@ setupXmlDialog({
   openButton: document.getElementById('btn-import-xml'),
   fileInput: document.getElementById('file-input'),
   onImport: async (xml) => {
+    // Un flowchart Mermaid collé ici passe par la fenêtre Depuis Mermaid, pour voir ce qui sera créé.
+    if (looksLikeMermaid(xml)) {
+      mermaidDialog.openWith(xml, { message: T('Mermaid text recognized: check the preview, then create the diagram.', 'Texte Mermaid reconnu : vérifiez l\'aperçu, puis créez le diagramme.') })
+      return
+    }
     const failure = await importAndReport(xml, null)
     track(failure ? 'fichier-invalide' : 'fichier-ouvert', failure ? { cause: 'xml' } : { source: 'xml' })
     return failure
@@ -401,6 +416,17 @@ setupGridDialog({
     const failure = await importAndReport(xml, name)
     if (!failure) setStatus(T('Diagram created from the grid', 'Diagramme créé depuis la grille'))
     track(failure ? 'fichier-invalide' : 'fichier-ouvert', failure ? { cause: 'grille' } : { source: 'grille' })
+    return failure
+  },
+})
+
+// Ouvrir > Depuis Mermaid : un flowchart converti sans IA, puis rangé automatiquement.
+const mermaidDialog = setupMermaidDialog({
+  openButton: document.getElementById('btn-import-mermaid'),
+  onCreate: async (xml, name) => {
+    const failure = await importAndReport(xml, name)
+    if (!failure) setStatus(T('Diagram created from Mermaid', 'Diagramme créé depuis Mermaid'))
+    track(failure ? 'fichier-invalide' : 'fichier-ouvert', failure ? { cause: 'mermaid' } : { source: 'mermaid' })
     return failure
   },
 })
@@ -501,6 +527,15 @@ setupXmlExport({
   download: (xml) => {
     download(xml, baseName() + '.xml', 'application/xml')
     track('export', { format: 'xml' })
+  },
+})
+
+setupMermaidExport({
+  openButton: document.getElementById('btn-mermaid'),
+  getDefinitions: () => modeler.getDefinitions(),
+  download: (text) => {
+    download(text, baseName() + '.mmd', 'text/plain')
+    track('export', { format: 'mermaid' })
   },
 })
 

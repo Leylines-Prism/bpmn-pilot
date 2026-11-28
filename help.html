@@ -124,7 +124,7 @@
           <li>Name the file in the toolbar field. Exports use this name.</li>
         </ol>
         <p>Every change is kept in the browser, and reopening the page brings your work back. <span class="uib">FR</span> or <span class="uib">EN</span> switches the language, <span class="uib"><span class="ico" data-icon="theme" aria-hidden="true"></span>Theme</span> cycles through automatic, light and dark. The help follows these choices.</p>
-        <p>BPMN 2.0 is an Object Management Group standard, adopted by ISO as <a href="https://www.iso.org/standard/62652.html" target="_blank" rel="noopener">ISO/IEC 19510:2013</a>. A .bpmn file made here opens in any compliant editor or engine.</p>
+        <p>BPMN 2.0 is an Object Management Group standard, adopted by ISO as ISO/IEC 19510:2013. A .bpmn file made here opens in any compliant editor or engine.</p>
         <details class="faq">
           <summary>Why BPMN rather than a flowchart?</summary>
           <p>In draw.io, Lucidchart or Visio, a shape means whatever its author meant. In BPMN, every symbol has a defined meaning: pools and lanes for who does what, events for what triggers or waits, gateways for how paths split and join. The file describes the process itself, not a picture of it: it can be checked, simulated, read by an AI agent and run by a workflow engine. It will still open in ten years, in another tool.</p>
@@ -371,7 +371,7 @@
       <section id="open-export">
         <h2>Open, import, export (XML, SVG, PNG, PDF)</h2>
         <h3>Open<span class="ico" data-icon="open" aria-hidden="true"></span></h3>
-        <p><span class="uib"><span class="ico" data-icon="open" aria-hidden="true"></span>Open</span> reads a .bpmn, .xml or encrypted file, a table of steps or a workshop grid. A file dropped on the page opens too. <span class="uib"><span class="ico" data-icon="code" aria-hidden="true"></span>Paste XML…</span>, in the same menu, takes BPMN XML copied from another tool or from an AI answer. Files from Camunda, Bizagi or Signavio are read, and their layout is computed if they lack one. The other way round, what is specific to BPMN-Pilot (probabilities, sub-levels, AI agent steps…) is ignored without error by other tools, and kept when they save the file again.</p>
+        <p><span class="uib"><span class="ico" data-icon="open" aria-hidden="true"></span>Open</span> reads a .bpmn, .xml or encrypted file, a table of steps, a workshop grid or a Mermaid flowchart. A file dropped on the page opens too. <span class="uib"><span class="ico" data-icon="code" aria-hidden="true"></span>Paste XML…</span>, in the same menu, takes BPMN XML copied from another tool or from an AI answer. Files from Camunda, Bizagi or Signavio are read, and their layout is computed if they lack one. The other way round, what is specific to BPMN-Pilot (probabilities, sub-levels, AI agent steps…) is ignored without error by other tools, and kept when they save the file again.</p>
         <h3 id="from-table">Create from a table (no AI)<span class="ico" data-icon="table" aria-hidden="true"></span></h3>
         <p><span class="uib"><span class="ico" data-icon="table" aria-hidden="true"></span>From a table…</span> turns a list of steps into a diagram. Paste the rows copied from Excel, header included, or pick a .csv, .tsv or .xlsx file. Nothing leaves the page. A preview counts steps, links, decisions and lanes, and flags errors before creating anything.</p>
         <div class="table-wrap">
@@ -394,6 +394,26 @@
         <h3 id="roles-grid">Roles × tasks grid (workshop)<span class="ico" data-icon="grid" aria-hidden="true"></span></h3>
         <p><span class="uib"><span class="ico" data-icon="grid" aria-hidden="true"></span>Roles × tasks grid…</span>: roles in columns, tasks in rows. Click the cell of the role that does each task. A task ending with "?" becomes a decision. <span class="uib"><span class="ico" data-icon="table" aria-hidden="true"></span>Continue in the table…</span> moves to the previous window to add branches or types.</p>
         <figure><img src="/src/help/img/en-grille-roles.webp" width="920" height="452" alt="Roles × tasks grid window: three roles in columns (Employee, Manager, Accounting) and four tasks, each checked in the column of its role, including the decision Approve?." loading="lazy" /><figcaption>Four tasks shared between three roles, including a decision.</figcaption></figure>
+        <h3 id="from-mermaid">Create from Mermaid (no AI)<span class="ico" data-icon="flowchart" aria-hidden="true"></span></h3>
+        <p><span class="uib"><span class="ico" data-icon="flowchart" aria-hidden="true"></span>From Mermaid…</span> converts a <a href="https://mermaid.js.org/syntax/flowchart.html" target="_blank" rel="noopener">Mermaid</a> flowchart (<code>flowchart</code> or <code>graph</code>) into a BPMN process, laid out automatically. Paste the text, or pick a .mmd, .mermaid or .md file: in a Markdown file, the first <code>```mermaid</code> block is read. Nothing leaves the page. A preview counts tasks, gateways, events, data and lanes, and lists line by line what is ignored. Mermaid text pasted into <span class="uib"><span class="ico" data-icon="code" aria-hidden="true"></span>Paste XML…</span>, or a .mmd file dropped on the page, opens the same window.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mermaid</th><th>BPMN</th></tr></thead>
+            <tbody>
+              <tr><td><code>A[text]</code>, <code>A(text)</code> and shapes without an equivalent</td><td>Task</td></tr>
+              <tr><td><code>A{text}</code></td><td>Exclusive gateway. The labels of its outgoing links (<code>--&gt;|yes|</code> or <code>-- yes --&gt;</code>) become the branch conditions</td></tr>
+              <tr><td><code>A((text))</code>, <code>A([text])</code></td><td>Start event without incoming link, end event without outgoing link, intermediate event otherwise</td></tr>
+              <tr><td><code>A(((text)))</code></td><td>End event</td></tr>
+              <tr><td><code>A[[text]]</code></td><td>Call activity, to link later to a <a href="#levels">sub-level</a></td></tr>
+              <tr><td><code>A[(text)]</code>, <code>A[/text/]</code></td><td>Data store, data object, linked to the task by an association</td></tr>
+              <tr><td><code>@{ shape: fork }</code>, <code>@{ shape: delay }</code>, <code>@{ shape: comment }</code></td><td>Parallel gateway, timer event, annotation</td></tr>
+              <tr><td><code>subgraph Sales … end</code></td><td>One lane per subgraph, or an expanded subprocess if you tick <span class="ui">Subgraphs are steps</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A step with several outgoing links gets a gateway: exclusive if the links are labelled, parallel otherwise. Missing starts, ends and joins are added. Styles, clicks and the direction are ignored. Mermaid expresses neither pools, nor messages, nor task types: complete them by hand or with the <a href="#assistant">AI co-pilot</a>. Other Mermaid diagrams (sequence, state…) are rejected.</p>
+        <figure><img src="/src/help/img/en-depuis-mermaid.webp" width="720" height="534" alt="Create a process from Mermaid window: a flowchart with two subgraphs Sales and Warehouse, a decision In stock? and a data store, and the preview: 3 tasks, 2 gateways, 2 events, 1 data item, 2 lanes." loading="lazy" /><figcaption>The example flowchart, and the preview before creation.</figcaption></figure>
+        <figure><img src="/src/help/img/en-mermaid-resultat.webp" width="975" height="521" alt="The process created: two lanes Sales and Warehouse, the event Order received, the gateway In stock? with its yes and no branches, the call activity Order from the supplier, a join, the tasks Pack the order and Ship, the Inventory store and the end Delivered." loading="lazy" /><figcaption>The diagram created and laid out, ready to complete.</figcaption></figure>
         <h3 id="compare">Compare two versions (diff)<span class="ico" data-icon="compare" aria-hidden="true"></span></h3>
         <p><span class="uib"><span class="ico" data-icon="compare" aria-hidden="true"></span>Compare with a file…</span>, or <span class="uib">Before / after</span> on the co-pilot pill, shows the old version on the left and the open one on the right. Green for added, red for removed, orange for changed, blue (on request) for what only moved. A click in the list centers both views on the element.</p>
         <figure><img src="/src/help/img/en-avant-apres.webp" width="1440" height="720" alt="Before and after window: the diagram before the co-pilot on the left, the current diagram on the right, with an added element in green, a removed one in red, a changed one in orange, and the list of differences." loading="lazy" /><figcaption>The Before and after window, opened from the co-pilot's pill.</figcaption></figure>
@@ -414,11 +434,12 @@
               <tr><td>RACI matrix (Excel)</td><td>A workbook: one row per activity, one column per role, and the letters R, A, C, I (see <a href="#responsibilities">Responsibilities</a>)</td></tr>
               <tr><td>User stories (Markdown)</td><td>In Expert mode: the user stories and acceptance criteria of each activity, see <a href="#user-stories">User stories</a></td></tr>
               <tr><td>XML code to copy…</td><td>Copy the code to paste it elsewhere, or download it</td></tr>
+              <tr><td>Mermaid code to copy…</td><td>The diagram as a Mermaid flowchart, to paste into a README or a wiki that displays Mermaid (GitHub, GitLab…). <span class="ui">Copy for a README</span> wraps it in a <code>```mermaid</code> block. Positions, colors and detailed types have no equivalent</td></tr>
               <tr><td>Print…</td><td>Print the diagram alone, without the editor around it: it fits on one page, and the orientation follows its shape</td></tr>
             </tbody>
           </table>
         </div>
-        <figure><img src="/src/help/img/en-menu-exporter.webp" width="240" height="670" alt="Export menu open in Expert mode: Destination, .bpmn file, .xml file, Encrypted .bpmn file, BPMN for Camunda 8 and 7, SVG and PNG images, PDF document, Procedure sheets in PDF, Markdown and Word, Documentation page (HTML), RACI matrix (Excel), User stories (Markdown), XML code to copy, Print." loading="lazy" /><figcaption>The Export menu, in Expert mode.</figcaption></figure>
+        <figure><img src="/src/help/img/en-menu-exporter.webp" width="240" height="704" alt="Export menu open in Expert mode: Destination, .bpmn file, .xml file, Encrypted .bpmn file, BPMN for Camunda 8 and 7, SVG and PNG images, PDF document, Procedure sheets in PDF, Markdown and Word, Documentation page (HTML), RACI matrix (Excel), User stories (Markdown), XML code to copy, Mermaid code to copy, Print." loading="lazy" /><figcaption>The Export menu, in Expert mode.</figcaption></figure>
         <!-- online -->
         <p>In the Docker version, the menu starts with a <span class="ui">Destination</span>: download, server or both.</p>
         <!-- /online -->

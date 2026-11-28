@@ -50,18 +50,19 @@
       <span class="file-name-ext" aria-hidden="true">.bpmn</span>
     </label>
     <button class="btn" id="btn-new" title="Start an empty diagram (replaces the autosave)" data-icon="new">New</button>
-    <button class="btn" id="btn-open-menu" title="Open a file, paste XML, build from a table or a grid, or compare with a file" data-icon="open" popovertarget="open-menu" aria-haspopup="menu">Open</button>
+    <button class="btn" id="btn-open-menu" title="Open a file, paste XML, build from a table, a grid or Mermaid, or compare with a file" data-icon="open" popovertarget="open-menu" aria-haspopup="menu">Open</button>
     <div id="open-menu" class="menu" popover role="menu">
       <button class="btn" id="btn-open" title="Open a BPMN 2.0 diagram from your computer, or an encrypted .bpmn.enc file" data-icon="open" role="menuitem">.bpmn, .xml or encrypted file…</button>
       <button class="btn dmn-only expert-only" id="btn-open-dmn" title="Add the decisions of a DMN file to the open diagram, to link them to its business rule tasks" data-icon="table" role="menuitem">.dmn file (decisions)…</button>
       <button class="btn" id="btn-import-xml" title="Paste BPMN XML; a process without layout is laid out automatically" data-icon="code" role="menuitem">Paste XML…</button>
       <button class="btn" id="btn-import-table" title="Build a process from a table of steps pasted from Excel, or a .csv or .xlsx file, without AI" data-icon="table" role="menuitem">From a table…</button>
       <button class="btn" id="btn-import-grid" title="For a workshop: roles in columns, tasks in rows, one click per task; the diagram is built with one lane per role" data-icon="grid" role="menuitem">Roles × tasks grid…</button>
+      <button class="btn" id="btn-import-mermaid" title="Build a process from a Mermaid flowchart, pasted or from a .mmd or .md file, without AI" data-icon="flowchart" role="menuitem">From Mermaid…</button>
       <div class="menu-sep" role="separator"></div>
       <button class="btn" id="btn-compare-file" title="Compare the open diagram with a .bpmn file, side by side" data-icon="compare" role="menuitem">Compare with a file…</button>
     </div>
     <input type="file" id="compare-input" accept=".bpmn,.xml" style="display:none" />
-    <input type="file" id="file-input" accept=".bpmn,.xml,.enc" style="display:none" />
+    <input type="file" id="file-input" accept=".bpmn,.xml,.enc,.mmd,.mermaid" style="display:none" />
     <input type="file" id="dmn-input" accept=".dmn,.xml" style="display:none" />
     <button class="btn" id="btn-export" title="Export as BPMN, XML, SVG, PNG or PDF, procedure sheets (PDF, Word, Markdown), an HTML documentation page, or print" data-icon="save" popovertarget="export-menu" aria-haspopup="menu">Export</button>
     <div id="export-menu" class="menu" popover role="menu">
@@ -85,6 +86,7 @@
       <button class="btn expert-only mod-user-stories-only" id="btn-stories-md" title="The user stories and acceptance criteria of each activity, in the order of the flow, as Markdown" data-icon="code" role="menuitem">User stories (Markdown)</button>
       <div class="menu-sep" role="separator"></div>
       <button class="btn" id="btn-xml" title="Show the BPMN XML, ready to copy" data-icon="code" role="menuitem">XML code to copy…</button>
+      <button class="btn" id="btn-mermaid" title="The diagram as a Mermaid flowchart, to paste into a README or a wiki" data-icon="flowchart" role="menuitem">Mermaid code to copy…</button>
       <button class="btn" id="btn-print" title="Print, or save as PDF from the browser's dialog" data-icon="print" role="menuitem">Print…</button>
     </div>
     <button class="btn" id="btn-library" data-icon="library" title="Save, reopen, rename or delete diagrams (Ctrl+S saves)">My diagrams</button>

@@ -25,7 +25,7 @@ import { fontOf, textColorOf } from './label-style.js'
 import { track } from './analytics.js'
 
 // Outils qui modifient le diagramme.
-const WRITE_TOOLS = ['add_shapes', 'connect_shapes', 'update_elements', 'style_elements', 'remove_elements', 'set_diagram_xml', 'layout_diagram', 'auto_layout', 'move_elements', 'duplicate_elements', 'undo', 'redo', 'link_decision', 'set_decision_table', 'set_task_form', 'apply_log_frequencies', 'set_report_commentary']
+const WRITE_TOOLS = ['add_shapes', 'connect_shapes', 'update_elements', 'style_elements', 'remove_elements', 'set_diagram_xml', 'import_mermaid', 'layout_diagram', 'auto_layout', 'move_elements', 'duplicate_elements', 'undo', 'redo', 'link_decision', 'set_decision_table', 'set_task_form', 'apply_log_frequencies', 'set_report_commentary']
 
 // Au-delà, mode discret : plus de 15 formes changées, ou plus de la moitié
 // des formes du diagramme (à partir de 6), ou un diagramme sans forme avant l'IA.

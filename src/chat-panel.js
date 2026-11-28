@@ -32,6 +32,8 @@ const TOOL_LABELS = {
   get_process_report: T('process report', 'rapport de processus'),
   set_report_commentary: T('analysis for the report', 'analyse pour le rapport'),
   set_diagram_xml: T('replacing the diagram', 'remplacement du diagramme'),
+  import_mermaid: T('importing Mermaid', 'import Mermaid'),
+  get_diagram_mermaid: T('reading as Mermaid', 'lecture en Mermaid'),
   export_diagram: 'export',
   add_shapes: T('adding shapes', 'ajout de formes'),
   connect_shapes: T('connections', 'connexions'),

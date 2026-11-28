@@ -14,7 +14,7 @@ export const CRITIQUE_MIN_CHARS = 200 // en dessous, sans pièce jointe : une co
 export const MAX_CORRECTIONS = 2
 const MAX_ISSUES = 6
 const SEVERITIES = ['blocking', 'major', 'minor']
-export const WRITE_TOOLS = ['add_shapes', 'connect_shapes', 'update_elements', 'style_elements', 'remove_elements', 'set_diagram_xml', 'layout_diagram', 'auto_layout', 'move_elements', 'duplicate_elements', 'undo', 'redo']
+export const WRITE_TOOLS = ['add_shapes', 'connect_shapes', 'update_elements', 'style_elements', 'remove_elements', 'set_diagram_xml', 'import_mermaid', 'layout_diagram', 'auto_layout', 'move_elements', 'duplicate_elements', 'undo', 'redo']
 
 export const CRITIQUE_SYSTEM = `You review a request to model a business process in BPMN, before it is drawn.
 Find what is ambiguous or missing for a correct BPMN model:

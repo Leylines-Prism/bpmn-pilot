@@ -638,29 +638,29 @@ body #chat-input:focus-visible { outline: 2px solid var(--focus-ring); outline-o
 
 /* ── Fenêtre « Importer XML » et dépôt de fichier ─────────────────────── */
 
-#xml-dialog, #xml-export-dialog, #table-dialog, #password-dialog, #grid-dialog, #chat-editor {
+#xml-dialog, #xml-export-dialog, #mermaid-export-dialog, #table-dialog, #mermaid-dialog, #password-dialog, #grid-dialog, #chat-editor {
   margin: auto; width: min(720px, calc(100vw - 32px));
   border: 1px solid var(--line); border-radius: var(--radius-lg);
   background: var(--surface-raised); color: var(--ink);
   box-shadow: var(--elevation-1); padding: var(--space-6);
 }
-#xml-dialog::backdrop, #xml-export-dialog::backdrop, #table-dialog::backdrop, #password-dialog::backdrop, #grid-dialog::backdrop, #chat-editor::backdrop { background: rgba(5, 8, 18, 0.45); }
-#xml-dialog form, #xml-export-dialog form, #table-dialog form, #grid-dialog form, #chat-editor form { display: flex; flex-direction: column; gap: var(--space-3); }
-#xml-dialog h2, #xml-export-dialog h2, #table-dialog h2, #grid-dialog h2, #chat-editor h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
-#xml-dialog .hint, #xml-export-dialog .hint, #table-dialog .hint, #grid-dialog .hint { color: var(--ink-muted); font-size: 13px; }
-#xml-dialog textarea, #xml-export-dialog textarea, #table-dialog textarea {
+#xml-dialog::backdrop, #xml-export-dialog::backdrop, #mermaid-export-dialog::backdrop, #table-dialog::backdrop, #mermaid-dialog::backdrop, #password-dialog::backdrop, #grid-dialog::backdrop, #chat-editor::backdrop { background: rgba(5, 8, 18, 0.45); }
+#xml-dialog form, #xml-export-dialog form, #mermaid-export-dialog form, #table-dialog form, #mermaid-dialog form, #grid-dialog form, #chat-editor form { display: flex; flex-direction: column; gap: var(--space-3); }
+#xml-dialog h2, #xml-export-dialog h2, #mermaid-export-dialog h2, #table-dialog h2, #mermaid-dialog h2, #grid-dialog h2, #chat-editor h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
+#xml-dialog .hint, #xml-export-dialog .hint, #mermaid-export-dialog .hint, #table-dialog .hint, #mermaid-dialog .hint, #grid-dialog .hint { color: var(--ink-muted); font-size: 13px; }
+#xml-dialog textarea, #xml-export-dialog textarea, #mermaid-export-dialog textarea, #table-dialog textarea, #mermaid-dialog textarea {
   width: 100%; height: 320px; resize: vertical;
   padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-md);
   background: var(--surface); color: var(--ink);
   font-family: var(--font-mono); font-size: 12px; line-height: 18px;
 }
-#xml-dialog textarea:focus-visible, #xml-export-dialog textarea:focus-visible, #table-dialog textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
-#xml-dialog .error, #xml-export-dialog .error, #table-dialog .error, #grid-dialog .error { color: var(--magenta); font-size: 13px; min-height: 20px; }
-#xml-dialog .error:empty, #xml-export-dialog .error:empty, #table-dialog .error:empty, #grid-dialog .error:empty { display: none; }
-#xml-dialog .actions, #xml-export-dialog .actions, #table-dialog .actions, #grid-dialog .actions { display: flex; align-items: center; gap: var(--space-2); }
-#xml-dialog .grow, #xml-export-dialog .grow, #table-dialog .grow, #grid-dialog .grow { flex: 1; }
-#xml-export-dialog .status { color: var(--accent); font-size: 13px; min-height: 20px; }
-#xml-export-dialog .status:empty { display: none; }
+#xml-dialog textarea:focus-visible, #xml-export-dialog textarea:focus-visible, #mermaid-export-dialog textarea:focus-visible, #table-dialog textarea:focus-visible, #mermaid-dialog textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+#xml-dialog .error, #xml-export-dialog .error, #mermaid-export-dialog .error, #table-dialog .error, #mermaid-dialog .error, #grid-dialog .error { color: var(--magenta); font-size: 13px; min-height: 20px; }
+#xml-dialog .error:empty, #xml-export-dialog .error:empty, #mermaid-export-dialog .error:empty, #table-dialog .error:empty, #mermaid-dialog .error:empty, #grid-dialog .error:empty { display: none; }
+#xml-dialog .actions, #xml-export-dialog .actions, #mermaid-export-dialog .actions, #table-dialog .actions, #mermaid-dialog .actions, #grid-dialog .actions { display: flex; align-items: center; gap: var(--space-2); }
+#xml-dialog .grow, #xml-export-dialog .grow, #mermaid-export-dialog .grow, #table-dialog .grow, #mermaid-dialog .grow, #grid-dialog .grow { flex: 1; }
+#xml-export-dialog .status, #mermaid-export-dialog .status { color: var(--accent); font-size: 13px; min-height: 20px; }
+#xml-export-dialog .status:empty, #mermaid-export-dialog .status:empty { display: none; }
 #grid-dialog { width: min(920px, calc(100vw - 32px)); }
 #grid-dialog .grid-wrap { max-height: 52vh; overflow: auto; border: 1px solid var(--line); border-radius: var(--radius-md); }
 #grid-dialog .grid-table { border-collapse: collapse; width: 100%; font-size: 13px; }
@@ -685,14 +685,16 @@ body #chat-input:focus-visible { outline: 2px solid var(--focus-ring); outline-o
 #password-dialog .error:empty { display: none; }
 #password-dialog .actions { display: flex; align-items: center; gap: var(--space-2); }
 #password-dialog .grow { flex: 1; }
-#table-dialog textarea { height: 220px; white-space: pre; tab-size: 16; }
-#table-dialog .table-preview { font-size: 13px; color: var(--ink-muted); min-height: 20px; }
-#table-dialog .table-preview strong { color: var(--ink); font-weight: 600; }
-#table-dialog .table-preview ul { margin: var(--space-1) 0 0; padding-left: 18px; max-height: 96px; overflow: auto; }
-#table-dialog .table-preview .warn { color: var(--ink-muted); }
-#table-dialog .table-preview .err { color: var(--magenta); }
-#table-dialog .table-columns { font-size: 12px; color: var(--ink-muted); }
-#table-dialog .table-columns code { font-family: var(--font-mono); font-size: 12px; }
+#table-dialog textarea, #mermaid-dialog textarea { height: 220px; white-space: pre; tab-size: 16; }
+#table-dialog .table-preview, #mermaid-dialog .table-preview { font-size: 13px; color: var(--ink-muted); min-height: 20px; }
+#table-dialog .table-preview strong, #mermaid-dialog .table-preview strong { color: var(--ink); font-weight: 600; }
+#table-dialog .table-preview ul, #mermaid-dialog .table-preview ul { margin: var(--space-1) 0 0; padding-left: 18px; max-height: 96px; overflow: auto; }
+#table-dialog .table-preview .warn, #mermaid-dialog .table-preview .warn { color: var(--ink-muted); }
+#table-dialog .table-preview .err, #mermaid-dialog .table-preview .err { color: var(--magenta); }
+#table-dialog .table-columns, #mermaid-dialog .table-columns { font-size: 12px; color: var(--ink-muted); }
+#table-dialog .table-columns code, #mermaid-dialog .table-columns code { font-family: var(--font-mono); font-size: 12px; }
+#mermaid-dialog textarea { white-space: pre; tab-size: 4; font-family: var(--font-mono); }
+#mermaid-dialog .mermaid-option { display: flex; align-items: center; gap: var(--space-2); font-size: 13px; }
 
 /* ── Fenêtre « Options du co-pilote » (src/options-dialog.js) ───────── */
 

@@ -139,7 +139,7 @@ On an internal purchase process with four lanes:
 </tr>
 </table>
 
-BPMN 2.0 is the international standard [ISO/IEC 19510](https://www.iso.org/standard/62652.html),
+BPMN 2.0 is the international standard ISO/IEC 19510,
 published by the OMG. A diagram made here reads the same in any compliant editor or engine, and the
 .bpmn file opens there.
 
@@ -517,7 +517,9 @@ it), unless the table says `mcp/.env`, then run `docker compose up -d --build`.
 - **Multi-level map**: a call activity links to the diagram of My diagrams that details it. One click
   goes down to it, and a breadcrumb trail goes back up, in Presentation mode too.
 - **Without AI**: build a process from a table of steps (pasted from Excel, .csv or .xlsx, Visio Data
-  Visualizer columns read as they are), or from a roles × tasks grid in a workshop.
+  Visualizer columns read as they are), from a roles × tasks grid in a workshop, or from a Mermaid
+  flowchart (pasted, or a .mmd or .md file). Export > Mermaid code gives the diagram back as a flowchart
+  for a README or a wiki.
 - **Responsibilities**: assignee, systems used and RACI for each activity, plain-words conditions on
   decision branches. Procedure sheets in PDF, Markdown or Word, RACI matrix in Excel, and a single-file
   HTML documentation page: the read-only diagram, where a click on an element opens its sheet.
