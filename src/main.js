@@ -1035,29 +1035,24 @@ if (import.meta.env.MODE === 'online') {
   }
   // Bouton « Confidentialité », en bas à droite du canevas.
   import('./privacy.js').then(({ setupPrivacy }) => setupPrivacy({ container: document.getElementById('canvas') }))
-  // Agent MCP local : la page se relie au relais que l'utilisateur fait tourner sur son poste
-  // (serveur mcp/ lancé par son agent), à l'adresse 127.0.0.1. Seulement sur demande
-  // (?mcp=local, mémorisé ; ?mcp=off l'oublie) : sans demande, aucune connexion vers le poste,
-  // et Chrome n'affiche pas sa demande d'accès au réseau local.
-  const LOCAL_MCP_KEY = 'bpmn-editor-local-mcp'
-  const mcpParam = new URLSearchParams(location.search).get('mcp')
-  let localMcp
-  try {
-    if (mcpParam === 'local') localStorage.setItem(LOCAL_MCP_KEY, '1')
-    if (mcpParam === 'off') localStorage.removeItem(LOCAL_MCP_KEY)
-    localMcp = localStorage.getItem(LOCAL_MCP_KEY) === '1'
-  } catch {
-    localMcp = mcpParam === 'local'
-  }
-  // Les mêmes outils servent au chat intégré et à l'agent local.
-  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js')]).then(([{ createTools, connectMcpBridge }, { createChatPanel }]) => {
-    const tools = createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi })
-    createChatPanel({ mode: 'online', tools })
-    if (localMcp) {
+  // Les mêmes outils servent au chat intégré et à l'agent local (fenêtre « Connecter un agent » :
+  // relais lancé par l'agent sur l'ordinateur, voir src/mcp-connect-local.js).
+  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect-local.js')]).then(
+    ([{ createTools, connectMcpBridge, createBadge, setBadge }, { createChatPanel }, { setupLocalMcpConnect, localMcpWanted }]) => {
+      const tools = createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi })
+      createChatPanel({ mode: 'online', tools })
+      const badge = createBadge()
+      setBadge(badge, 'off')
       const port = Number(import.meta.env.VITE_LOCAL_MCP_PORT) || 3333
-      connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, { tools })
-    }
-  })
+      let bridge = null
+      const start = (on) => {
+        if (on && !bridge) bridge = connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, { tools, badge, local: true })
+        if (!on && bridge) { bridge.stop(); bridge = null }
+      }
+      setupLocalMcpConnect({ badge, onChange: start })
+      start(localMcpWanted())
+    },
+  )
 } else {
   if (mcpBridgeUrl) {
     Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect.js')]).then(([{ connectMcpBridge }, { createChatPanel }, { setupMcpConnect }]) => {

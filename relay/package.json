@@ -1,0 +1,30 @@
+{
+  "name": "bpmn-pilot-mcp",
+  "version": "1.4.5",
+  "description": "Local MCP relay for the online BPMN Pilot editor: lets an AI agent draw in the diagram open in your browser",
+  "type": "module",
+  "bin": {
+    "bpmn-pilot-mcp": "dist/bpmn-pilot-mcp.mjs"
+  },
+  "files": [
+    "dist/bpmn-pilot-mcp.mjs"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "bpmn",
+    "mcp",
+    "model-context-protocol",
+    "bpmn-js",
+    "ai-agent"
+  ],
+  "homepage": "https://bpmn.leylines.fr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leylines-Prism/bpmn-pilot.git",
+    "directory": "relay"
+  },
+  "bugs": "https://github.com/Leylines-Prism/bpmn-pilot/issues",
+  "license": "MIT"
+}

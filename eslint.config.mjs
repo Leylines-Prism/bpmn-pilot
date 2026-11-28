@@ -4,7 +4,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['node_modules/', 'mcp/node_modules/', 'dist/', 'dist-online/', 'src/packed-lint-config.js', 'design/'],
+    ignores: ['node_modules/', 'mcp/node_modules/', 'dist/', 'dist-online/', 'relay/dist/', 'src/packed-lint-config.js', 'design/'],
   },
   js.configs.recommended,
   {
@@ -29,7 +29,7 @@ export default [
   },
   {
     // Le serveur MCP, la configuration de Vite, les tests et les scripts, exécutés par Node.
-    files: ['mcp/**/*.js', 'test/**/*.mjs', 'test/**/*.js', 'scripts/**/*.mjs', '*.config.js', '*.config.mjs'],
+    files: ['mcp/**/*.js', 'relay/**/*.mjs', 'test/**/*.mjs', 'test/**/*.js', 'scripts/**/*.mjs', '*.config.js', '*.config.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
 ]

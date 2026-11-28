@@ -9,7 +9,6 @@
 // MCP_HOST=0.0.0.0 le rend joignable par nginx, et MCP_ALLOWED_HOSTS limite les noms
 // d'hôte acceptés (protection contre le DNS rebinding).
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js'
@@ -21,18 +20,17 @@ import { readFileSync } from 'node:fs'
 
 import { LOCAL_HOSTS, LOCKED_MESSAGE, mcpAccess } from './auth.js'
 import { EditorBridge } from './bridge.js'
+import { buildMcpServer as buildMcpServerFor } from './mcp-server.js'
 import { DiagramStore, KINDS, MAX_XML_BYTES } from './diagrams.js'
 import { ExportStore, MAX_EXPORT_BYTES } from './exports.js'
 import { ChatService } from './chat.js'
 import { isForbiddenAddress, relayFetch } from './relay-guard.js'
 import { HeadlessRenderer, headlessConfig } from './renderer.js'
-import { fileContent, isFileResult } from '../src/ai/file-result.js'
 import { OpenAICompatError } from '../src/ai/openai-compat.js'
-import { INSTRUCTIONS, buildTools } from '../src/ai/tools.js'
+import { buildTools } from '../src/ai/tools.js'
 import { buildPrompts } from '../src/ai/prompts.js'
 import { attachmentRefused, describeProviderError } from '../src/ai/errors.js'
 import { checkAttachments } from '../src/ai/attachments.js'
-import { imageCaption, isImageResult } from '../src/ai/image-result.js'
 import { PROVIDERS, apiErrorMessage, checkBaseUrl, listModels, providerBaseUrl } from '../src/ai/providers.js'
 
 // Variables d'environnement facultatives dans mcp/.env (exclu de git).
@@ -100,43 +98,7 @@ const TOOLS = buildTools(z)
 for (const tool of TOOLS) if (tool.annotations?.readOnlyHint) READ_ONLY_TOOLS.add(tool.name)
 const PROMPTS = buildPrompts(z)
 
-function buildMcpServer() {
-  const server = new McpServer({ name: 'bpmn-pilot', version: VERSION }, { instructions: INSTRUCTIONS })
-  for (const tool of TOOLS) {
-    server.registerTool(
-      tool.name,
-      { title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations },
-      async (args) => {
-        try {
-          bridge.noteMcpCall()
-          const data = await bridge.call(tool.name, args ?? {})
-          if (isFileResult(data)) return { content: fileContent(data) }
-          if (isImageResult(data)) {
-            return {
-              content: [
-                { type: 'image', data: data.image.data, mimeType: data.image.mediaType },
-                { type: 'text', text: imageCaption(data.image) },
-              ],
-            }
-          }
-          const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
-          return { content: [{ type: 'text', text }] }
-        } catch (err) {
-          log(`[mcp] ${tool.name} : ${err.message}`)
-          return { content: [{ type: 'text', text: `Erreur : ${err.message}` }], isError: true }
-        }
-      },
-    )
-  }
-  for (const prompt of PROMPTS) {
-    server.registerPrompt(
-      prompt.name,
-      { title: prompt.title, description: prompt.description, argsSchema: prompt.argsSchema },
-      (args) => ({ messages: [{ role: 'user', content: { type: 'text', text: prompt.text(args ?? {}) } }] }),
-    )
-  }
-  return server
-}
+const buildMcpServer = () => buildMcpServerFor({ bridge, tools: TOOLS, prompts: PROMPTS, version: VERSION, log })
 
 // Hors de 127.0.0.1, les noms d'hôte acceptés sont ceux de MCP_ALLOWED_HOSTS, ou localhost par défaut.
 const app = createMcpExpressApp(

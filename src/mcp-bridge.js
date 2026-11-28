@@ -58,10 +58,15 @@ export function connectMcpBridge(modeler, url, options = {}) {
   // options.tools : outils déjà créés pour ce modeler (version en ligne, partagés avec le chat
   // intégré). Les créer deux fois enregistrerait deux fois leurs commandes.
   const tools = options.tools || createTools(modeler, options)
-  const badge = createBadge()
+  // options.badge : bouton déjà posé (version en ligne). options.local : relais lancé par
+  // l'agent sur l'ordinateur (version en ligne), pour les infobulles.
+  if (options.local) localRelay = true
+  const badge = options.badge || createBadge()
   const state = { tabId: null, badge }
   let retryDelay = RETRY_MIN_MS
   let ws = null
+  let stopped = false
+  let retryTimer = null
   let mcpClient = null
   // Le nom d'un agent ne reste sur le badge que tant qu'il est actif : on le revoit chaque minute.
   setInterval(() => {
@@ -113,8 +118,9 @@ export function connectMcpBridge(modeler, url, options = {}) {
 
     ws.addEventListener('close', () => {
       state.tabId = null
+      if (stopped) return
       setBadge(badge, 'disconnected')
-      setTimeout(connect, retryDelay)
+      retryTimer = setTimeout(connect, retryDelay)
       retryDelay = Math.min(retryDelay * 2, RETRY_MAX_MS)
     })
   }
@@ -125,6 +131,13 @@ export function connectMcpBridge(modeler, url, options = {}) {
   // L'utilisateur a ouvert ici le diagramme dessiné sans éditeur : le serveur ferme l'onglet
   // invisible et les appels suivants de l'agent arrivent dans cet onglet.
   state.takeHeadless = (id) => send({ type: 'headless-take', id })
+  // Coupe la connexion et les nouvelles tentatives (version en ligne, agent local désactivé).
+  state.stop = () => {
+    stopped = true
+    clearTimeout(retryTimer)
+    ws?.close()
+    setBadge(badge, 'off')
+  }
 
   // Le serveur pilote l'onglet utilisé le plus récemment.
   const markActive = () => send({ type: 'active' })
@@ -139,7 +152,7 @@ export function connectMcpBridge(modeler, url, options = {}) {
 
 // ── Indicateur dans la barre d'outils ──────────────────────────────────────
 
-function createBadge() {
+export function createBadge() {
   const badge = document.createElement('button')
   badge.type = 'button'
   badge.id = 'mcp-status'
@@ -167,16 +180,19 @@ const CLIENT_NAMES = {
   'codex-mcp-client': 'Codex',
   'Zed': 'Zed',
 }
+export { setBadge }
 export const clientLabel = (name) => CLIENT_NAMES[name] || (name.length > 24 ? name.slice(0, 23) + '…' : name)
 
 const ACTIVE_MS = 15 * 60_000
 let servedByDocker = false
+let localRelay = false
 
 function setBadge(badge, state, client = null) {
   const states = {
     connecting: [T('MCP: connecting…', 'MCP : connexion…'), '#888'],
     connected: [T('MCP: ready', 'MCP : prêt'), '#4ade80'],
     disconnected: [T('MCP: offline', 'MCP : hors ligne'), '#888'],
+    off: ['MCP', '#888'],
   }
   const [text, color] = states[state]
   const known = state === 'connected' && client?.name
@@ -186,9 +202,16 @@ function setBadge(badge, state, client = null) {
   const active = known && Date.now() - activeAt < ACTIVE_MS
   badge.textContent = active ? T('MCP: ', 'MCP : ') + clientLabel(client.name) : text
   badge.dataset.state = state
+  badge.dataset.client = known ? clientLabel(client.name) : ''
   badge.style.color = color
+  if (state === 'off') {
+    badge.title = T('Connect an AI agent installed on this computer (MCP). Click for the steps.', 'Connecter un agent IA installé sur cet ordinateur (MCP). Cliquez pour les étapes.')
+    return
+  }
   if (state !== 'connected') {
-    badge.title = servedByDocker
+    badge.title = localRelay
+      ? T('Local relay unreachable: start your agent, it starts the relay. Click for the steps.', 'Relais local non joignable : lancez votre agent, il démarre le relais. Cliquez pour les étapes.')
+      : servedByDocker
       ? T('MCP server unreachable. Check that the mcp container is running (docker compose ps) and read its log (docker compose logs mcp).',
           'Serveur MCP non joignable. Vérifiez que le conteneur mcp tourne (docker compose ps) et lisez son journal (docker compose logs mcp).')
       : T('MCP server unreachable. Start it with: cd mcp && npm start', 'Serveur MCP non joignable. Lancez-le avec : cd mcp && npm start')

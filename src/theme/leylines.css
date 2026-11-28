@@ -1055,6 +1055,9 @@ body #chat-input { flex: 1; min-height: 72px; padding-right: 32px; overflow-y: h
 #mcp-connect-dialog .grow { flex: 1; }
 #mcp-connect-dialog .status { color: var(--accent); font-size: 13px; min-height: 20px; }
 #mcp-connect-dialog .status:empty { display: none; }
+#mcp-connect-dialog .relay-state { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+#mcp-connect-dialog .relay-state[data-state="connected"] { color: var(--accent); }
+#mcp-connect-dialog .download { align-self: flex-start; display: inline-flex; text-decoration: none; }
 #mcp-connect-dialog h4 { font-size: 13px; line-height: 18px; font-weight: 600; margin-top: var(--space-2); }
 #mcp-connect-dialog ol.steps { display: flex; flex-direction: column; gap: var(--space-2); padding-left: 20px; margin: 0; color: var(--ink-muted); font-size: 13px; }
 #mcp-connect-dialog ol.steps > li > * + * { margin-top: var(--space-2); }
@@ -1194,31 +1197,31 @@ body #chat-input { flex: 1; min-height: 72px; padding-right: 32px; overflow-y: h
 #modules-dialog h2 { font-size: 18px; line-height: 24px; font-weight: 600; }
 #modules-dialog .hint { color: var(--ink-muted); font-size: 13px; line-height: 18px; }
 #modules-dialog .mod-list { display: flex; flex-direction: column; gap: var(--space-2); }
-#modules-dialog .mod-row {
+#modules-dialog .mod-row, #mcp-connect-dialog .mod-row {
   display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3);
   border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer;
 }
-#modules-dialog .mod-row:hover { border-color: var(--accent); }
+#modules-dialog .mod-row:hover, #mcp-connect-dialog .mod-row:hover { border-color: var(--accent); }
 #modules-dialog .mod-row.disabled { cursor: default; opacity: 0.6; }
 #modules-dialog .mod-row.disabled:hover { border-color: var(--line); }
 #modules-dialog .mod-icon {
   flex: none; width: 20px; height: 20px; background-color: var(--accent);
   -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
 }
-#modules-dialog .mod-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
-#modules-dialog .mod-detail { color: var(--ink-muted); font-size: 13px; line-height: 18px; }
+#modules-dialog .mod-text, #mcp-connect-dialog .mod-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+#modules-dialog .mod-detail, #mcp-connect-dialog .mod-detail { color: var(--ink-muted); font-size: 13px; line-height: 18px; }
 #modules-dialog .mod-help { color: var(--accent); }
-#modules-dialog .mod-switch {
+#modules-dialog .mod-switch, #mcp-connect-dialog .mod-switch {
   appearance: none; flex: none; width: 34px; height: 20px; margin: 0; border-radius: 10px; cursor: pointer;
   background: radial-gradient(circle 7px at 10px 50%, var(--surface-raised) 6.5px, transparent 7px), var(--line-strong);
   transition: background 0.15s;
 }
-#modules-dialog .mod-switch:checked { background: radial-gradient(circle 7px at 24px 50%, #fff 6.5px, transparent 7px), var(--accent); }
+#modules-dialog .mod-switch:checked, #mcp-connect-dialog .mod-switch:checked { background: radial-gradient(circle 7px at 24px 50%, #fff 6.5px, transparent 7px), var(--accent); }
 #modules-dialog .mod-switch:disabled { cursor: default; }
-#modules-dialog .mod-switch:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+#modules-dialog .mod-switch:focus-visible, #mcp-connect-dialog .mod-switch:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 #modules-dialog .actions { display: flex; align-items: center; gap: var(--space-2); }
 #modules-dialog .grow { flex: 1; }
-@media (prefers-reduced-motion: reduce) { #modules-dialog .mod-switch { transition: none; } }
+@media (prefers-reduced-motion: reduce) { #modules-dialog .mod-switch, #mcp-connect-dialog .mod-switch { transition: none; } }
 
 #feedback-dialog::backdrop { background: rgba(5, 8, 18, 0.45); }
 #feedback-dialog form { display: flex; flex-direction: column; gap: var(--space-3); }
