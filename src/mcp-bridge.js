@@ -19,6 +19,8 @@ import { trackAiChanges } from './ai-changes.js'
 import { checkDiagram } from './diagram-checks.js'
 import { setDecisionTable, summarize as summarizeDmn, checkDecision } from './dmn/dmn-model.js'
 import { evaluateDecision, casesPerRule } from './dmn/dmn-eval.js'
+import { formServiceOf } from './forms/form-service.js'
+import { schemaFromSpec, describeForm, checkForm, canHoldForm } from './forms/form-store.js'
 import { eventTriggerProblem } from './lint/event-triggers.js'
 import { isAgentStep } from './lint/agent-steps.js'
 import { renderDiagramPng } from './diagram-image.js'
@@ -938,6 +940,55 @@ function buildTools(modeler, exportDiagram, processReport, decisions) {
       const summary = await decisions.getSummary()
       const task = atomic(() => decisions.linkNow(elementId, decisionId || '', summary))
       return decisionId ? { linked: task.id, decisionId } : { unlinked: task.id }
+    },
+
+    // Formulaires des tâches utilisateur et événements de début (src/forms/).
+    get_task_forms({ elementId } = {}) {
+      const forms = formServiceOf(modeler)
+      const one = elementId ? getElement(elementId) : null
+      const items = forms.list().map(({ bo, schema }) => ({
+        elementId: bo.id,
+        name: bo.name || '',
+        type: bo.$type.replace('bpmn:', ''),
+        ...describeForm(schema),
+        findings: checkForm(schema).map(({ fr, ...f }) => f),
+        ...(one && one.id === bo.id ? { schema } : {}),
+      }))
+      const withoutForm = elementRegistry
+        .filter((e) => e.type !== 'label' && e.businessObject && canHoldForm(e.businessObject) && !items.some((i) => i.elementId === e.id))
+        .map((e) => e.id)
+      return {
+        forms: items,
+        withoutForm,
+        dataFindings: forms.dataFindings().map(({ fr, ...f }) => f),
+      }
+    },
+
+    set_task_form({ elementId, title, intro, fields = [], schema }) {
+      const forms = formServiceOf(modeler)
+      const element = getElement(elementId)
+      let next = null
+      if (schema) {
+        try {
+          next = JSON.parse(schema)
+        } catch (err) {
+          throw new Error(`The schema is not valid JSON: ${err.message}`, { cause: err })
+        }
+        if (!next || typeof next !== 'object' || !Array.isArray(next.components)) throw new Error('A form-js schema is an object with a components list.')
+      } else if (fields.length || title || intro) {
+        next = schemaFromSpec({ title, intro, fields }, forms.getForm(element)?.id)
+      }
+      const target = atomic(() => forms.setForm(element, next))
+      if (!next) return { removed: target.id }
+      const saved = forms.getForm(target)
+      return {
+        elementId: target.id,
+        ...(target.id !== elementId || target.type !== element.type ? { turnedInto: target.type.replace('bpmn:', '') } : {}),
+        formId: saved.id,
+        variables: describeForm(saved).variables,
+        findings: checkForm(saved).map(({ fr, ...f }) => f),
+        dataFindings: forms.dataFindings().map(({ fr, ...f }) => f),
+      }
     },
 
     async get_process_report({ simulate } = {}) {

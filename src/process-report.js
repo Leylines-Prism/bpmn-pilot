@@ -723,6 +723,7 @@ function lintDetail(rule) {
     'end-event-required': T('Every process and sub-process needs an end event.', 'Chaque processus et sous-processus a besoin d\'un événement de fin.'),
     'bpmnpilot/agent-review': T('The result of the AI agent reaches an end without a person seeing it.', 'Le résultat de l\'agent IA atteint une fin sans qu\'une personne le voie.'),
     'bpmnpilot/agent-escalation': T('Nothing in the diagram says what happens if the AI agent fails or takes too long.', 'Rien dans le diagramme ne dit ce qui se passe si l\'agent IA échoue ou tarde.'),
+    'bpmnpilot/form-data': T('A branch or a decision table reads data that no form before it asks for: in the engine, the variable would be empty.', 'Une branche ou une table de décision lit une donnée qu\'aucun formulaire placé avant elle ne demande : dans le moteur, la variable serait vide.'),
   }
   return details[rule] || T(`bpmnlint rule ${rule}.`, `Règle bpmnlint ${rule}.`)
 }
@@ -826,6 +827,14 @@ function axisFor(kind, list, elements, { quoted, simulation }) {
       change: T(`Attach a timer, error or escalation boundary event to ${quoted(elements)}, leading to a person.`,
         `Accrocher à ${quoted(elements)} un événement en bordure (minuterie, erreur ou escalade) qui mène à une personne.`),
       effect: T('A failed or stalled agent does not block the instance.', 'Un agent en échec ou bloqué n\'arrête pas l\'instance.'),
+    }
+  }
+  if (kind === 'lint:bpmnpilot/form-data') {
+    return {
+      title: T('Ask for the data the process reads', 'Demander les données que lit le processus'),
+      change: T(`Add the missing fields to a form placed before ${quoted(elements)}, with the same key as the variable.`,
+        `Ajouter les champs manquants à un formulaire placé avant ${quoted(elements)}, avec la même clé que la variable.`),
+      effect: T('Every branch and decision reads data someone filled in.', 'Chaque branche et chaque décision lit une donnée que quelqu\'un a remplie.'),
     }
   }
   if (kind === 'lint:fake-join') {

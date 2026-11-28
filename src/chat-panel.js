@@ -49,6 +49,8 @@ const TOOL_LABELS = {
   set_decision_table: T('decision table', 'table de décision'),
   link_decision: T('decision link', 'lien de décision'),
   test_decision: T('testing the table', 'essai de la table'),
+  get_task_forms: T('reading the forms', 'lecture des formulaires'),
+  set_task_form: T('task form', 'formulaire de tâche'),
   load_event_log: T('loading the event log', 'chargement du journal'),
   get_log_summary: T('reading the event log', 'lecture du journal'),
   map_log_activities: T('matching log steps', 'correspondance des étapes'),

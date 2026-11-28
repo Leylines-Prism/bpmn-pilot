@@ -53,6 +53,11 @@ ranges ([1..10], ]1000..5000]), lists ("A","B"). Give the allowed values of text
 policy no two rules may apply together; use First or Priority when they must overlap. Check the findings each tool returns.
 test_decision evaluates a decision table on input cases (with no cases, one case per rule): use it to check a table you wrote.
 
+Forms: a user task or a start event can carry a form (form-js schema kept in the diagram file, linked for Camunda 8).
+get_task_forms lists them, with the variables each fills in and the gateways or decision tables that read a variable no form fills in.
+set_task_form writes a form from a simple list of fields. Each field key is a process variable: reuse the names the gateway conditions
+and decision tables already read, so that the data check passes and the token simulation can follow the answers.
+
 Process mining: load_event_log reads an event log (CSV or XES) exported from an ERP, CRM or ticketing tool.
 With a diagram, check the step matches (map_log_activities), then apply_log_frequencies and check_conformance.
 Without one, get_log_summary gives the directly-follows graph to draw the process from; review it with check_conformance.
@@ -83,7 +88,7 @@ export const FONT_NAMES = ['Arial', 'Times New Roman', 'Courier New', 'Verdana',
 // ses documents (DOCUMENT_FORMATS), recopiés ici. Un test vérifie qu'ils restent les mêmes.
 export const EXPORT_FORMATS = [
   'bpmn', 'svg', 'png', 'pdf',
-  'dmn', 'camunda8', 'camunda7',
+  'dmn', 'forms', 'camunda8', 'camunda7',
   'report-pdf', 'report-md', 'report-docx',
   'sheets-pdf', 'sheets-md', 'sheets-docx',
   'doc-html', 'stories-md', 'raci-xlsx',
@@ -174,7 +179,7 @@ export function buildTools(z) {
       title: 'Export the diagram or one of its documents',
       description:
         'Produces a file exactly like the editor\'s Export menu. The diagram: bpmn (BPMN 2.0 XML), svg, png (2x, white background) or pdf (vector). ' +
-        'Its documents: dmn (the decision tables, DMN 1.3), camunda8 and camunda7 (BPMN prepared for the engine: executable process, gateway conditions in FEEL or JUEL, assigned tasks as user tasks), ' +
+        'Its documents: dmn (the decision tables, DMN 1.3), forms (the task forms, a .form file or a .zip of them, to deploy with the process in Camunda 8), camunda8 and camunda7 (BPMN prepared for the engine: executable process, gateway conditions in FEEL or JUEL, assigned tasks as user tasks), ' +
         'report-pdf, report-md and report-docx (the process report, see get_process_report), sheets-pdf, sheets-md and sheets-docx (procedure sheets: one per activity in flow order, with its documentation, RACI, risks and stories), ' +
         'doc-html (a self-contained web page: the diagram, and the sheet of each element on a click), stories-md (user stories and acceptance criteria backlog) and raci-xlsx (RACI matrix as an Excel workbook). ' +
         'The documents work whatever the Expert modules shown in the tab. When there is nothing to put in one (no decision, no RACI role, no user story), the error says which field to fill in. ' +
@@ -186,7 +191,7 @@ export function buildTools(z) {
       inputSchema: {
         format: z
           .enum(EXPORT_FORMATS)
-          .describe('File format: bpmn, svg, png or pdf for the diagram; dmn, camunda8, camunda7, report-*, sheets-*, doc-html, stories-md or raci-xlsx for a document'),
+          .describe('File format: bpmn, svg, png or pdf for the diagram; dmn, forms, camunda8, camunda7, report-*, sheets-*, doc-html, stories-md or raci-xlsx for a document'),
         name: z
           .string()
           .max(120)
@@ -574,6 +579,50 @@ export function buildTools(z) {
       inputSchema: {
         elementId,
         decisionId: z.string().describe('Id of the decision, or an empty string to unlink'),
+      },
+    },
+    {
+      name: 'get_task_forms',
+      title: 'Read the task forms',
+      description:
+        'Lists the forms kept in the diagram file: for each user task or start event that has one, its form id, title and fields ' +
+        '(key, label, type, required, allowed values) and the process variables it fills in. Also lists the user tasks and start events without a form, ' +
+        'and the data findings: a gateway or a decision table that reads a variable no form before it fills in. With elementId, also returns the full form-js schema of that element. Read-only.',
+      inputSchema: {
+        elementId: elementId.optional().describe('Id of a user task or start event, to get its full form-js schema'),
+      },
+      annotations: READ,
+    },
+    {
+      name: 'set_task_form',
+      title: 'Write a task form',
+      description:
+        'Creates or replaces the form of a user task or a start event (a plain task becomes a user task), kept in the diagram file as a form-js schema ' +
+        'and linked for Camunda 8 (zeebe:formDefinition). Describe the fields simply; each key is the process variable the field fills in. ' +
+        'Reuse the variable names the diagram already reads: a gateway condition such as "Amount > 3000" reads amount, and a gateway whose branches are ' +
+        'named after answers reads the gateway name in camelCase ("Category?" reads category, with the branch names as values). ' +
+        'An empty fields list with no schema removes the form. Returns the form id, its variables and the findings. The user can undo it with Ctrl+Z.',
+      annotations: edit(true, true),
+      inputSchema: {
+        elementId,
+        title: z.string().max(200).optional().describe('Heading shown at the top of the form, for example the task name'),
+        intro: z.string().max(1000).optional().describe('Short instructions under the heading (Markdown)'),
+        fields: z
+          .array(
+            z.object({
+              key: z.string().max(80).optional().describe('Process variable the field fills in, camelCase, for example amount; derived from the label if omitted'),
+              label: z.string().min(1).max(200),
+              type: z.enum(['textfield', 'textarea', 'number', 'checkbox', 'radio', 'select', 'checklist', 'taglist', 'datetime']).optional().describe('Default textfield. checkbox gives true or false; radio and select one value, checklist and taglist a list'),
+              required: z.boolean().optional(),
+              values: z.array(z.string().max(120)).max(30).optional().describe('Allowed values, required for radio, select, checklist and taglist'),
+              min: z.number().optional().describe('number only'),
+              max: z.number().optional().describe('number only'),
+              description: z.string().max(300).optional().describe('Help text under the field'),
+              defaultValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
+            }),
+          )
+          .max(40),
+        schema: z.string().max(100000).optional().describe('Advanced: a complete form-js schema as JSON text, used instead of title, intro and fields'),
       },
     },
     {

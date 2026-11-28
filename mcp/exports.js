@@ -47,6 +47,17 @@ export const FORMATS = {
     const text = xmlText(buf) ?? ''
     return /<([\w-]+:)?definitions[\s>]/.test(text) && /omg\.org\/spec\/DMN\//.test(text)
   },
+  // Formulaire form-js (.form) : un objet JSON avec sa liste de composants.
+  form: (buf) => {
+    try {
+      const data = JSON.parse(utf8.decode(buf))
+      return !!data && typeof data === 'object' && Array.isArray(data.components)
+    } catch {
+      return false
+    }
+  },
+  // Plusieurs formulaires : une archive zip.
+  zip: (buf) => buf.length > 4 && buf.readUInt32LE(0) === 0x04034b50,
   // Page de documentation : une page HTML complète.
   html: (buf) => /^<!doctype html>/i.test(xmlText(buf) ?? ''),
   // Les noms des parties d'un document Word ou d'un classeur Excel figurent dans l'archive.

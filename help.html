@@ -66,6 +66,7 @@
               <li><a href="#user-stories">User stories</a></li>
               <li><a href="#camunda-export">Camunda export</a></li>
               <li><a href="#dmn-decisions">Decision tables (DMN)</a></li>
+              <li><a href="#forms">Task forms</a></li>
               <li><a href="#experts-mcp">MCP agents in Expert mode</a></li>
             </ol>
           </li>
@@ -645,7 +646,7 @@
         <p>Prompts to adapt, for every provider. The co-pilot answers in the prompt's language.</p>
         <figure><p class="fig-title">One prompt, one diagram</p><img src="/docs/prompt-example.png" width="1400" height="1083" alt="Diagram drawn by the co-pilot from the prompt: a Company pool with Employee, Manager, Purchasing and Accounting lanes, a Request approved? decision, and message flows to a Supplier pool." loading="lazy" /><figcaption>"Draw a purchase request: the employee enters the request, their manager accepts or rejects it. If accepted, purchasing orders from the supplier, then accounting pays the invoice. If rejected, the employee is told." One message, one pass.</figcaption></figure>
         <details class="faq prompts-list">
-          <summary>19 demo prompts, ready to copy and paste</summary>
+          <summary>20 demo prompts, ready to copy and paste</summary>
         <h3>Model</h3>
         <div class="prompt">
           <p class="prompt-title">From a description</p>
@@ -720,6 +721,11 @@
           <p class="prompt-text">Set a probability on each flow leaving an exclusive gateway, based on the labels and the context. List your assumptions.</p>
           <p class="prompt-tip">They feed the <span class="uib">Run</span> button of the heatmap.</p>
         </div>
+        <div class="prompt">
+          <p class="prompt-title">Task forms</p>
+          <p class="prompt-text">Write the form of each user task: one field per piece of data the person enters, with the right type and the allowed values. Use as keys the variables read by the next gateways and decision tables, then tell me what the data check still flags.</p>
+          <p class="prompt-tip">Needs the <a href="#forms">Task forms</a> module.</p>
+        </div>
 
         <h3>Structured prompts</h3>
         <p>For a sharper result on the first try: a role, a context, modeling rules and an expected deliverable. The <span class="uib">Copy</span> button keeps the line breaks.</p>
@@ -787,7 +793,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
 
       <div class="part-banner" id="expert-part">
         <p class="part-title"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert mode</p>
-        <p>Test a model and prepare it for execution: simulation, heatmap, report, event log, AI potential, compliance, Camunda, DMN. None of this is needed to draw.</p>
+        <p>Test a model and prepare it for execution: simulation, heatmap, report, event log, AI potential, compliance, Camunda, DMN, forms. None of this is needed to draw.</p>
       </div>
 
       <section id="bpmn-experts" class="expert-part">
@@ -795,8 +801,8 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p>The small switch right of the <span class="uib"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert</span> button, in the toolbar, turns the mode on or off in one click: the button turns blue, the expert sections show in the Process panel, and the browser remembers it. <span class="uib"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert</span> opens the menu of the modules turned on, and picking one of its commands also turns the mode on. Commands that go through the co-pilot stay greyed out until a model is set.</p>
         <figure><img src="/src/help/img/en-menu-expert.webp" width="600" height="403" alt="The blue Expert button and its open menu in three groups: simulation, analyses by activity, then Co-pilot analysis and the PDF, Markdown and Word buttons of the process report." loading="lazy" /><figcaption>The Expert menu in three groups: simulation, analyses by activity, process report.</figcaption></figure>
         <h3 id="modules">Choose modules<span class="ico" data-icon="modules" aria-hidden="true"></span></h3>
-        <p><span class="uib"><span class="ico" data-icon="modules" aria-hidden="true"></span>Choose modules…</span>, at the bottom of the menu, turns each feature on or off. The menu and the Process panel only show the modules turned on. By default, everything is on except the Camunda export and decision tables. The heatmap needs the simulation.</p>
-        <figure><img src="/src/help/img/en-modules-experts.webp" width="1040" height="2048" alt="The Expert modules window: Token simulation, Heatmap, Process report, Event log analysis, AI potential, Risks and compliance, User stories, Camunda export and Decision tables (DMN), each with its switch, a line of explanation and a link to the help." loading="lazy" /><figcaption>The Expert modules window: here, the Camunda export and decision tables are off.</figcaption></figure>
+        <p><span class="uib"><span class="ico" data-icon="modules" aria-hidden="true"></span>Choose modules…</span>, at the bottom of the menu, turns each feature on or off. The menu and the Process panel only show the modules turned on. By default, everything is on except the Camunda export, decision tables and task forms. The heatmap needs the simulation.</p>
+        <figure><img src="/src/help/img/en-modules-experts.webp" width="1040" height="2268" alt="The Expert modules window: Token simulation, Heatmap, Process report, Event log analysis, AI potential, Risks and compliance, User stories, Camunda export, Decision tables (DMN) and Task forms, each with its switch, a line of explanation and a link to the help." loading="lazy" /><figcaption>The Expert modules window: here, the Camunda export and decision tables are off.</figcaption></figure>
         <p>Turning a module off removes nothing from the file: values already entered stay. The co-pilot and MCP agents keep all their tools.</p>
       </section>
 
@@ -996,15 +1002,38 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p>In the <span class="ui">Decision table (DMN)</span> group, <span class="uib">✦ Draft it with the co-pilot</span> does the same for a task without a table, <span class="uib">✦ Fill in with the co-pilot</span> for a linked table still empty, and <span class="uib">✦ Explain and test with the co-pilot</span> has it summarize and try a filled table, without changing it. An MCP agent gets the same request with the <code>fill_decision_table</code> prompt.</p>
       </section>
 
+      <section id="forms" class="expert-part">
+        <h2>Task forms<span class="ico" data-icon="form" aria-hidden="true"></span></h2>
+        <p>A user task asks a person for something: an amount, a category, an approval. The <span class="ui">Task forms</span> module describes what they enter, with form-js, the bpmn.io form editor that Camunda uses too. The form is stored in the .bpmn file, on the task. Turn the module on in <a href="#modules">Choose modules</a>: it is off by default.</p>
+        <figure><img src="/src/help/img/en-form-task.webp" width="1440" height="520" alt="The user task Enter the expense report with its Form badge, and the Form group of the Process panel: two fields, Amount and Category, the variables filled in, and the Edit the form, Export .form and Remove buttons." loading="lazy" /><figcaption>A task and its form: the badge on the canvas, the Form group in the panel.</figcaption></figure>
+        <h3 id="form-create">Create a form</h3>
+        <p>Each user task carries a badge: <span class="uib"><span class="ico" data-icon="form" aria-hidden="true"></span>Form</span> opens its form, the dashed <span class="uib">+ Form</span> opens the <span class="ui">Form</span> group of the panel. The group offers <span class="uib">+ Create a form</span>, <span class="uib">Import a .form file…</span> or <span class="uib">✦ Draft it with the co-pilot</span>. A plain task becomes a user task. A start event can also have a form, the one that starts the process: select it to see the group.</p>
+        <h3 id="form-edit">The form window</h3>
+        <p>The form opens full screen. Drag components from the palette (text field, number, date, checkbox, select, radio buttons, group…) and set them up on the right: label, <strong>key</strong>, required, values, display conditions. The key is the name of the process variable the field fills in: <code>amount</code>, <code>category</code>. The <span class="ui">Preview</span> tab shows the form as the person will see it: <span class="uib">Submit</span> shows the data it would fill in, or its errors.</p>
+        <p><span class="uib"><span class="ico" data-icon="undo" aria-hidden="true"></span>Back to the diagram</span> or <kbd>Esc</kbd> stores the changes in the diagram, as one step you can undo.</p>
+        <figure><img src="/src/help/img/en-form-editor.webp" width="1440" height="860" alt="The form window: the component palette on the left, the Expense report form in the middle with Amount and Category, the settings of the selected field on the right, and the Edit and Preview tabs." loading="lazy" /><figcaption>The form window, edited with form-js.</figcaption></figure>
+        <h3 id="form-data">Data check</h3>
+        <p>A branch that tests <code>Amount &gt; 500</code> reads the variable <code>amount</code>. As soon as the diagram has a form, validation flags, as a warning, a gateway or decision table that reads data no form placed before it fills in: in the engine, that variable would be empty. Conditions count whether they are written in the <span class="ui">Condition</span> field, in the flow label or in FEEL, and so do the inputs of a linked DMN table. The finding shows on the canvas, in the report and in <code>validate_diagram</code>.</p>
+        <h3 id="form-simulation">During the simulation</h3>
+        <p>In the <a href="#simulation">token simulation</a>, a token stops on a task that has a form, and the form opens on the right. <span class="uib">Submit and continue</span> stores your answers and sends the token on, <span class="uib">Skip</span> sends it on without entering anything. Your answers then pick the branches of exclusive gateways: the first true condition, otherwise the default flow. A gateway whose branches carry answers ("Transport", "Meal") reads the variable named after it (<code>category</code> for "Category"), as in the <a href="#export-camunda">Camunda export</a>. Answers start over at each reset.</p>
+        <figure><img src="/src/help/img/en-form-simulation.webp" width="1440" height="860" alt="Simulation running: the token waits on Enter the expense report, and the form open on the right shows Amount 742 and Category Meal, with the Skip and Submit and continue buttons." loading="lazy" /><figcaption>The form during the simulation: the answer Meal sends the token to the invoice check.</figcaption></figure>
+        <h3 id="form-files">Files and Camunda 8</h3>
+        <p>The form travels in the .bpmn (<code>bpmnpilot:taskForm</code>). For Camunda 8, the task also gets <code>zeebe:formDefinition</code> with the form id. <span class="uib"><span class="ico" data-icon="form" aria-hidden="true"></span>Task forms (.form files)</span>, in Export, saves the form as a .form file, or a .zip archive when there are several, to deploy with the process. <span class="uib">Export .form</span> does the same for a single form. A Camunda Modeler .form file can be imported from the group.</p>
+        <h3 id="form-copilot">With the AI co-pilot</h3>
+        <div class="note">"Write the form of the task Enter the expense report: amount, category (transport, meal, lodging), date of the expense and a required receipt. Reuse the variables read by the next gateways."</div>
+        <p>The co-pilot writes the form with the keys the process reads later. <span class="uib">✦ Review with the co-pilot</span> has it check an existing form, without changing it.</p>
+      </section>
+
       <section id="experts-mcp" class="expert-part">
         <h2>MCP agents in Expert mode</h2>
         <p>In the <a href="#docker">Docker version</a>, an MCP agent also has these tools, whether Expert mode is on in the tab or not:</p>
         <ul>
           <li><code>get_process_report</code>: the report in Markdown, with or without 100 simulated tokens;</li>
           <li><code>update_elements</code>: documentation, assignee, systems, RACI, AI potential, risks, controls and requirements, user stories and acceptance criteria, probabilities, and the process identity on the diagram root;</li>
-          <li><code>export_diagram</code>: besides the diagram, the report, the procedure sheets, the documentation page, the RACI matrix, the user stories, the decisions and the files for Camunda;</li>
+          <li><code>export_diagram</code>: besides the diagram, the report, the procedure sheets, the documentation page, the RACI matrix, the user stories, the decisions, the forms and the files for Camunda;</li>
           <li><code>set_report_commentary</code>: the process analysis;</li>
           <li><code>get_decisions</code>, <code>set_decision_table</code>, <code>link_decision</code>, <code>test_decision</code>: decision tables;</li>
+          <li><code>get_task_forms</code>, <code>set_task_form</code>: task forms, the variables they fill in and the data check;</li>
           <li><code>load_event_log</code>, <code>map_log_activities</code>, <code>apply_log_frequencies</code>, <code>check_conformance</code>, <code>get_log_summary</code>: the event log, never returning a case or resource name.</li>
         </ul>
         <p>Six MCP prompts cover these functions: <code>propose_probabilities</code>, <code>rate_ai_potential</code> and <code>analyze_process</code> send the same request as <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Propose probabilities</span>, <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Which activities to hand to AI?</span> and <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilot analysis</span>; <code>assess_compliance</code> writes risks, controls and requirements; <code>model_from_event_log</code> draws the process from a log; <code>fill_decision_table</code> sends the same request as <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Fill in with the co-pilot</span>, in the <a href="#dmn-copilot">decision window</a>.</p>

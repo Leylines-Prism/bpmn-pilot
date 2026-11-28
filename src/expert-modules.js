@@ -64,6 +64,12 @@ const modules = [
     name: () => T('Decision tables (DMN)', 'Tables de décision (DMN)'),
     detail: () => T('Link business rule tasks to DMN decision tables, edited in the app.', 'Relier les tâches de règle métier à des tables de décision DMN, modifiables dans l\'application.'),
   },
+  {
+    id: 'forms', icon: 'form', default: false, help: ['formulaires', 'forms'],
+    name: () => T('Task forms', 'Formulaires des tâches'),
+    detail: () => T('Give user tasks and start events a form (form-js), check that every branch reads data someone filled in, and answer the forms during the token simulation.',
+      'Donner un formulaire (form-js) aux tâches utilisateur et aux événements de début, vérifier que chaque branche lit une donnée remplie, et répondre aux formulaires pendant la simulation de jetons.'),
+  },
 ]
 
 export function registerModule(module) {
