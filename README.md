@@ -457,6 +457,10 @@ file. Chromium runs as a non-root user, with no Linux capability and a read-only
 uses 300 to 600 MB of memory while a tab is open (capped by `HEADLESS_MEMORY`, 1 GB by default). The
 MCP token rules above still apply.
 
+The container watches Chromium: if its DevTools interface does not answer within 30 seconds of
+starting, or stops answering, the container stops and Docker restarts it. The `mcp` service starts
+once `renderer` is healthy.
+
 Check it: `docker compose -f docker-compose.headless.yml exec mcp wget -qO- http://localhost:3333/healthz/headless`
 answers `"browser": true` when the server reaches Chromium.
 
@@ -606,8 +610,7 @@ is read.
 
 [![bpmn-pilot MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot/badges/card.svg)](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot)
 
-<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-light.svg#gh-light-mode-only" alt="BPMN-Pilot on AlternativeTo" width="171" height="58"></a>
-<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-dark.svg#gh-dark-mode-only" alt="BPMN-Pilot on AlternativeTo" width="171" height="58"></a>
+<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><picture><source media="(prefers-color-scheme: dark)" srcset="https://alternativeto.net/static/badges/badge-compact-dark.svg"><img src="https://alternativeto.net/static/badges/badge-compact-light.svg" alt="BPMN-Pilot on AlternativeTo" width="171" height="58"></picture></a>
 
 ## Support development
 

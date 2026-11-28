@@ -422,6 +422,8 @@ export default {
   'AI agent step without an exit if the agent fails: add a timer, error or escalation boundary event': "Étape d'agent IA sans sortie si l'agent échoue : ajoutez un événement en bordure de minuterie, d'erreur ou d'escalade",
   // Règle maison bpmnpilot/form-data (src/lint/form-data.js) : la liste des variables suit les deux-points.
   'Reads process data that no form before it fills in: ': 'Lit des données du processus qu\'aucun formulaire placé avant ne remplit : ',
+  // Règle maison bpmnpilot/gateway-branch-names (src/lint/gateway-branches.js)
+  'Branch of a decision without a name: label it with the answer or the condition it stands for': "Branche de décision sans nom : indiquez la réponse ou la condition qu'elle représente",
   // bpmn-js-token-simulation
   'Token Simulation': 'Simulation de jetons',
   'Play Simulation': 'Lancer la simulation',

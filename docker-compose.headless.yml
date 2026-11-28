@@ -130,7 +130,7 @@ services:
       data-init:
         condition: service_completed_successfully
       renderer:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
 
   # Chromium sans écran, piloté par le serveur MCP sur le réseau interne « headless » : il n'a pas

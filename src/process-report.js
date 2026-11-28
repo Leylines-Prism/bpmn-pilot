@@ -723,6 +723,7 @@ function lintDetail(rule) {
     'end-event-required': T('Every process and sub-process needs an end event.', 'Chaque processus et sous-processus a besoin d\'un événement de fin.'),
     'bpmnpilot/agent-review': T('The result of the AI agent reaches an end without a person seeing it.', 'Le résultat de l\'agent IA atteint une fin sans qu\'une personne le voie.'),
     'bpmnpilot/agent-escalation': T('Nothing in the diagram says what happens if the AI agent fails or takes too long.', 'Rien dans le diagramme ne dit ce qui se passe si l\'agent IA échoue ou tarde.'),
+    'bpmnpilot/gateway-branch-names': T('A branch leaving a decision has no name: the reader cannot tell which case it follows.', 'Une branche qui sort d\'une décision n\'a pas de nom : le lecteur ne sait pas quel cas elle suit.'),
     'bpmnpilot/form-data': T('A branch or a decision table reads data that no form before it asks for: in the engine, the variable would be empty.', 'Une branche ou une table de décision lit une donnée qu\'aucun formulaire placé avant elle ne demande : dans le moteur, la variable serait vide.'),
   }
   return details[rule] || T(`bpmnlint rule ${rule}.`, `Règle bpmnlint ${rule}.`)
@@ -835,6 +836,14 @@ function axisFor(kind, list, elements, { quoted, simulation }) {
       change: T(`Add the missing fields to a form placed before ${quoted(elements)}, with the same key as the variable.`,
         `Ajouter les champs manquants à un formulaire placé avant ${quoted(elements)}, avec la même clé que la variable.`),
       effect: T('Every branch and decision reads data someone filled in.', 'Chaque branche et chaque décision lit une donnée que quelqu\'un a remplie.'),
+    }
+  }
+  if (kind === 'lint:bpmnpilot/gateway-branch-names') {
+    return {
+      title: T('Name the branches of each decision', 'Nommer les branches de chaque décision'),
+      change: T(`Write on ${quoted(elements)} the answer each branch stands for ("Yes", "No", "Amount > 3000").`,
+        `Écrire sur ${quoted(elements)} la réponse que porte chaque branche (« Oui », « Non », « Montant > 3000 »).`),
+      effect: T('Each path of the diagram says which case it follows.', 'Chaque chemin du diagramme dit quel cas il suit.'),
     }
   }
   if (kind === 'lint:fake-join') {
