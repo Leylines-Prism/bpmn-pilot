@@ -78,9 +78,14 @@
       <button class="btn" id="btn-png" title="Bitmap image at 2× resolution, white background" data-icon="image" role="menuitem">PNG image</button>
       <button class="btn" id="btn-pdf" title="Vector PDF document" data-icon="pdf" role="menuitem">PDF document</button>
       <div class="menu-sep" role="separator"></div>
-      <button class="btn" id="btn-sheets-pdf" title="One page per activity, in the order of the flow, with its documentation" data-icon="pdf" role="menuitem">Procedure sheets (PDF)</button>
-      <button class="btn" id="btn-sheets-md" title="The same procedure sheets, as Markdown text" data-icon="code" role="menuitem">Procedure sheets (Markdown)</button>
-      <button class="btn" id="btn-sheets-docx" title="The same procedure sheets, as an editable Word document" data-icon="word" role="menuitem">Procedure sheets (Word)</button>
+      <div role="group" aria-labelledby="export-sheets-title">
+        <div class="menu-subtitle" id="export-sheets-title">Procedure sheets</div>
+        <div class="menu-formats">
+          <button class="btn" id="btn-sheets-pdf" title="Procedure sheets: one page per activity, in the order of the flow, with its documentation, as a PDF" data-icon="pdf" role="menuitem">PDF</button>
+          <button class="btn" id="btn-sheets-md" title="The same procedure sheets, as Markdown text" data-icon="code" role="menuitem">Markdown</button>
+          <button class="btn" id="btn-sheets-docx" title="The same procedure sheets, as an editable Word document" data-icon="word" role="menuitem">Word</button>
+        </div>
+      </div>
       <button class="btn" id="btn-doc-html" title="One self-contained web page: the diagram, and the sheet of each element on a click. Opens in any browser, without BPMN Pilot" data-icon="doc" role="menuitem">Documentation page (HTML)</button>
       <button class="btn" id="btn-raci-xlsx" title="Who performs, answers for, is consulted on and informed of each activity, as an Excel workbook" data-icon="table" role="menuitem">RACI matrix (Excel)</button>
       <button class="btn expert-only mod-user-stories-only" id="btn-stories-md" title="The user stories and acceptance criteria of each activity, in the order of the flow, as Markdown" data-icon="code" role="menuitem">User stories (Markdown)</button>
