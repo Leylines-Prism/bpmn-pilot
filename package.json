@@ -14,7 +14,7 @@
     "prebuild": "npm run lint:pack",
     "lint": "eslint .",
     "pretest": "npm run lint:pack",
-    "test": "node --test \"test/*.test.mjs\""
+    "test": "node --test \"test/*.test.mjs\" \"test/fuzz/*.test.js\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.14.0",

@@ -116,7 +116,8 @@ function toolError(name, content, emit, log) {
 // lang : langue de l'interface, pour les messages d'erreur montrés dans le panneau.
 export async function runTool({ toolSet, name, input, executeTool, emit, log = console.error, images = false, lang = 'en' }) {
   const T = (en, fr) => (lang === 'fr' ? fr : en)
-  const validator = toolSet.validators[name]
+  // Object.hasOwn : un nom comme « __proto__ » ou « toString » ne doit pas tomber sur Object.prototype.
+  const validator = Object.hasOwn(toolSet.validators, name) ? toolSet.validators[name] : null
   if (!validator) return toolError(name, T(`Unknown tool: ${name}`, `Outil inconnu : ${name}`), emit, log)
   const parsed = validator.safeParse(input)
   if (!parsed.success) return toolError(name, T(`Invalid arguments: ${toolSet.z.prettifyError(parsed.error)}`, `Arguments invalides : ${toolSet.z.prettifyError(parsed.error)}`), emit, log)
