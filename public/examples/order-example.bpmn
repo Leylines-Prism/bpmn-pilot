@@ -33,7 +33,7 @@
     <bpmndi:BPMNShape id="Paiement_di" bpmnElement="Paiement"><dc:Bounds x="170" y="160" width="100" height="80"/></bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="GPaiement_di" bpmnElement="GPaiement" isMarkerVisible="true"><dc:Bounds x="315" y="175" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="296" y="145" width="88" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="Stock_di" bpmnElement="Stock"><dc:Bounds x="410" y="160" width="100" height="80"/></bpmndi:BPMNShape>
-    <bpmndi:BPMNShape id="GStock_di" bpmnElement="GStock" isMarkerVisible="true"><dc:Bounds x="555" y="175" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="555" y="152" width="50" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="GStock_di" bpmnElement="GStock" isMarkerVisible="true"><dc:Bounds x="555" y="175" width="50" height="50"/><bpmndi:BPMNLabel><dc:Bounds x="540" y="152" width="80" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="Fournisseur_di" bpmnElement="Fournisseur"><dc:Bounds x="640" y="290" width="100" height="80"/></bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="GJoin_di" bpmnElement="GJoin" isMarkerVisible="true"><dc:Bounds x="775" y="175" width="50" height="50"/></bpmndi:BPMNShape>
     <bpmndi:BPMNShape id="Preparer_di" bpmnElement="Preparer"><dc:Bounds x="870" y="160" width="100" height="80"/></bpmndi:BPMNShape>

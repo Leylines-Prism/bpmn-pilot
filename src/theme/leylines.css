@@ -20,14 +20,13 @@ body {
   position: relative;
   display: flex; align-items: center; gap: var(--space-1);
   padding: var(--space-2) var(--space-3);
-  background: var(--surface-raised);
-  border-bottom: 1px solid var(--line);
+  /* La ligne de lumière : un trait fin sous la barre, du froid vers le chaud. En fond, pour
+     rester en place quand la barre défile sur un écran étroit. */
+  background: var(--leyline) left bottom / 100% 1.5px no-repeat border-box, var(--surface-raised);
+  border-bottom: 1px solid transparent;
   flex-shrink: 0; flex-wrap: nowrap; min-width: 0;
-}
-/* La ligne de lumière : un trait fin sous la barre, du froid vers le chaud */
-#toolbar::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
-  height: 1.5px; background: var(--leyline); pointer-events: none;
+  /* Sur un écran étroit, la barre défile seule, sans faire défiler la page. */
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: thin;
 }
 
 .brand { display: flex; align-items: center; gap: var(--space-2); margin-right: var(--space-3); }

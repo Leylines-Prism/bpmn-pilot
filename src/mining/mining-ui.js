@@ -602,7 +602,10 @@ export function setupMining(modeler, { menuButton, isSimulating = () => false } 
     div.className = `mining-badge ${cls}`
     div.textContent = text
     if (title) div.title = title
-    overlays.add(el, 'mining', { position: { top: -11, right: el.width > 60 ? 4 : -12 }, html: div })
+    // La pastille finit à gauche de celle de la documentation (src/doc/doc-badges.js), qui
+    // occupe le coin haut droit : 20 px à partir de 10 px du bord, ou 8 px au-delà sur une
+    // petite forme.
+    overlays.add(el, 'mining', { position: { top: -11, right: el.width > 60 ? 14 : -6 }, html: div })
   }
 
   function drawPasses(g, r) {
