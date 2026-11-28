@@ -11,6 +11,3 @@ design/
 
 # Dossier de données de la version Docker (diagrammes et exports)
 bpmn-data/
-
-# Résultats de la campagne de tests de bout en bout (test/e2e)
-test-results/
