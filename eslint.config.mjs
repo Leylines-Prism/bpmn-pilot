@@ -32,4 +32,10 @@ export default [
     files: ['mcp/**/*.js', 'test/**/*.mjs', 'scripts/**/*.mjs', '*.config.js', '*.config.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
+  {
+    // La campagne de bout en bout : Node, plus les fonctions passées à page.evaluate de
+    // Playwright, qui s'exécutent dans la page.
+    files: ['test/e2e/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
 ]
