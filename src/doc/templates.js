@@ -71,3 +71,25 @@ export function templateText(id, bo) {
   }
   return blocks.join('\n')
 }
+
+// Changer de modèle repart de zéro : les titres d'un modèle restés vides (rien dessous, ou
+// seulement les puces vides des branches d'une passerelle) sont retirés avant d'insérer le
+// nouveau. Le texte écrit, et toute section remplie, restent en place.
+export function withoutEmptyTemplate(text) {
+  const titles = new Set(TEMPLATES.flatMap((t) => t.sections()))
+  const lines = text.split('\n')
+  const out = []
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^## (.+?)\s*$/.exec(lines[i])
+    if (m && titles.has(m[1])) {
+      let j = i + 1
+      while (j < lines.length && !/^#{1,6} /.test(lines[j]) && isBlankTemplateLine(lines[j])) j++
+      if (j === lines.length || /^#{1,6} /.test(lines[j])) { i = j - 1; continue }
+    }
+    out.push(lines[i])
+  }
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+}
+
+// Ligne vide, ou puce de branche sans texte (« - **Oui** : »).
+const isBlankTemplateLine = (line) => !line.trim() || /^- \*\*[^*]+\*\*\s*:\s*$/.test(line)
