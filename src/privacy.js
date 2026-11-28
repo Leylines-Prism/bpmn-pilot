@@ -20,6 +20,7 @@ const ICONS = {
   chart: svg('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
   key: svg('<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>'),
   scale: svg('<path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>'),
+  agent: svg('<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>'),
   server: svg('<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/>'),
 }
 
@@ -66,6 +67,15 @@ export function setupPrivacy({ container, env = import.meta.env }) {
           <p>${T('Voice dictation is recognized on your device: neither the sound nor the dictated text leaves the browser until you send the message.',
                  "La dictée vocale est reconnue sur votre appareil : ni le son ni le texte dicté ne quittent le navigateur avant l'envoi du message.")}</p>`)
 
+  // Votre propre agent (MCP), à ne pas confondre avec le co-pilote intégré à la page.
+  const agent = section('agent', T('With your AI agent (MCP)', 'Avec votre agent IA (MCP)'), `
+          <p>${T('Your own AI agent (Claude Desktop, Claude Code, Cursor…) is not the AI co-pilot: it keeps its own subscription and uses no API key from this page.',
+                 "Votre propre agent IA (Claude Desktop, Claude Code, Cursor…) n'est pas le co-pilote IA : il garde son propre abonnement et n'utilise aucune clé API de cette page.")}</p>
+          <p>${T('Until you turn on <strong>Local agent</strong> in the MCP window, the page opens no connection to your computer. Once it is on, the diagram goes between this tab and the agent through a relay on your computer, through no other server, and the relay writes nothing to disk.',
+                 "Tant que vous n'activez pas <strong>Agent local</strong> dans la fenêtre MCP, la page n'ouvre aucune connexion vers votre ordinateur. Une fois activé, le diagramme circule entre cet onglet et l'agent par un relais sur votre ordinateur, sans passer par aucun autre serveur, et le relais n'écrit rien sur le disque.")}</p>
+          <p>${T('What the agent does with it then depends on the agent and its provider.',
+                 "Ce que l'agent en fait ensuite dépend de l'agent et de son fournisseur.")}</p>`)
+
   // Encadré mis en avant : la clé d'API recommandée pour cet éditeur.
   const responsible = `<section class="pv-section pv-responsible" aria-labelledby="pv-responsible-title">
         <span class="pv-icon">${ICONS.key}</span>
@@ -103,8 +113,8 @@ export function setupPrivacy({ container, env = import.meta.env }) {
             ? T('The page loads no third-party scripts.', 'La page ne charge aucun script tiers.')
             : T('The page sets no cookies, measures no audience and loads no third-party scripts.', "La page ne dépose aucun cookie, ne mesure pas l'audience et ne charge aucun script tiers.")}</p>
           <p class="pv-docker">${T(
-            `For data sovereignty, deploy the <a href="${DOCKER_URL.en}" target="_blank" rel="noopener">Docker version, available on GitHub${GITHUB_ICON}</a>: the editor runs on your machine or network, API keys stay server-side, and no third-party host logs your requests. It also includes the MCP server, which connects the editor to your AI agent and its full context: that is where it shows its full potential.`,
-            `Pour la souveraineté de vos données, déployez la <a href="${DOCKER_URL.fr}" target="_blank" rel="noopener">version Docker, disponible sur GitHub${GITHUB_ICON}</a> : l'éditeur s'exécute sur votre machine ou votre réseau, les clés API restent côté serveur, et aucun hébergeur tiers ne journalise vos accès. Elle intègre aussi le serveur MCP, qui relie l'éditeur à votre agent IA et à tout son contexte : c'est là que l'usage prend toute son ampleur.`)}</p>`)
+            `For data sovereignty, deploy the <a href="${DOCKER_URL.en}" target="_blank" rel="noopener">Docker version, available on GitHub${GITHUB_ICON}</a>: the editor runs on your machine or network, API keys stay server-side, and no third-party host logs your requests. Your AI agent connects to its built-in MCP server, with no relay to install, and can even work with no tab open.`,
+            `Pour la souveraineté de vos données, déployez la <a href="${DOCKER_URL.fr}" target="_blank" rel="noopener">version Docker, disponible sur GitHub${GITHUB_ICON}</a> : l'éditeur s'exécute sur votre machine ou votre réseau, les clés API restent côté serveur, et aucun hébergeur tiers ne journalise vos accès. Votre agent IA se relie à son serveur MCP intégré, sans relais à installer, et peut même travailler sans onglet ouvert.`)}</p>`)
 
   const dialog = document.createElement('dialog')
   dialog.id = 'privacy-dialog'
@@ -120,6 +130,7 @@ export function setupPrivacy({ container, env = import.meta.env }) {
       ${yours}
       ${assistant}
       </div>
+      ${agent}
       ${responsible}
       ${audience}
       ${hosting}

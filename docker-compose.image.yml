@@ -82,6 +82,7 @@ services:
       CHAT_EFFORT: ${CHAT_EFFORT:-}
       # off : coupe les fournisseurs réglés dans la fenêtre Options (le serveur n'appelle plus
       # d'adresse envoyée par la page).
+      BROWSER_KEYS: ${BROWSER_KEYS:-}
       CHAT_RELAY: ${CHAT_RELAY:-}
       # Jeton demandé aux clients MCP (fenêtre « Connecter un agent »).
       MCP_TOKEN: ${MCP_TOKEN:-}

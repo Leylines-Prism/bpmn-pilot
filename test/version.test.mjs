@@ -24,3 +24,9 @@ test('the compose files use the images of the application version', () => {
     for (const tag of tags) assert.equal(tag, app, `${file}: image tag ${tag} instead of ${app}`)
   }
 })
+
+// Le relais local de la version en ligne (paquet npm et extension Claude Desktop) porte aussi
+// la version de l'application.
+test('the local relay version matches the application version', () => {
+  assert.equal(read('../relay/package.json').version, read('../package.json').version, 'set "version" in relay/package.json')
+})

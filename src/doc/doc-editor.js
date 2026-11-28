@@ -17,7 +17,7 @@
 
 import { T } from '../i18n/lang.js'
 import { markdownToHtml } from './markdown.js'
-import { TEMPLATES, templateFor, templateText } from './templates.js'
+import { TEMPLATES, templateFor, templateText, withoutEmptyTemplate } from './templates.js'
 import { docText, setDocText } from './documentation.js'
 import { MIC_ICON, setupVoiceInput, voiceSupported } from '../voice-input.js'
 // Icônes des listes : trois lignes précédées de puces, ou de 1, 2, 3.
@@ -282,7 +282,7 @@ export function setupDocEditor(modeler) {
       if (!id) return
       showMenu(false)
       const block = templateText(id, bo)
-      const value = textarea.value.replace(/\s+$/, '')
+      const value = withoutEmptyTemplate(textarea.value)
       textarea.value = value ? `${value}\n\n${block}` : block
       // Curseur à la fin du premier titre inséré, prêt à écrire.
       const at = textarea.value.indexOf('\n', value ? value.length + 2 : 0)

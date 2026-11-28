@@ -1,0 +1,37 @@
+{
+  "manifest_version": "0.2",
+  "name": "bpmn-pilot",
+  "display_name": "BPMN Pilot",
+  "version": "0.0.0",
+  "description": "Draw and edit BPMN diagrams in the BPMN Pilot editor open in your browser.",
+  "long_description": "Connects Claude to the online BPMN Pilot editor (https://bpmn.leylines.fr) open in a browser on this computer. Claude reads, draws, lays out, checks and exports the diagram with the same tools as the built-in AI co-pilot. Every change shows up live and can be undone with Ctrl+Z. The extension is a local relay: diagrams go from Claude to the browser tab on this computer, through no other server. In the editor, click \"Connect an agent\" and turn on the local agent.",
+  "author": {
+    "name": "Leylines Prism",
+    "url": "https://github.com/Leylines-Prism"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Leylines-Prism/bpmn-pilot"
+  },
+  "homepage": "https://bpmn.leylines.fr",
+  "documentation": "https://github.com/Leylines-Prism/bpmn-pilot#readme",
+  "support": "https://github.com/Leylines-Prism/bpmn-pilot/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.mjs"]
+    }
+  },
+  "tools_generated": false,
+  "prompts_generated": false,
+  "keywords": ["bpmn", "process", "diagram", "bpmn-js", "modeling"],
+  "license": "MIT",
+  "privacy_policies": ["https://github.com/Leylines-Prism/bpmn-pilot/blob/main/docs/online-privacy.md"],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "node": ">=20.0.0" }
+  }
+}

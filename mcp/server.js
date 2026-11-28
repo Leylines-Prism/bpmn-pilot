@@ -9,7 +9,6 @@
 // MCP_HOST=0.0.0.0 le rend joignable par nginx, et MCP_ALLOWED_HOSTS limite les noms
 // d'hôte acceptés (protection contre le DNS rebinding).
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import Anthropic from '@anthropic-ai/sdk'
 import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js'
@@ -21,18 +20,17 @@ import { readFileSync } from 'node:fs'
 
 import { LOCAL_HOSTS, LOCKED_MESSAGE, mcpAccess } from './auth.js'
 import { EditorBridge } from './bridge.js'
+import { buildMcpServer as buildMcpServerFor } from './mcp-server.js'
 import { DiagramStore, KINDS, MAX_XML_BYTES } from './diagrams.js'
 import { ExportStore, MAX_EXPORT_BYTES } from './exports.js'
 import { ChatService } from './chat.js'
 import { isForbiddenAddress, relayFetch } from './relay-guard.js'
 import { HeadlessRenderer, headlessConfig } from './renderer.js'
-import { fileContent, isFileResult } from '../src/ai/file-result.js'
 import { OpenAICompatError } from '../src/ai/openai-compat.js'
-import { INSTRUCTIONS, buildTools } from '../src/ai/tools.js'
+import { buildTools } from '../src/ai/tools.js'
 import { buildPrompts } from '../src/ai/prompts.js'
 import { attachmentRefused, describeProviderError } from '../src/ai/errors.js'
 import { checkAttachments } from '../src/ai/attachments.js'
-import { imageCaption, isImageResult } from '../src/ai/image-result.js'
 import { PROVIDERS, apiErrorMessage, checkBaseUrl, listModels, providerBaseUrl } from '../src/ai/providers.js'
 
 // Variables d'environnement facultatives dans mcp/.env (exclu de git).
@@ -56,9 +54,6 @@ const PORT = Number(process.env.MCP_PORT || 3333)
 const MCP_TOKEN = (process.env.MCP_TOKEN || '').trim()
 // Sans jeton, /mcp est fermé dès que le serveur accepte un nom non local (voir auth.js).
 const MCP_ACCESS = mcpAccess({ host: HOST, allowedHosts: ALLOWED_HOSTS, token: MCP_TOKEN, auth: process.env.MCP_AUTH })
-// Relais des fournisseurs réglés dans la fenêtre Options. CHAT_RELAY=off le coupe : seuls
-// les modèles configurés sur le serveur restent proposés.
-const RELAY = !/^(off|false|0|no)$/i.test((process.env.CHAT_RELAY || '').trim())
 const ALLOWED_ORIGINS = (process.env.BPMN_EDITOR_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
   .split(',')
   .map((s) => s.trim())
@@ -96,47 +91,18 @@ const bridge = new EditorBridge({
   },
 })
 const chat = new ChatService({ bridge, log })
+// Clés API saisies dans le navigateur (fenêtre Options, relayées par ce serveur).
+// BROWSER_KEYS (ou son ancien nom CHAT_RELAY) : « on » les accepte, « off » les refuse.
+// Sans réglage, elles sont refusées dès que le serveur a ses propres clés : seuls les
+// modèles du serveur sont proposés, et le serveur n'appelle jamais une adresse envoyée par une page.
+const BROWSER_KEYS = (process.env.BROWSER_KEYS || process.env.CHAT_RELAY || '').trim()
+const RELAY = /^(on|true|1|yes)$/i.test(BROWSER_KEYS)
+  || (!/^(off|false|0|no)$/i.test(BROWSER_KEYS) && !chat.enabled)
 const TOOLS = buildTools(z)
 for (const tool of TOOLS) if (tool.annotations?.readOnlyHint) READ_ONLY_TOOLS.add(tool.name)
 const PROMPTS = buildPrompts(z)
 
-function buildMcpServer() {
-  const server = new McpServer({ name: 'bpmn-pilot', version: VERSION }, { instructions: INSTRUCTIONS })
-  for (const tool of TOOLS) {
-    server.registerTool(
-      tool.name,
-      { title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations },
-      async (args) => {
-        try {
-          bridge.noteMcpCall()
-          const data = await bridge.call(tool.name, args ?? {})
-          if (isFileResult(data)) return { content: fileContent(data) }
-          if (isImageResult(data)) {
-            return {
-              content: [
-                { type: 'image', data: data.image.data, mimeType: data.image.mediaType },
-                { type: 'text', text: imageCaption(data.image) },
-              ],
-            }
-          }
-          const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
-          return { content: [{ type: 'text', text }] }
-        } catch (err) {
-          log(`[mcp] ${tool.name} : ${err.message}`)
-          return { content: [{ type: 'text', text: `Erreur : ${err.message}` }], isError: true }
-        }
-      },
-    )
-  }
-  for (const prompt of PROMPTS) {
-    server.registerPrompt(
-      prompt.name,
-      { title: prompt.title, description: prompt.description, argsSchema: prompt.argsSchema },
-      (args) => ({ messages: [{ role: 'user', content: { type: 'text', text: prompt.text(args ?? {}) } }] }),
-    )
-  }
-  return server
-}
+const buildMcpServer = () => buildMcpServerFor({ bridge, tools: TOOLS, prompts: PROMPTS, version: VERSION, log })
 
 // Hors de 127.0.0.1, les noms d'hôte acceptés sont ceux de MCP_ALLOWED_HOSTS, ou localhost par défaut.
 const app = createMcpExpressApp(
@@ -255,7 +221,7 @@ function readCustom(value, { needModel }) {
   }
 }
 
-const RELAY_OFF = (req) => T(req, 'Providers set in Options are turned off on this server (CHAT_RELAY=off).', 'Les fournisseurs réglés dans Options sont désactivés sur ce serveur (CHAT_RELAY=off).')
+const RELAY_OFF = (req) => T(req, 'API keys entered in the browser are turned off: this server provides its own (BROWSER_KEYS).', 'Les clés API saisies dans le navigateur sont désactivées : ce serveur fournit les siennes (BROWSER_KEYS).')
 
 // Erreur d'un fournisseur relayé, telle qu'elle repart vers le navigateur. Le relais
 // appelle une adresse choisie par la page : seul le message d'une erreur d'API en JSON
@@ -502,7 +468,7 @@ const httpServer = app.listen(PORT, HOST, (err) => {
     log(`ATTENTION : MCP_AUTH=off, /mcp est ouvert sans jeton sous le nom ${publicHosts}.`)
     log('Quiconque atteint cette adresse peut piloter l\'éditeur, utiliser les clés d\'API du serveur et lire les diagrammes.')
   }
-  if (!RELAY) log('Relais des fournisseurs de la fenêtre Options désactivé (CHAT_RELAY=off).')
+  if (!RELAY) log(BROWSER_KEYS ? 'Clés API du navigateur refusées (BROWSER_KEYS=off).' : 'Clés API du navigateur refusées : le serveur a ses propres clés (BROWSER_KEYS=on pour les accepter aussi).')
   log(`Origines de l'éditeur autorisées : ${ALLOWED_ORIGINS.join(', ')}`)
   if (renderer) {
     log(`Mode sans navigateur actif : navigateur ${HEADLESS.cdpUrl}, éditeur ${HEADLESS.editorUrl}, fermeture après ${HEADLESS.idleMs / 1000} s sans appel.`)

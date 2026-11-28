@@ -80,6 +80,7 @@ import { fitView } from './fit-view.js'
 import { setupDeepLink } from './deep-link.js'
 import { setupDiagramLibrary } from './diagram-library.js'
 import { MAX_RETURNED_FILE_BYTES } from './ai/file-result.js'
+import { setupActiveAi, setActiveAi } from './active-ai.js'
 import { createHeadlessOffer } from './headless-offer.js'
 import { setupFeedback } from './feedback.js'
 import { setupAnalytics, track } from './analytics.js'
@@ -1035,9 +1036,26 @@ if (import.meta.env.MODE === 'online') {
   }
   // Bouton « Confidentialité », en bas à droite du canevas.
   import('./privacy.js').then(({ setupPrivacy }) => setupPrivacy({ container: document.getElementById('canvas') }))
-  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js')]).then(([{ createTools }, { createChatPanel }]) => {
-    createChatPanel({ mode: 'online', tools: createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi }) })
-  })
+  // Les mêmes outils servent au chat intégré et à l'agent local (fenêtre « Connecter un agent » :
+  // relais lancé par l'agent sur l'ordinateur, voir src/mcp-connect-local.js).
+  Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect-local.js')]).then(
+    ([{ createTools, connectMcpBridge, createBadge, setBadge }, { createChatPanel }, { setupLocalMcpConnect, localMcpWanted }]) => {
+      const tools = createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi })
+      createChatPanel({ mode: 'online', tools })
+      const badge = createBadge()
+      setBadge(badge, 'off')
+      setupActiveAi({ defaultAi: 'copilot' })
+      const port = Number(import.meta.env.VITE_LOCAL_MCP_PORT) || 3333
+      let bridge = null
+      const start = (on) => {
+        if (on && !bridge) bridge = connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, { tools, badge, local: true })
+        if (!on && bridge) { bridge.stop(); bridge = null }
+      }
+      // Activer l'agent local, c'est le choisir comme IA active.
+      setupLocalMcpConnect({ badge, onChange: (on) => { if (on) setActiveAi('agent'); start(on) } })
+      start(localMcpWanted())
+    },
+  )
 } else {
   if (mcpBridgeUrl) {
     Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect.js')]).then(([{ connectMcpBridge }, { createChatPanel }, { setupMcpConnect }]) => {
@@ -1058,6 +1076,9 @@ if (import.meta.env.MODE === 'online') {
         headlessKey: HEADLESS_KEY,
         onHeadlessDiagram: (item) => headlessOffer?.show(item),
       })
+      // IA active : l'agent MCP par défaut (usage premier de cette version), imposé dans
+      // l'onglet invisible du mode sans écran.
+      setupActiveAi({ defaultAi: 'agent', forced: HEADLESS_KEY ? 'agent' : null })
       // Le chat intégré passe par le même serveur, route /chat.
       const chatUrl = mcpBridgeUrl.replace(/^ws/, 'http').replace(/\/bridge$/, '/chat')
       createChatPanel({ mode: 'server', chatUrl, bridge })

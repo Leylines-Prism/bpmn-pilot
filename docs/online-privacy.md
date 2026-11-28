@@ -52,8 +52,26 @@ this editor, one that expires on its own and has a spending cap (see [Good pract
    message, no file content, no key. It is turned off by "Do Not Track" and "Global Privacy Control". The
    code is in [src/analytics.js](../src/analytics.js).
 
-The MCP connection, server storage and server exports do not exist in the online version: their server
-address is forced to empty when the online version is built ([src/main.js](../src/main.js)).
+Server storage and server exports do not exist in the online version: their server address is forced
+to empty when the online version is built ([src/main.js](../src/main.js)).
+
+## Local agent (MCP)
+
+An AI agent installed on your computer can drive the page through the local relay `bpmn-pilot-mcp`,
+that the agent starts itself ([relay/README.md](../relay/README.md), code in
+[mcp/relay.js](../mcp/relay.js)).
+
+- **Off by default.** The page opens a connection to your computer only after you turn on **Local
+  agent** in the "Connect an agent" window (MCP button), and closes it when you turn it off. The choice
+  is kept in the browser's local storage.
+- **On your computer only.** The page connects to `ws://127.0.0.1:3333`. The relay listens on
+  `127.0.0.1` only, accepts only the `https://bpmn.leylines.fr` page (checked from the `Origin` header,
+  which a web page cannot forge) and only local host names. Chrome and Edge also ask you once to allow
+  access to the local network.
+- **Nothing goes through another server.** The diagram goes from the agent to the relay, then to the
+  tab, and back. The relay writes nothing to disk and calls no service.
+- **What the agent does with the diagram** depends on the agent and its AI provider, as for any file
+  you give it. The audience measurement records no diagram and no message from the agent.
 
 ## What protects your keys and diagrams
 

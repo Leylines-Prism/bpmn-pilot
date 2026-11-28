@@ -126,7 +126,7 @@ a domain name or from another machine, set these variables in a `.env` file next
 
 | Variable | Example | Purpose |
 |---|---|---|
-| `CHAT_RELAY` | `off` | `off` turns off the providers set in the Options window: the server then only offers its own models and never calls an address sent by a page |
+| `BROWSER_KEYS` | `on` | API keys typed in the browser (Options window), relayed by the server. Left empty: refused as soon as the server has its own keys or models (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_MODELS`…), so Options only offers the server models. `on` accepts them as well, `off` always refuses them. The old name `CHAT_RELAY` still works |
 | `BPMN_EDITOR_ORIGINS` | `https://bpmn.example.com` | addresses of the editor pages, with `http://` or `https://`, separated by commas. The WebSocket and the chat only accept them |
 | `MCP_ALLOWED_HOSTS` | `bpmn.example.com` | host names that MCP clients use |
 | `BPMN_BIND` | `0.0.0.0` | interface the site listens on (`127.0.0.1` by default). Only needed when the proxy runs on another machine |
@@ -163,6 +163,20 @@ For Claude Code, the `.mcp.json` file at the root already declares the server
 The server also speaks MCP over stdio, for clients that launch it themselves:
 `node mcp/server.js --stdio` (or `MCP_TRANSPORT=stdio`). It still opens its HTTP port for the
 editor tabs, and its log goes to the error output. Directory checks use this mode.
+
+## Local relay for the online version
+
+`relay.js` is a reduced server for the online editor (https://bpmn.leylines.fr), which has no server
+of its own. The agent starts it and talks to it over stdio. It only opens the `/bridge` WebSocket (and
+`/healthz`) on `127.0.0.1:3333`, accepts only the online editor as `Origin` and local host names, and
+relays the same tools and prompts as `server.js` (shared in `mcp-server.js`). No chat, no saved
+diagrams, no exports folder, no headless mode: it writes nothing to disk.
+
+`npm run build:relay` at the root bundles it into one file, `relay/dist/bpmn-pilot-mcp.mjs`, published
+on npm as `bpmn-pilot-mcp` (`npx -y bpmn-pilot-mcp`). `npm run pack:mcpb` also builds the Claude
+Desktop extension `relay/dist/bpmn-pilot.mcpb`, attached to each release. The page connects to it once
+**Local agent** is on in its "Connect an agent" window. To try it with `npm run dev:online`, start it
+with `BPMN_EDITOR_ORIGINS=http://localhost:5173 node mcp/relay.js`.
 
 ## Tools
 
@@ -302,7 +316,7 @@ They can also be placed in `mcp/.env`.
 | `MISTRAL_BASE_URL` | `https://api.mistral.ai/v1` | Mistral API address. `https://api.eu.mistral.ai/v1` keeps processing in the European Union |
 | `MISTRAL_REASONING_EFFORT` | none | sent as is as `reasoning_effort` (`low`, `medium`, `high`…). Without it, each model uses its own default |
 | `CHAT_MODEL` | the first in the list | model selected by default in the menu: `anthropic:claude-sonnet-5-5`, `openai:qwen3:14b`, or the id alone |
-| `CHAT_RELAY` | `on` | `off` turns off the providers set in the Options window: the server then only offers its own models (above) and never calls an address sent by a page |
+| `BROWSER_KEYS` | `on` | API keys typed in the browser (Options window), relayed by the server. Left empty: refused as soon as the server has its own keys or models (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_MODELS`…), so Options only offers the server models. `on` accepts them as well, `off` always refuses them. The old name `CHAT_RELAY` still works |
 | `DIAGRAMS_DIR` | `mcp/data/diagrams` (`/data/diagrams` in the docker image) | folder of the diagrams saved on the server |
 | `VITE_MCP_BRIDGE_URL` (editor side) | `ws://127.0.0.1:3333/bridge` in development, `/bridge` in the compose file | bridge address. A relative address points to the site itself |
 

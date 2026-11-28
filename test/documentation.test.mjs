@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import { BpmnModdle } from 'bpmn-moddle'
 import { markdownToHtml, markdownToLine, markdownToPlain, parseInline, safeUrl, shiftHeadings } from '../src/doc/markdown.js'
-import { templateFor, templateText } from '../src/doc/templates.js'
+import { templateFor, templateText, withoutEmptyTemplate } from '../src/doc/templates.js'
 
 // Le rapport passe par des modules de l'éditeur qui touchent la page au chargement.
 const classList = { toggle() {}, contains: () => false, add() {}, remove() {} }
@@ -130,4 +130,11 @@ test('procedure sheets follow the flow, include documented gateways and flag mis
   assert.match(md, /\*\*Before\*\*: 1\. Claim received/)
   assert.match(md, /### Purpose\nCheck that the claim/)
   assert.match(md, /## \d+\. Ask for documents[\s\S]*\*Documentation to complete\.\*/)
+})
+
+test('changing template drops the empty sections of the previous one and keeps written text', () => {
+  const before = 'Check ceci est un test\n\n## Question asked\n\n## Criteria of the branches\n- **Fin**: \n\n## Trigger\n\n## Frequency\nEvery Monday\n\n## Data received\n'
+  assert.equal(withoutEmptyTemplate(before), 'Check ceci est un test\n\n## Frequency\nEvery Monday')
+  assert.equal(withoutEmptyTemplate(templateText('activity')), '')
+  assert.equal(withoutEmptyTemplate('## My own title\n\nText'), '## My own title\n\nText')
 })

@@ -37,8 +37,9 @@ BPMN structure and on drawing by hand.
 
 BPMN-Pilot is a BPMN 2.0 editor in the browser (bpmn-js), in English and French:
 
-- **Connect an agent through MCP** (Docker version), such as Claude Code, Claude Desktop or GitHub Copilot in
-  VS Code. It drives the editor open in your browser, or, in the optional headless mode, an invisible one.
+- **Connect an agent through MCP** ([online](#connect-an-agent-to-the-online-version) or Docker), such as
+  Claude Desktop, Claude Code, Cursor or GitHub Copilot in VS Code. It drives the editor open in your
+  browser, or, in the optional headless mode of the Docker version, an invisible one.
 - **Ask the built-in AI co-pilot** ([online](https://bpmn.leylines.fr) or Docker): describe a process
   or attach your documents (Word, Excel, PDF, emails…), and it draws it.
 - **Draw by hand**, with the bpmn-js modeler and its extensions.
@@ -56,15 +57,17 @@ Two ways to use it, your choice:
 **Online: [bpmn.leylines.fr](https://bpmn.leylines.fr)**
 
 Nothing to install, no account: open the link and draw. The AI co-pilot works with your own API key,
-and your diagrams stay in your browser. [Learn more](#use-it-online)
+your MCP agent connects through a small local relay, and your diagrams stay in your browser.
+[Learn more](#use-it-online)
 
 </td>
 <td width="50%" valign="top">
 
 **With Docker: `ghcr.io/leylines-prism/bpmn-pilot`**
 
-At home, on your machine or your server, with the MCP server that connects your agents
-(Claude Code, Claude Desktop, GitHub Copilot) to the editor. [Run it](#run-it-with-docker)
+The same editor, at home, on your machine or your server, for data sovereignty: API keys on the
+server, saving on the server, and a built-in MCP server for your agents, even with no tab open.
+[Run it](#run-it-with-docker)
 
 </td>
 </tr>
@@ -184,8 +187,9 @@ everything it is connected to, and uses BPMN diagrams in its own workflows:
 
 - it loads a diagram from BPMN XML, or draws one;
 - it checks it against the BPMN rules;
-- it gets it back as BPMN XML or a PNG image, or exports it as a BPMN, SVG, PNG or PDF file into the server's
-  exports folder, for the next step: a document, a ticket, a repository.
+- it gets it back as BPMN XML or a PNG image, or exports it as a BPMN, SVG, PNG or PDF file (into the server's
+  exports folder in the Docker version, back to the agent online), for the next step: a document, a
+  ticket, a repository.
 
 The tools run in an editor tab, which only needs to stay open.
 
@@ -202,14 +206,53 @@ The tools run in an editor tab, which only needs to stay open.
 
 The editor is open to everyone at https://bpmn.leylines.fr (GitHub Pages): no account, nothing to
 install, just a browser. Its [user guide](https://bpmn.leylines.fr/help.html) explains how to draw,
-save, export and use the AI co-pilot. The Help (?) button in the toolbar opens it too.
+save, export, use the AI co-pilot and connect your own agent through MCP. The Help (?) button in the
+toolbar opens it too.
 
 It follows the released versions (the latest `vX.Y.Z` tag) and shows its version in the bottom left corner of the canvas and of the user guide.
 
 For the AI co-pilot, each visitor enters their own API key, which stays in their browser.
-Compared with the Docker version, there is no agent connection (MCP) and no saving on a server, and
+Compared with the Docker version, there is no saving on a server and no headless mode, and
 some providers (OpenAI) refuse calls from a web page. The "Privacy" link on the page says what leaves the browser, and
 [Your data and API keys in the online version](docs/online-privacy.md) gives the details.
+
+### Connect an agent to the online version
+
+Your own AI agent, installed on your computer, drives the online editor through a small local relay,
+`bpmn-pilot-mcp`, that the agent starts itself. The relay only passes messages between the agent
+and the tab, on `127.0.0.1`: the diagram goes through no other server, and the relay writes nothing
+to disk.
+
+It is not the AI co-pilot. The co-pilot is built into the page and calls the provider with the API key
+you enter in Options. The MCP agent is your own assistant, with its own subscription, model and context:
+no API key is entered in the page.
+
+1. Install the relay in your agent:
+   - **Claude Desktop**: download `bpmn-pilot.mcpb` from the [latest release](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)
+     and double-click it. Claude Desktop runs the relay itself: no Node.js to install.
+   - **Claude Code**: `claude mcp add bpmn-pilot -- npx -y bpmn-pilot-mcp`
+   - **Cursor, VS Code and other MCP clients**: `{ "command": "npx", "args": ["-y", "bpmn-pilot-mcp"] }`
+     in their MCP settings (Node.js 20 or later).
+2. In the editor, click **MCP** in the toolbar and turn on **Local agent**. Until then, the page opens
+   no connection to your computer. Chrome and Edge ask once to allow access to the local network:
+   accept.
+3. Ask your agent: "Describe the diagram open in BPMN Pilot."
+
+The agent gets the same tools and prompts as with the Docker version. An export comes back to the
+agent, or waits in the page behind the Download button. Safari blocks the connection from an HTTPS
+page to the computer: use Chrome, Edge or Firefox. Details in [relay/README.md](relay/README.md).
+
+**One AI at a time.** The **AI** selector in the toolbar picks the active AI: **Co-pilot** or **MCP
+agent**. The other one is turned off: with the agent, the co-pilot is greyed out; with the co-pilot,
+the agent's calls are refused with a message that tells it why. Two AIs never edit the diagram at
+the same time. Online, the co-pilot is the default and turning on **Local agent** picks the agent.
+In Docker, the MCP agent is the default. With the headless mode, picking the co-pilot in your tab
+sends the agent to the invisible tab: each AI then works on its own diagram.
+
+**Not for web assistants.** MCP here is for agents installed on your computer or your network (Claude
+Desktop, Claude Code, Cursor, GitHub Copilot in VS Code…). Assistants used in a browser tab
+(claude.ai, ChatGPT, Le Chat…) run on their vendor's servers: they cannot reach the local relay, nor
+a private Docker server. Use their desktop app instead.
 
 The stable page measures its audience anonymously, without cookies: visits (help pages included), referrers, app version and the use of each function (diagram created, opened or exported,
 expert mode, installation and opening as a PWA, simulation, heatmap, event log analysis, layout, comparison, co-pilot opened or used, provider connected, attached file types,
@@ -403,7 +446,12 @@ Without a proxy login, anyone who finds the address can use the editor and your 
 and a token reduce the risk, they do not remove it. [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 with Cloudflare Access is another way to put a login in front of it, with no open port.
 
-## Connect an agent (MCP)
+## Connect an agent to the Docker version (MCP)
+
+The Docker version has its MCP server built in: no relay to install next to the agent. As online, the
+MCP agent is your own assistant, not the AI co-pilot of the page. Pick **MCP agent** in the **AI**
+selector of the toolbar (the default in Docker), and use an agent installed on your computer or
+network: web assistants (claude.ai, ChatGPT…) cannot reach the server.
 
 Click the **MCP** badge in the toolbar. The "Connect an agent" window gives the address to use
 (`http://localhost:8080/mcp`, or `https://your-domain/mcp`), and the setting to paste for Claude
@@ -468,8 +516,15 @@ answers `"browser": true` when the server reaches Chromium.
 
 **In the Docker version**, the safest place is the server: the `.env` file next to
 `docker-compose.image.yml` (or `mcp/.env` from the source code). The key stays on the server and never
-reaches the browser. A key typed in the co-pilot's Options window is kept in the browser as below,
-then sent with each message to your server, which passes it on to the provider without storing it.
+reaches the browser.
+
+**Keys in the compose turn off keys in the browser.** As soon as the server has a key or a model of
+its own (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODELS`…), the co-pilot's
+Options window only offers "Server models": no provider to pick, no API key field. The server also
+refuses any key or provider address sent by a page, so no API key stays in a browser. To let users
+add their own providers as well (Ollama on their machine, for example), set `BROWSER_KEYS=on`.
+Without any server key, keys typed in Options are kept in the browser as below, then sent with each
+message to your server, which passes them on to the provider without storing them.
 
 **In the browser** (the online version, or keys typed in Options):
 
@@ -495,6 +550,7 @@ it), unless the table says `mcp/.env`, then run `docker compose up -d --build`.
 |---|---|
 | `MISTRAL_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`… (`mcp/.env`) | API keys for the AI co-pilot. See `mcp/.env.example`. |
 | `MCP_TOKEN` (`mcp/.env`) | Token that agents must send. The "Connect an agent" window generates one. Required when `MCP_ALLOWED_HOSTS` holds a name other than localhost. |
+| `BROWSER_KEYS` (`mcp/.env`) | API keys typed in the browser. Empty (default): turned off as soon as the server has its own keys or models, Options then only offers the server models. `on` accepts them as well, `off` always refuses them. |
 | `MCP_AUTH` (`mcp/.env`) | `off` opens `/mcp` without a token under a name other than localhost. Only on a network you trust, or behind a proxy that authenticates `/mcp`. |
 | `BPMN_PORT` | Port of the site (8080 by default). |
 | `BPMN_EDITOR_ORIGINS`, `MCP_ALLOWED_HOSTS` | The address and name of the site when it is served under a domain name (see above). |
@@ -539,6 +595,9 @@ it), unless the table says `mcp/.env`, then run `docker compose up -d --build`.
   JSON, XML, Markdown…), whose text is read in the browser. You can also dictate: speech is recognized on the device (Chrome, Edge 139+ or Firefox 160+), and no audio leaves the browser. The model is chosen in Options. What it adds or changes is outlined on the
   canvas, a pill sums up the changes, and one click shows the before and after or undoes the whole
   answer.
+- **Your own AI agent (MCP)**: Claude Desktop, Claude Code, Cursor or GitHub Copilot in VS Code
+  reads, draws, checks and exports the diagram with the same tools and prompts, online through a local
+  relay or in Docker through its built-in server. It is not the AI co-pilot: no API key in the page.
 - **Interface**: light or dark theme, English or French, resizable side panels. Made for a computer
   screen: on a phone, it is mostly for viewing a diagram.
 

@@ -54,13 +54,14 @@ export function createOptionsDialog({ mode, test, onSave, onForget }) {
   dialog.innerHTML = `
     <form method="dialog">
       <h2 id="options-title">${T('Co-pilot options', "Options du co-pilote")}</h2>
-      <p class="hint">${T('Choose a provider, paste the API key if needed and test the connection: its models then appear in the menu below, where you pick the model of the co-pilot.', 'Choisissez un fournisseur, collez la clé API si besoin et testez la connexion : ses modèles apparaissent alors dans le menu du bas, où vous choisissez le modèle du co-pilote.')}</p>
+      <p class="hint intro-keys">${T('Choose a provider, paste the API key if needed and test the connection: its models then appear in the menu below, where you pick the model of the co-pilot.', 'Choisissez un fournisseur, collez la clé API si besoin et testez la connexion : ses modèles apparaissent alors dans le menu du bas, où vous choisissez le modèle du co-pilote.')}</p>
       <label class="field"><span>${T('Provider', 'Fournisseur')}</span><select id="options-provider">
         ${PROVIDERS.map((p) => `<option value="${p.id}">${esc(p.id === 'compat' ? T('OpenAI-compatible', 'Compatible OpenAI') : p.label)}</option>`).join('')}
       </select></label>
       <div class="providers">
         <div class="provider server-block" data-id="server" hidden>
-          <p class="hint">${T('Models set up in the server variables (Docker stack or mcp/.env). The server holds their keys.', 'Modèles réglés dans les variables du serveur (pile Docker ou mcp/.env). Le serveur garde leurs clés.')}</p>
+          <p class="hint server-hint">${T('Models set up in the server variables (Docker stack or mcp/.env). The server holds their keys.', 'Modèles réglés dans les variables du serveur (pile Docker ou mcp/.env). Le serveur garde leurs clés.')}</p>
+          <p class="server-only-note">${T('The API keys are provided by the server (variables of the Docker stack or mcp/.env). Entering keys in the browser is turned off on this server. The administrator can turn it back on with BROWSER_KEYS=on.', "Les clés API sont fournies par le serveur (variables de la pile Docker ou de mcp/.env). La saisie de clés dans le navigateur est coupée sur ce serveur. L'administrateur peut la rouvrir avec BROWSER_KEYS=on.")}</p>
         </div>
         ${PROVIDERS.map(
           (p) => `
@@ -305,10 +306,15 @@ export function createOptionsDialog({ mode, test, onSave, onForget }) {
   })
 
   return {
-    open(settings, { server = [] } = {}) {
+    open(settings, { server = [], browserKeys = true } = {}) {
       live = settings
       draft = structuredClone(settings)
       serverModels = server
+      // Le serveur fournit ses clés et refuse celles du navigateur : seuls ses modèles restent.
+      const serverOnly = !browserKeys && server.length > 0
+      dialog.classList.toggle('server-keys-only', serverOnly)
+      providerSelect.disabled = serverOnly
+      if (serverOnly) draft.active = 'server'
       if (server.length) providerSelect.prepend(serverOption)
       else serverOption.remove()
       // Sans choix enregistré (ou avec les modèles du serveur, absents ici) : ceux du

@@ -151,14 +151,21 @@ export function setupPresentationPointer({ modeler, bar, flash }) {
     const now = performance.now()
     const life = reduceMotion ? 0 : TRAIL_MS
     trail = trail.filter((p) => now - p.t < life)
-    ctx.lineCap = 'round'
-    for (let i = 1; i < trail.length; i++) {
+    // Courbe lissée : chaque morceau va du milieu d'un segment au milieu du suivant, avec le
+    // point relevé comme point de contrôle. Les morceaux se raccordent bout à bout, sans se
+    // chevaucher : aucune pastille plus foncée aux points relevés, aucun angle.
+    ctx.lineCap = 'butt'
+    const mid = (p, q) => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 })
+    const last = trail.length - 1
+    for (let i = 1; i <= last; i++) {
       const a = 1 - (now - trail[i].t) / life
       ctx.strokeStyle = `rgba(${COLOR}, ${a * 0.6})`
       ctx.lineWidth = 1.5 + 3 * a
+      const from = i === 1 ? trail[0] : mid(trail[i - 2], trail[i - 1])
+      const to = i === last ? trail[i] : mid(trail[i - 1], trail[i])
       ctx.beginPath()
-      ctx.moveTo(trail[i - 1].x, trail[i - 1].y)
-      ctx.lineTo(trail[i].x, trail[i].y)
+      ctx.moveTo(from.x, from.y)
+      ctx.quadraticCurveTo(trail[i - 1].x, trail[i - 1].y, to.x, to.y)
       ctx.stroke()
     }
     if (dot) {
@@ -201,7 +208,10 @@ export function setupPresentationPointer({ modeler, bar, flash }) {
     if (!on.laser) return
     if (overDiagram(e.target)) {
       dot = { x: e.clientX, y: e.clientY }
-      trail.push({ x: e.clientX, y: e.clientY, t: performance.now() })
+      // Tous les points du mouvement (getCoalescedEvents), pour une courbe plus fine.
+      const t = performance.now()
+      const events = e.getCoalescedEvents?.()
+      for (const ev of events?.length ? events : [e]) trail.push({ x: ev.clientX, y: ev.clientY, t })
     } else {
       dot = null
       trail = []

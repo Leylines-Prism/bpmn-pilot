@@ -38,8 +38,9 @@ les heures passées sur la structure BPMN et le dessin à la main.
 
 BPMN-Pilot est un éditeur BPMN 2.0 dans le navigateur (bpmn-js), en français et en anglais :
 
-- **Connectez un agent par MCP** (version Docker), comme Claude Code, Claude Desktop ou GitHub Copilot dans
-  VS Code. Il pilote l'éditeur ouvert dans votre navigateur, ou, avec le mode sans écran facultatif, un éditeur invisible.
+- **Connectez un agent par MCP** ([en ligne](#connecter-un-agent-à-la-version-en-ligne) ou en Docker), comme
+  Claude Desktop, Claude Code, Cursor ou GitHub Copilot dans VS Code. Il pilote l'éditeur ouvert dans votre
+  navigateur, ou, avec le mode sans écran facultatif de la version Docker, un éditeur invisible.
 - **Demandez au co-pilote IA intégré** ([en ligne](https://bpmn.leylines.fr) ou en Docker) : décrivez
   un processus ou joignez vos documents (Word, Excel, PDF, e-mails…), et il le dessine.
 - **Dessinez à la main**, avec le modeleur bpmn-js et ses extensions.
@@ -58,15 +59,17 @@ Deux façons de l'utiliser, au choix :
 **En ligne : [bpmn.leylines.fr](https://bpmn.leylines.fr)**
 
 Rien à installer, aucun compte : ouvrez le lien et dessinez. Le co-pilote IA marche avec votre propre
-clé API, et vos diagrammes restent dans votre navigateur. [En savoir plus](#lutiliser-en-ligne)
+clé API, votre agent MCP se relie par un petit relais local, et vos diagrammes restent dans votre
+navigateur. [En savoir plus](#lutiliser-en-ligne)
 
 </td>
 <td width="50%" valign="top">
 
 **En Docker : `ghcr.io/leylines-prism/bpmn-pilot`**
 
-Chez vous, sur votre machine ou votre serveur, avec le serveur MCP qui relie vos agents
-(Claude Code, Claude Desktop, GitHub Copilot) à l'éditeur. [Le lancer](#le-lancer-avec-docker)
+Le même éditeur, chez vous, sur votre machine ou votre serveur, pour la souveraineté de vos données :
+clés API sur le serveur, enregistrement sur le serveur, et un serveur MCP intégré pour vos agents,
+même sans onglet ouvert. [Le lancer](#le-lancer-avec-docker)
 
 </td>
 </tr>
@@ -191,8 +194,9 @@ ce à quoi il est connecté, et intègre des diagrammes BPMN à ses propres work
 
 - il charge un diagramme en XML BPMN, ou le dessine ;
 - il le vérifie selon les règles BPMN ;
-- il le récupère en XML BPMN ou en image PNG, ou l'exporte en fichier BPMN, SVG, PNG ou PDF dans le dossier
-  exports du serveur, pour l'étape suivante : un document, un ticket, un dépôt.
+- il le récupère en XML BPMN ou en image PNG, ou l'exporte en fichier BPMN, SVG, PNG ou PDF (dans le dossier
+  exports du serveur en version Docker, renvoyé à l'agent en ligne), pour l'étape suivante : un document,
+  un ticket, un dépôt.
 
 Les outils s'exécutent dans un onglet de l'éditeur, qui doit seulement rester ouvert.
 
@@ -209,17 +213,57 @@ Les outils s'exécutent dans un onglet de l'éditeur, qui doit seulement rester 
 
 L'éditeur est ouvert à tous sur https://bpmn.leylines.fr (GitHub Pages) : sans compte, sans
 installation, juste un navigateur. Son [guide d'utilisation](https://bpmn.leylines.fr/aide.html)
-explique comment dessiner, enregistrer, exporter et se servir du co-pilote IA. Le bouton Aide (?) de
-la barre d'outils l'ouvre aussi.
+explique comment dessiner, enregistrer, exporter, se servir du co-pilote IA et connecter votre propre
+agent par MCP. Le bouton Aide (?) de la barre d'outils l'ouvre aussi.
 
 Il suit les versions publiées (le dernier tag `vX.Y.Z`) et affiche sa version en bas à gauche
 du canevas et du guide d'utilisation.
 
 Pour le co-pilote IA, chaque visiteur saisit sa propre clé API, qui reste dans son navigateur. Par
-rapport à la version Docker, pas de connexion d'agent (MCP), pas d'enregistrement sur un serveur, et
+rapport à la version Docker, pas d'enregistrement sur un serveur ni de mode sans écran, et
 certains fournisseurs (OpenAI) refusent les appels depuis une page web. Le lien « Confidentialité » de la page
 dit ce qui sort du navigateur, et
 [Vos données et vos clés API dans la version en ligne](docs/online-privacy.fr.md) donne le détail.
+
+### Connecter un agent à la version en ligne
+
+Votre propre agent IA, installé sur votre ordinateur, pilote l'éditeur en ligne par un petit relais local,
+`bpmn-pilot-mcp`, que l'agent lance lui-même. Le relais ne fait que passer les messages entre l'agent
+et l'onglet, sur `127.0.0.1` : le diagramme ne passe par aucun autre serveur, et le relais n'écrit rien
+sur le disque.
+
+Ce n'est pas le Co-pilote IA. Le Co-pilote est intégré à la page et appelle le fournisseur avec la clé API
+saisie dans Options. L'agent MCP est votre propre assistant, avec son abonnement, son modèle et son
+contexte : aucune clé API n'est saisie dans la page.
+
+1. Installez le relais dans votre agent :
+   - **Claude Desktop** : téléchargez `bpmn-pilot.mcpb` dans la [dernière version publiée](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)
+     et double-cliquez dessus. Claude Desktop fait tourner le relais lui-même : pas de Node.js à installer.
+   - **Claude Code** : `claude mcp add bpmn-pilot -- npx -y bpmn-pilot-mcp`
+   - **Cursor, VS Code et les autres clients MCP** : `{ "command": "npx", "args": ["-y", "bpmn-pilot-mcp"] }`
+     dans leurs réglages MCP (Node.js 20 ou plus).
+2. Dans l'éditeur, cliquez sur **MCP** dans la barre d'outils et activez **Agent local**. Jusque-là, la
+   page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser
+   l'accès au réseau local : acceptez.
+3. Demandez à votre agent : « Décris le diagramme ouvert dans BPMN Pilot. »
+
+L'agent a les mêmes outils et les mêmes prompts qu'avec la version Docker. Un export revient à l'agent,
+ou attend dans la page derrière le bouton Télécharger. Safari bloque la connexion d'une page HTTPS vers
+l'ordinateur : utilisez Chrome, Edge ou Firefox. Détails dans [relay/README.md](relay/README.md).
+
+**Une seule IA à la fois.** Le sélecteur **IA** de la barre d'outils choisit l'IA active :
+**Co-pilote** ou **Agent MCP**. L'autre est coupée : avec l'agent, le co-pilote est grisé ; avec le
+co-pilote, les appels de l'agent sont refusés avec un message qui lui dit pourquoi. Deux IA ne
+modifient jamais le diagramme en même temps. En ligne, le co-pilote est choisi par défaut, et
+activer **Agent local** choisit l'agent. En Docker, l'agent MCP est choisi par défaut. Avec le mode
+sans écran, choisir le co-pilote dans votre onglet envoie l'agent dans l'onglet invisible : chaque IA
+travaille alors sur son propre diagramme.
+
+**Pas pour les assistants web.** Le MCP sert ici aux agents installés sur votre poste ou votre réseau
+(Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…). Les assistants utilisés dans un
+onglet du navigateur (claude.ai, ChatGPT, Le Chat…) tournent sur les serveurs de leur éditeur : ils
+ne peuvent joindre ni le relais local ni un serveur Docker privé. Prenez plutôt leur application de
+bureau.
 
 La page stable compte son audience de façon anonyme, sans cookie :
 visites (pages d'aide comprises), provenance, version de l'app et usage de chaque fonction (diagramme créé, ouvert
@@ -430,7 +474,13 @@ Sans connexion au proxy, quiconque trouve l'adresse peut utiliser l'éditeur et 
 connexion et un jeton réduisent le risque, ils ne le suppriment pas. [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 avec Cloudflare Access est une autre façon de placer une connexion devant, sans port ouvert.
 
-## Connecter un agent (MCP)
+## Connecter un agent à la version Docker (MCP)
+
+La version Docker a son serveur MCP intégré : aucun relais à installer à côté de l'agent. Comme en
+ligne, l'agent MCP est votre propre assistant, pas le co-pilote IA de la page. Choisissez **Agent
+MCP** dans le sélecteur **IA** de la barre d'outils (le choix par défaut en Docker), et prenez un
+agent installé sur votre poste ou votre réseau : les assistants web (claude.ai, ChatGPT…) ne peuvent
+pas joindre le serveur.
 
 Cliquez sur le badge **MCP** de la barre d'outils. La fenêtre « Connecter un agent » donne l'adresse à
 utiliser (`http://localhost:8080/mcp`, ou `https://votre-domaine/mcp`), et le réglage à coller pour
@@ -499,9 +549,16 @@ répond `"browser": true` quand le serveur joint Chromium.
 
 **Dans la version Docker**, le plus sûr est le serveur : le fichier `.env` à côté de
 `docker-compose.image.yml` (ou `mcp/.env` depuis le code source). La clé reste sur le serveur et
-n'arrive jamais au navigateur. Une clé saisie dans la fenêtre Options du co-pilote est gardée dans le
-navigateur comme ci-dessous, puis envoyée à chaque message à votre serveur, qui la transmet au
-fournisseur sans l'enregistrer.
+n'arrive jamais au navigateur.
+
+**Des clés dans le compose coupent la saisie dans le navigateur.** Dès que le serveur a sa propre clé
+ou son propre modèle (`ANTHROPIC_API_KEY`, `MISTRAL_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODELS`…), la
+fenêtre Options du co-pilote ne propose plus que « Modèles du serveur » : ni choix de fournisseur, ni
+champ de clé API. Le serveur refuse aussi toute clé ou adresse de fournisseur envoyée par une page :
+aucune clé API ne reste dans un navigateur. Pour laisser les utilisateurs ajouter aussi leurs propres
+fournisseurs (Ollama sur leur machine, par exemple), réglez `BROWSER_KEYS=on`. Sans clé sur le
+serveur, une clé saisie dans Options est gardée dans le navigateur comme ci-dessous, puis envoyée à
+chaque message à votre serveur, qui la transmet au fournisseur sans l'enregistrer.
 
 **Dans le navigateur** (la version en ligne, ou les clés saisies dans Options) :
 
@@ -529,6 +586,7 @@ commande `up -d`. Depuis le code source, mettez-les dans un fichier `.env` à c�
 |---|---|
 | `MISTRAL_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`… (`mcp/.env`) | Clés API du co-pilote IA. Voir `mcp/.env.example`. |
 | `MCP_TOKEN` (`mcp/.env`) | Jeton que les agents doivent envoyer. La fenêtre « Connecter un agent » en génère un. Obligatoire quand `MCP_ALLOWED_HOSTS` contient un autre nom que localhost. |
+| `BROWSER_KEYS` (`mcp/.env`) | Clés API saisies dans le navigateur. Vide (par défaut) : coupées dès que le serveur a ses propres clés ou modèles, Options ne propose alors que les modèles du serveur. `on` les accepte aussi, `off` les refuse toujours. |
 | `MCP_AUTH` (`mcp/.env`) | `off` ouvre `/mcp` sans jeton sous un autre nom que localhost. Seulement sur un réseau de confiance, ou derrière un proxy qui authentifie `/mcp`. |
 | `BPMN_PORT` | Port du site (8080 par défaut). |
 | `BPMN_EDITOR_ORIGINS`, `MCP_ALLOWED_HOSTS` | L'adresse et le nom du site quand il est servi sous un nom de domaine (voir plus haut). |
@@ -574,6 +632,10 @@ commande `up -d`. Depuis le code source, mettez-les dans un fichier `.env` à c�
   des fichiers texte (CSV, JSON, XML, Markdown…), dont le texte est lu dans le navigateur. On peut aussi dicter : la voix est reconnue sur l'appareil (Chrome, Edge 139+ ou Firefox 160+), sans que le son quitte le navigateur. Le modèle se choisit dans Options. Ce qu'il ajoute ou modifie est
   entouré sur le canevas, une pilule résume les changements, et un clic montre l'avant et l'après ou
   annule toute la réponse.
+- **Votre propre agent IA (MCP)** : Claude Desktop, Claude Code, Cursor ou GitHub Copilot dans VS Code
+  lit, dessine, vérifie et exporte le diagramme avec les mêmes outils et les mêmes prompts, en ligne
+  par un relais local ou en Docker par son serveur intégré. Ce n'est pas le co-pilote IA : aucune clé
+  API dans la page.
 - **Interface** : thème clair ou sombre, anglais ou français, panneaux latéraux redimensionnables.
   Pensé pour un écran d'ordinateur : sur un téléphone, il sert surtout à regarder un diagramme.
 
