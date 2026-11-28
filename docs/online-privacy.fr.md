@@ -54,9 +54,26 @@ clé réservée à cet éditeur, qui expire d'elle-même et dont la dépense est
    `track`. Ni cookie, ni diagramme, ni message, ni contenu de fichier, ni clé. Elle est coupée par « Do Not
    Track » et « Global Privacy Control ». Le code est dans [src/analytics.js](../src/analytics.js).
 
-La connexion MCP, l'enregistrement et les exports sur serveur n'existent pas dans la version en ligne :
-leur adresse de serveur est forcée à vide quand la version en ligne est construite
-([src/main.js](../src/main.js)).
+L'enregistrement et les exports sur serveur n'existent pas dans la version en ligne : leur adresse de
+serveur est forcée à vide quand la version en ligne est construite ([src/main.js](../src/main.js)).
+
+## Agent local (MCP)
+
+Un agent IA installé sur votre ordinateur peut piloter la page par le relais local `bpmn-pilot-mcp`,
+que l'agent lance lui-même ([relay/README.md](../relay/README.md), code dans
+[mcp/relay.js](../mcp/relay.js)).
+
+- **Désactivé par défaut.** La page n'ouvre une connexion vers votre ordinateur qu'après que vous avez
+  activé **Agent local** dans la fenêtre « Connecter un agent » (bouton MCP), et la ferme quand vous le
+  désactivez. Le choix est gardé dans le stockage local du navigateur.
+- **Sur votre ordinateur seulement.** La page se connecte à `ws://127.0.0.1:3333`. Le relais n'écoute que
+  sur `127.0.0.1`, n'accepte que la page `https://bpmn.leylines.fr` (contrôlée par l'en-tête `Origin`,
+  qu'une page web ne peut pas falsifier) et que des noms d'hôte locaux. Chrome et Edge demandent en plus,
+  une fois, d'autoriser l'accès au réseau local.
+- **Rien ne passe par un autre serveur.** Le diagramme va de l'agent au relais, puis à l'onglet, et
+  retour. Le relais n'écrit rien sur le disque et n'appelle aucun service.
+- **Ce que l'agent fait du diagramme** dépend de l'agent et de son fournisseur d'IA, comme pour tout
+  fichier que vous lui donnez. La mesure d'audience n'enregistre ni diagramme ni message de l'agent.
 
 ## Ce qui protège vos clés et vos diagrammes
 

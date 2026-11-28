@@ -64,7 +64,9 @@ export function setupPrivacy({ container, env = import.meta.env }) {
           <p>${T("The provider's own terms and privacy policy apply, and it bills you for usage.",
                  "Les conditions d'utilisation et la politique de confidentialité de ce fournisseur s'appliquent, et c'est lui qui vous facture l'usage.")}</p>
           <p>${T('Voice dictation is recognized on your device: neither the sound nor the dictated text leaves the browser until you send the message.',
-                 "La dictée vocale est reconnue sur votre appareil : ni le son ni le texte dicté ne quittent le navigateur avant l'envoi du message.")}</p>`)
+                 "La dictée vocale est reconnue sur votre appareil : ni le son ni le texte dicté ne quittent le navigateur avant l'envoi du message.")}</p>
+          <p>${T('A local AI agent (MCP), once turned on in the MCP window, exchanges the diagram with this tab through a relay on your computer, through no other server. What it does with it depends on the agent and its provider.',
+                 "Un agent IA local (MCP), une fois activé dans la fenêtre MCP, échange le diagramme avec cet onglet par un relais sur votre ordinateur, sans passer par aucun autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.")}</p>`)
 
   // Encadré mis en avant : la clé d'API recommandée pour cet éditeur.
   const responsible = `<section class="pv-section pv-responsible" aria-labelledby="pv-responsible-title">
@@ -103,8 +105,8 @@ export function setupPrivacy({ container, env = import.meta.env }) {
             ? T('The page loads no third-party scripts.', 'La page ne charge aucun script tiers.')
             : T('The page sets no cookies, measures no audience and loads no third-party scripts.', "La page ne dépose aucun cookie, ne mesure pas l'audience et ne charge aucun script tiers.")}</p>
           <p class="pv-docker">${T(
-            `For data sovereignty, deploy the <a href="${DOCKER_URL.en}" target="_blank" rel="noopener">Docker version, available on GitHub${GITHUB_ICON}</a>: the editor runs on your machine or network, API keys stay server-side, and no third-party host logs your requests. It also includes the MCP server, which connects the editor to your AI agent and its full context: that is where it shows its full potential.`,
-            `Pour la souveraineté de vos données, déployez la <a href="${DOCKER_URL.fr}" target="_blank" rel="noopener">version Docker, disponible sur GitHub${GITHUB_ICON}</a> : l'éditeur s'exécute sur votre machine ou votre réseau, les clés API restent côté serveur, et aucun hébergeur tiers ne journalise vos accès. Elle intègre aussi le serveur MCP, qui relie l'éditeur à votre agent IA et à tout son contexte : c'est là que l'usage prend toute son ampleur.`)}</p>`)
+            `For data sovereignty, deploy the <a href="${DOCKER_URL.en}" target="_blank" rel="noopener">Docker version, available on GitHub${GITHUB_ICON}</a>: the editor runs on your machine or network, API keys stay server-side, and no third-party host logs your requests. Its built-in MCP server connects the editor to your AI agent and its full context, with no relay to install and even with no tab open: that is where it shows its full potential.`,
+            `Pour la souveraineté de vos données, déployez la <a href="${DOCKER_URL.fr}" target="_blank" rel="noopener">version Docker, disponible sur GitHub${GITHUB_ICON}</a> : l'éditeur s'exécute sur votre machine ou votre réseau, les clés API restent côté serveur, et aucun hébergeur tiers ne journalise vos accès. Son serveur MCP intégré relie l'éditeur à votre agent IA et à tout son contexte, sans relais à installer et même sans onglet ouvert : c'est là que l'usage prend toute son ampleur.`)}</p>`)
 
   const dialog = document.createElement('dialog')
   dialog.id = 'privacy-dialog'

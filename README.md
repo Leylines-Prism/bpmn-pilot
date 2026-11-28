@@ -37,8 +37,9 @@ BPMN structure and on drawing by hand.
 
 BPMN-Pilot is a BPMN 2.0 editor in the browser (bpmn-js), in English and French:
 
-- **Connect an agent through MCP** (Docker version), such as Claude Code, Claude Desktop or GitHub Copilot in
-  VS Code. It drives the editor open in your browser, or, in the optional headless mode, an invisible one.
+- **Connect an agent through MCP** ([online](#connect-an-agent-to-the-online-version) or Docker), such as
+  Claude Desktop, Claude Code, Cursor or GitHub Copilot in VS Code. It drives the editor open in your
+  browser, or, in the optional headless mode of the Docker version, an invisible one.
 - **Ask the built-in AI co-pilot** ([online](https://bpmn.leylines.fr) or Docker): describe a process
   or attach your documents (Word, Excel, PDF, emails…), and it draws it.
 - **Draw by hand**, with the bpmn-js modeler and its extensions.
@@ -184,8 +185,9 @@ everything it is connected to, and uses BPMN diagrams in its own workflows:
 
 - it loads a diagram from BPMN XML, or draws one;
 - it checks it against the BPMN rules;
-- it gets it back as BPMN XML or a PNG image, or exports it as a BPMN, SVG, PNG or PDF file into the server's
-  exports folder, for the next step: a document, a ticket, a repository.
+- it gets it back as BPMN XML or a PNG image, or exports it as a BPMN, SVG, PNG or PDF file (into the server's
+  exports folder in the Docker version, back to the agent online), for the next step: a document, a
+  ticket, a repository.
 
 The tools run in an editor tab, which only needs to stay open.
 
@@ -207,9 +209,31 @@ save, export and use the AI co-pilot. The Help (?) button in the toolbar opens i
 It follows the released versions (the latest `vX.Y.Z` tag) and shows its version in the bottom left corner of the canvas and of the user guide.
 
 For the AI co-pilot, each visitor enters their own API key, which stays in their browser.
-Compared with the Docker version, there is no agent connection (MCP) and no saving on a server, and
+Compared with the Docker version, there is no saving on a server and no headless mode, and
 some providers (OpenAI) refuse calls from a web page. The "Privacy" link on the page says what leaves the browser, and
 [Your data and API keys in the online version](docs/online-privacy.md) gives the details.
+
+### Connect an agent to the online version
+
+An agent installed on your computer drives the online editor through a small local relay,
+`bpmn-pilot-mcp`, that the agent starts itself. The relay only passes messages between the agent
+and the tab, on `127.0.0.1`: the diagram goes through no other server, and the relay writes nothing
+to disk.
+
+1. Install the relay in your agent:
+   - **Claude Desktop**: download `bpmn-pilot.mcpb` from the [latest release](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)
+     and double-click it. Claude Desktop runs the relay itself: no Node.js to install.
+   - **Claude Code**: `claude mcp add bpmn-pilot -- npx -y bpmn-pilot-mcp`
+   - **Cursor, VS Code and other MCP clients**: `{ "command": "npx", "args": ["-y", "bpmn-pilot-mcp"] }`
+     in their MCP settings (Node.js 20 or later).
+2. In the editor, click **MCP** in the toolbar and turn on **Local agent**. Until then, the page opens
+   no connection to your computer. Chrome and Edge ask once to allow access to the local network:
+   accept.
+3. Ask your agent: "Describe the diagram open in BPMN Pilot."
+
+The agent gets the same tools and prompts as with the Docker version. An export comes back to the
+agent, or waits in the page behind the Download button. Safari blocks the connection from an HTTPS
+page to the computer: use Chrome, Edge or Firefox. Details in [relay/README.md](relay/README.md).
 
 The stable page measures its audience anonymously, without cookies: visits (help pages included), referrers, app version and the use of each function (diagram created, opened or exported,
 expert mode, installation and opening as a PWA, simulation, heatmap, event log analysis, layout, comparison, co-pilot opened or used, provider connected, attached file types,

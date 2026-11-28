@@ -38,8 +38,9 @@ les heures passées sur la structure BPMN et le dessin à la main.
 
 BPMN-Pilot est un éditeur BPMN 2.0 dans le navigateur (bpmn-js), en français et en anglais :
 
-- **Connectez un agent par MCP** (version Docker), comme Claude Code, Claude Desktop ou GitHub Copilot dans
-  VS Code. Il pilote l'éditeur ouvert dans votre navigateur, ou, avec le mode sans écran facultatif, un éditeur invisible.
+- **Connectez un agent par MCP** ([en ligne](#connecter-un-agent-à-la-version-en-ligne) ou en Docker), comme
+  Claude Desktop, Claude Code, Cursor ou GitHub Copilot dans VS Code. Il pilote l'éditeur ouvert dans votre
+  navigateur, ou, avec le mode sans écran facultatif de la version Docker, un éditeur invisible.
 - **Demandez au co-pilote IA intégré** ([en ligne](https://bpmn.leylines.fr) ou en Docker) : décrivez
   un processus ou joignez vos documents (Word, Excel, PDF, e-mails…), et il le dessine.
 - **Dessinez à la main**, avec le modeleur bpmn-js et ses extensions.
@@ -191,8 +192,9 @@ ce à quoi il est connecté, et intègre des diagrammes BPMN à ses propres work
 
 - il charge un diagramme en XML BPMN, ou le dessine ;
 - il le vérifie selon les règles BPMN ;
-- il le récupère en XML BPMN ou en image PNG, ou l'exporte en fichier BPMN, SVG, PNG ou PDF dans le dossier
-  exports du serveur, pour l'étape suivante : un document, un ticket, un dépôt.
+- il le récupère en XML BPMN ou en image PNG, ou l'exporte en fichier BPMN, SVG, PNG ou PDF (dans le dossier
+  exports du serveur en version Docker, renvoyé à l'agent en ligne), pour l'étape suivante : un document,
+  un ticket, un dépôt.
 
 Les outils s'exécutent dans un onglet de l'éditeur, qui doit seulement rester ouvert.
 
@@ -216,10 +218,32 @@ Il suit les versions publiées (le dernier tag `vX.Y.Z`) et affiche sa version e
 du canevas et du guide d'utilisation.
 
 Pour le co-pilote IA, chaque visiteur saisit sa propre clé API, qui reste dans son navigateur. Par
-rapport à la version Docker, pas de connexion d'agent (MCP), pas d'enregistrement sur un serveur, et
+rapport à la version Docker, pas d'enregistrement sur un serveur ni de mode sans écran, et
 certains fournisseurs (OpenAI) refusent les appels depuis une page web. Le lien « Confidentialité » de la page
 dit ce qui sort du navigateur, et
 [Vos données et vos clés API dans la version en ligne](docs/online-privacy.fr.md) donne le détail.
+
+### Connecter un agent à la version en ligne
+
+Un agent installé sur votre ordinateur pilote l'éditeur en ligne par un petit relais local,
+`bpmn-pilot-mcp`, que l'agent lance lui-même. Le relais ne fait que passer les messages entre l'agent
+et l'onglet, sur `127.0.0.1` : le diagramme ne passe par aucun autre serveur, et le relais n'écrit rien
+sur le disque.
+
+1. Installez le relais dans votre agent :
+   - **Claude Desktop** : téléchargez `bpmn-pilot.mcpb` dans la [dernière version publiée](https://github.com/Leylines-Prism/bpmn-pilot/releases/latest)
+     et double-cliquez dessus. Claude Desktop fait tourner le relais lui-même : pas de Node.js à installer.
+   - **Claude Code** : `claude mcp add bpmn-pilot -- npx -y bpmn-pilot-mcp`
+   - **Cursor, VS Code et les autres clients MCP** : `{ "command": "npx", "args": ["-y", "bpmn-pilot-mcp"] }`
+     dans leurs réglages MCP (Node.js 20 ou plus).
+2. Dans l'éditeur, cliquez sur **MCP** dans la barre d'outils et activez **Agent local**. Jusque-là, la
+   page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser
+   l'accès au réseau local : acceptez.
+3. Demandez à votre agent : « Décris le diagramme ouvert dans BPMN Pilot. »
+
+L'agent a les mêmes outils et les mêmes prompts qu'avec la version Docker. Un export revient à l'agent,
+ou attend dans la page derrière le bouton Télécharger. Safari bloque la connexion d'une page HTTPS vers
+l'ordinateur : utilisez Chrome, Edge ou Firefox. Détails dans [relay/README.md](relay/README.md).
 
 La page stable compte son audience de façon anonyme, sans cookie :
 visites (pages d'aide comprises), provenance, version de l'app et usage de chaque fonction (diagramme créé, ouvert

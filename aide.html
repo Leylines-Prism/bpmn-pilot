@@ -73,6 +73,7 @@
           <li class="toc-part"><span>Installer et administrer</span>
             <ol>
               <li><a href="#confidentialite">Confidentialité</a></li>
+              <!-- online --><li><a href="#agent-local">Connecter votre agent IA (MCP)</a></li><!-- /online -->
               <li><a href="#docker">Version Docker et agents MCP</a></li>
               <li><a href="#installer-app">Installer sur votre poste (PWA)</a></li>
               <li><a href="#petits-ecrans">Sur téléphone et tablette</a></li>
@@ -660,7 +661,7 @@
           </tbody>
         </table></div>
         <h3 id="controles-mcp">Avec un agent MCP</h3>
-        <p>En <a href="#docker">version Docker</a>, <code>validate_diagram</code> rend le même rapport à un agent MCP, et le prompt <code>critique_description</code> fait la critique. L'agent n'a pas de boucle d'autocorrection : les règles que lui donne le serveur lui demandent d'appeler <code>validate_diagram</code> en fin de dessin.</p>
+        <p>En <a href="#docker">version Docker</a><!-- online -->, comme en ligne avec un <a href="#agent-local">agent local</a><!-- /online -->, <code>validate_diagram</code> rend le même rapport à un agent MCP, et le prompt <code>critique_description</code> fait la critique. L'agent n'a pas de boucle d'autocorrection : les règles que lui donne le serveur lui demandent d'appeler <code>validate_diagram</code> en fin de dessin.</p>
       </section>
 
       <section id="exemples-prompts">
@@ -1048,7 +1049,7 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
 
       <section id="experts-mcp" class="expert-part">
         <h2>Agents MCP en mode Expert</h2>
-        <p>En <a href="#docker">version Docker</a>, un agent MCP dispose aussi de ces outils, que le mode Expert soit allumé ou non dans l'onglet :</p>
+        <p>En <a href="#docker">version Docker</a><!-- online -->, comme en ligne avec un <a href="#agent-local">agent local</a><!-- /online -->, un agent MCP dispose aussi de ces outils, que le mode Expert soit allumé ou non dans l'onglet :</p>
         <ul>
           <li><code>get_process_report</code> : le rapport en Markdown, avec ou sans 100 jetons simulés ;</li>
           <li><code>update_elements</code> : documentation, personne assignée, systèmes, RACI, potentiel d'IA, risques, contrôles et exigences, récits utilisateur et critères d'acceptation, probabilités, et la fiche d'identité du processus sur la racine du diagramme ;</li>
@@ -1073,6 +1074,7 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <li>Vos diagrammes, réglages et clés API restent dans votre navigateur. Ni nous ni l'hébergeur (GitHub Pages) n'y avons accès.</li>
           <li>Avec le co-pilote, vos messages, le diagramme, vos fichiers et votre clé partent directement chez le fournisseur choisi, sous ses propres conditions.</li>
           <li>La dictée reconnaît la voix sur votre appareil.</li>
+          <li>Un <a href="#agent-local">agent local</a> (MCP), si vous l'activez, échange le diagramme avec l'onglet par un relais sur votre ordinateur, sans autre serveur. Ce qu'il en fait dépend de l'agent et de son fournisseur.</li>
           <li>GitHub Pages garde des journaux techniques, dont votre adresse IP.</li>
           <li>Le site stable mesure son audience sans cookie, selon les <a href="https://www.cnil.fr/fr/cookies-solutions-pour-les-outils-de-mesure-daudience" target="_blank" rel="noopener">recommandations de la CNIL</a> pour l'audience exemptée de consentement. L'adresse IP sert seulement à situer le pays, la région et la ville, et n'est pas enregistrée. Sont collectés la page vue, la provenance, l'appareil et quelques actions sans leur contenu (créer, ouvrir, exporter, utiliser le co-pilote, type de fournisseur, durée d'usage par tranche, clic vers la page de soutien). « Do Not Track » et « Global Privacy Control » coupent la mesure.</li>
           <li>Le site ne charge aucun script tiers.</li>
@@ -1089,6 +1091,20 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <!-- /docker -->
       </section>
 
+      <!-- online -->
+      <section id="agent-local">
+        <h2>Connecter votre agent IA (MCP)</h2>
+        <p>Un agent IA installé sur votre ordinateur (Claude Desktop, Claude Code, Cursor, GitHub Copilot dans VS Code…) lit et dessine dans le diagramme ouvert dans cet onglet, avec les mêmes outils et les mêmes prompts que dans la <a href="#docker">version Docker</a>. Il passe par un petit relais local, <code>bpmn-pilot-mcp</code>, qu'il lance lui-même : le diagramme va de l'agent à l'onglet sur votre ordinateur, sans passer par aucun autre serveur, et le relais n'écrit rien sur le disque.</p>
+        <ol>
+          <li>Cliquez sur <span class="uib">MCP</span> dans la barre d'outils et choisissez votre agent. Pour Claude Desktop, <span class="uib"><span class="ico" data-icon="save" aria-hidden="true"></span>Télécharger bpmn-pilot.mcpb</span>, puis double-cliquez sur le fichier : Claude Desktop fait tourner le relais lui-même, sans Node.js à installer. Pour les autres agents, copiez la ligne ou le bloc proposé dans leurs réglages MCP (Node.js 20 ou plus).</li>
+          <li>Activez <span class="ui">Agent local</span>. Jusque-là, la page n'ouvre aucune connexion vers votre ordinateur. Chrome et Edge demandent une fois d'autoriser l'accès au réseau local : acceptez.</li>
+          <li>Demandez à votre agent : « Décris le diagramme ouvert dans BPMN Pilot. » Le bouton passe à « MCP : » suivi du nom de l'agent.</li>
+        </ol>
+        <figure><img src="/src/help/img/fr-agent-local.webp" width="1200" height="1083" alt="Fenêtre Connecter un agent : choix de l'agent (Claude Desktop, Claude Code, VS Code, Cursor), bouton Télécharger bpmn-pilot.mcpb, interrupteur Agent local activé et mention Relié au relais local." loading="lazy" /><figcaption>La fenêtre Connecter un agent, agent local relié.</figcaption></figure>
+        <p>L'agent travaille dans le dernier onglet utilisé : gardez-le ouvert pendant qu'il dessine. Un export revient à l'agent, ou attend dans la page derrière <span class="uib">Télécharger</span>. Safari bloque la connexion d'une page HTTPS vers l'ordinateur : utilisez Chrome, Edge ou Firefox. Ce qui circule est détaillé dans <a href="#confidentialite">Confidentialité</a>.</p>
+      </section>
+      <!-- /online -->
+
       <section id="docker">
         <h2>Version Docker et agents MCP</h2>
         <!-- online -->
@@ -1101,7 +1117,8 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
           <li>des clés API sur le serveur, jamais dans le navigateur ;</li>
           <li>tous les fournisseurs, OpenAI compris ;</li>
           <li>des enregistrements et des exports sur le serveur, retrouvés depuis tout navigateur ;</li>
-          <li>un serveur MCP : Claude Code, Claude Desktop ou GitHub Copilot dans VS Code dessinent dans l'éditeur ouvert, mettent en forme, rangent, annulent. Le badge MCP de la barre d'outils donne l'adresse et les réglages à coller.</li>
+          <li>un serveur MCP intégré, sans relais à installer à côté de l'agent : Claude Code, Claude Desktop ou GitHub Copilot dans VS Code dessinent dans l'éditeur ouvert, mettent en forme, rangent, annulent. Le badge MCP de la barre d'outils donne l'adresse et les réglages à coller ;</li>
+          <li>le mode sans écran, où l'agent travaille sans onglet ouvert.</li>
         </ul>
         <p>Le serveur MCP donne aussi à l'agent des règles de modélisation et des prompts tout prêts, dans le menu de prompts de l'agent ou en commandes (<code>/mcp__bpmn-pilot__review_diagram</code> dans Claude Code) : <code>model_process</code>, <code>model_collaboration</code>, <code>review_diagram</code>, <code>tidy_diagram</code>, <code>critique_description</code>, <code>add_agent_step</code>, <code>write_user_stories</code>, et pour le <a href="#experts-bpmn">mode Expert</a> <code>propose_probabilities</code>, <code>rate_ai_potential</code>, <code>analyze_process</code>, <code>assess_compliance</code>, <code>model_from_event_log</code>, <code>fill_decision_table</code>. Les <a href="#exemples-prompts">exemples de prompts</a> marchent aussi.</p>
         <h3 id="sans-navigateur">Sans navigateur ouvert (mode sans écran)</h3>
@@ -1172,6 +1189,12 @@ Pour finir : vérifie le diagramme, corrige ce qui échoue et résume le process
         <details class="faq">
           <summary>« Tester » échoue avec OpenAI.</summary>
           <p>OpenAI refuse parfois les appels faits depuis une page web. Prenez un autre fournisseur, ou la version Docker, qui passe par son serveur.</p>
+        </details>
+        <!-- /online -->
+        <!-- online -->
+        <details class="faq">
+          <summary>Mon agent MCP ne dessine pas.</summary>
+          <p>Vérifiez dans <span class="uib">MCP</span> que <span class="ui">Agent local</span> est activé, et que l'agent tourne : c'est lui qui démarre le relais. Si la fenêtre reste « En attente du relais », redémarrez l'agent. S'il signale que le port 3333 est déjà pris, un autre agent fait déjà tourner le relais : fermez-le. Dans Chrome ou Edge, l'accès au réseau local refusé se rétablit par le cadenas de la barre d'adresse.</p>
         </details>
         <!-- /online -->
         <!-- docker -->

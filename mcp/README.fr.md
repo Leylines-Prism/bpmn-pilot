@@ -165,6 +165,20 @@ Le serveur parle aussi MCP par stdio, pour les clients qui le lancent eux-mêmes
 `node mcp/server.js --stdio` (ou `MCP_TRANSPORT=stdio`). Il ouvre quand même son port HTTP pour les
 onglets de l'éditeur, et son journal part sur la sortie d'erreur. Les contrôles des annuaires utilisent ce mode.
 
+## Relais local de la version en ligne
+
+`relay.js` est un serveur réduit pour l'éditeur en ligne (https://bpmn.leylines.fr), qui n'a pas de
+serveur à lui. L'agent le lance et lui parle par stdio. Il n'ouvre que le WebSocket `/bridge` (et
+`/healthz`) sur `127.0.0.1:3333`, n'accepte que l'éditeur en ligne comme `Origin` et que des noms d'hôte
+locaux, et relaie les mêmes outils et prompts que `server.js` (partagés dans `mcp-server.js`). Ni chat,
+ni diagrammes enregistrés, ni dossier d'exports, ni mode sans écran : il n'écrit rien sur le disque.
+
+`npm run build:relay` à la racine le réunit en un seul fichier, `relay/dist/bpmn-pilot-mcp.mjs`, publié
+sur npm sous le nom `bpmn-pilot-mcp` (`npx -y bpmn-pilot-mcp`). `npm run pack:mcpb` construit aussi
+l'extension Claude Desktop `relay/dist/bpmn-pilot.mcpb`, jointe à chaque release. La page s'y relie une
+fois **Agent local** activé dans sa fenêtre « Connecter un agent ». Pour l'essayer avec
+`npm run dev:online`, lancez-le avec `BPMN_EDITOR_ORIGINS=http://localhost:5173 node mcp/relay.js`.
+
 ## Outils
 
 | Outil | Rôle |
