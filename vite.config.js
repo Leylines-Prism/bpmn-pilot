@@ -41,7 +41,8 @@ function csp(connectSrc) {
   }
 }
 
-const ONLINE_CONNECT = "'self' https: http://localhost:* http://127.0.0.1:*"
+// ws:// pour le relais MCP lancé sur le poste de l'utilisateur (agent MCP local).
+const ONLINE_CONNECT = "'self' https: http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*"
 
 // Version serveur : le site, plus le serveur MCP s'il est à une autre adresse (ws:// et http://).
 function serverConnect(mode) {

@@ -1038,6 +1038,31 @@ if (import.meta.env.MODE === 'online') {
   Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js')]).then(([{ createTools }, { createChatPanel }]) => {
     createChatPanel({ mode: 'online', tools: createTools(modeler, { exportDiagram: exportForAi, processReport: processReportForAi, decisions: decisions.service, mining: mining.toolApi }) })
   })
+  // Agent MCP local : la page se relie au relais que l'utilisateur fait tourner sur son poste
+  // (serveur mcp/ lancé par son agent), à l'adresse 127.0.0.1. Seulement sur demande
+  // (?mcp=local, mémorisé ; ?mcp=off l'oublie) : sans demande, aucune connexion vers le poste,
+  // et Chrome n'affiche pas sa demande d'accès au réseau local.
+  const LOCAL_MCP_KEY = 'bpmn-editor-local-mcp'
+  const mcpParam = new URLSearchParams(location.search).get('mcp')
+  let localMcp
+  try {
+    if (mcpParam === 'local') localStorage.setItem(LOCAL_MCP_KEY, '1')
+    if (mcpParam === 'off') localStorage.removeItem(LOCAL_MCP_KEY)
+    localMcp = localStorage.getItem(LOCAL_MCP_KEY) === '1'
+  } catch {
+    localMcp = mcpParam === 'local'
+  }
+  if (localMcp) {
+    const port = Number(import.meta.env.VITE_LOCAL_MCP_PORT) || 3333
+    import('./mcp-bridge.js').then(({ connectMcpBridge }) => {
+      connectMcpBridge(modeler, `ws://127.0.0.1:${port}/bridge`, {
+        exportDiagram: exportForAi,
+        processReport: processReportForAi,
+        decisions: decisions.service,
+        mining: mining.toolApi,
+      })
+    })
+  }
 } else {
   if (mcpBridgeUrl) {
     Promise.all([import('./mcp-bridge.js'), import('./chat-panel.js'), import('./mcp-connect.js')]).then(([{ connectMcpBridge }, { createChatPanel }, { setupMcpConnect }]) => {
