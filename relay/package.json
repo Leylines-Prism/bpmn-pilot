@@ -7,7 +7,8 @@
     "bpmn-pilot-mcp": "dist/bpmn-pilot-mcp.mjs"
   },
   "files": [
-    "dist/bpmn-pilot-mcp.mjs"
+    "dist/bpmn-pilot-mcp.mjs",
+    "README.md"
   ],
   "engines": {
     "node": ">=20"

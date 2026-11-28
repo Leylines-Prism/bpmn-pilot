@@ -172,3 +172,46 @@ jobs:
       - run: ./mcp-publisher login github-oidc
 
       - run: ./mcp-publisher publish
+
+  # Relais local de la version en ligne : extension Claude Desktop (bpmn-pilot.mcpb) jointe à la
+  # release, et paquet npm bpmn-pilot-mcp. Le paquet est publié avec le secret NPM_TOKEN, ou par
+  # publication de confiance (OIDC) une fois réglée sur npmjs.com : le secret peut alors disparaître.
+  # Les préversions (v1.3.0-rc.1) ne sont pas publiées.
+  relay:
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # fichier .mcpb joint à la release
+      id-token: write  # provenance npm, et publication de confiance
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm ci --omit=dev
+        working-directory: mcp
+
+      - name: Check the relay version
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: test "$(jq -r .version relay/package.json)" = "${VERSION#v}"
+
+      - run: npm run pack:mcpb
+
+      - name: Attach the Claude Desktop extension to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.ref_name }}
+        run: gh release upload "$VERSION" relay/dist/bpmn-pilot.mcpb --clobber --repo "$GITHUB_REPOSITORY"
+
+      - name: Publish bpmn-pilot-mcp on npm
+        working-directory: relay
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
