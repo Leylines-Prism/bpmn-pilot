@@ -15,7 +15,9 @@
 // - une règle que le moteur ne saurait pas lire n'est pas écrite : elle reste dans le
 //   libellé du flux et le compte rendu la signale ;
 // - Camunda 8 : les tâches utilisateur sont marquées zeebe:userTask (tâche gérée par
-//   Camunda). Camunda 7 : durée de conservation de l'historique (camunda:historyTimeToLive),
+//   Camunda), et un formulaire de BPMN Pilot y est déjà lié (zeebe:formDefinition formId, voir
+//   src/forms/form-store.js) : le compte rendu dit combien, à déployer avec Exporter > Formulaires.
+//   Camunda 7 : durée de conservation de l'historique (camunda:historyTimeToLive),
 //   exigée par les versions récentes, à 180 jours comme dans Camunda Modeler.
 // Rien n'est inventé au-delà : les types de travail des tâches de service, les messages
 // et les minuteries restent à régler dans Camunda Modeler, qui les signale.
@@ -92,7 +94,7 @@ function* walk(container) {
 }
 
 // moddle : instance de bpmn-moddle (celle du modeleur). xml : XML du diagramme.
-// Renvoie { xml, summary: { processes, conditions, userTasks, assignees, converted, left } },
+// Renvoie { xml, summary: { processes, conditions, userTasks, assignees, converted, left, forms } },
 // left : branches dont la condition reste à écrire dans Camunda Modeler.
 export async function toCamunda(moddle, xml, target) {
   const conf = CAMUNDA_TARGETS[target]
@@ -114,7 +116,7 @@ export async function toCamunda(moddle, xml, target) {
   // Une version déjà marquée pour l'autre moteur est remplacée.
   delete defs.$attrs[target === 8 ? 'xmlns:camunda' : 'xmlns:zeebe']
 
-  const summary = { processes: 0, conditions: 0, userTasks: 0, assignees: 0, converted, left: 0 }
+  const summary = { processes: 0, conditions: 0, userTasks: 0, assignees: 0, converted, left: 0, forms: 0 }
   const processes = defs.rootElements.filter((e) => e.$type === 'bpmn:Process')
   for (const process of processes) {
     process.isExecutable = true
@@ -148,6 +150,7 @@ export async function toCamunda(moddle, xml, target) {
           summary.userTasks++
         }
       }
+      if (target === 8 && (el.extensionElements?.values || []).some((v) => /(^|:)formDefinition$/i.test(v.$type) && (v.formId || v.$attrs?.formId))) summary.forms++
       if (el.$type !== 'bpmn:ExclusiveGateway' && el.$type !== 'bpmn:InclusiveGateway') continue
       const outgoing = el.outgoing || []
       if (outgoing.length < 2) continue

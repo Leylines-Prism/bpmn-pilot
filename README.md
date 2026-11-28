@@ -114,6 +114,9 @@ uncluttered for everyone else (see the
 - **DMN decision tables**: each business rule task links to an editable decision
   table and its requirements diagram (dmn-js), stored in the .bpmn with the Camunda 8 link (`zeebe:calledDecision`),
   checked for overlaps and gaps, and written by the co-pilot or an MCP agent on request.
+- **Task forms**: each user task or start event gets a form-js form, stored in the .bpmn with the Camunda 8 link
+  (`zeebe:formDefinition`), a check that every branch reads data a form filled in, and the forms answered
+  during the token simulation, where the answers pick the branch.
 
 On an internal purchase process with four lanes:
 
@@ -557,6 +560,10 @@ Each function is turned on separately in **Expert** > **Choose modules…**.
   .dmn import and export, Excel and CSV import and export of a table, decision models in My diagrams, `zeebe:calledDecision` for Camunda 8, table checks
   (overlaps under Unique, uncovered values, unquoted text), a test bench (rules that apply, one case per rule), a comparison of two versions,
   computed tokens that follow the tables at gateways, and the MCP tools `get_decisions`, `set_decision_table`, `link_decision`, `test_decision`.
+- **Task forms**: forms on user tasks and start events, edited with form-js (palette, preview with the data sent),
+  .form import and export (a .zip when there are several), `zeebe:formDefinition` for Camunda 8, a data check
+  (a gateway or decision table reads a variable no earlier form fills in), forms answered during the token
+  simulation to pick the branches, and the MCP tools `get_task_forms`, `set_task_form`.
 
 ## How it differs from draw.io or Lucidchart
 
@@ -599,10 +606,8 @@ is read.
 
 [![bpmn-pilot MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot/badges/card.svg)](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot)
 
-<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://alternativeto.net/static/badges/badge-compact-dark.svg">
-  <img src="https://alternativeto.net/static/badges/badge-compact-light.svg" alt="BPMN-Pilot on AlternativeTo" width="171" height="58">
-</picture></a>
+<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-light.svg#gh-light-mode-only" alt="BPMN-Pilot on AlternativeTo" width="171" height="58"></a>
+<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-dark.svg#gh-dark-mode-only" alt="BPMN-Pilot on AlternativeTo" width="171" height="58"></a>
 
 ## Support development
 

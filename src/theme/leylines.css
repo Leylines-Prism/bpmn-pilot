@@ -79,7 +79,7 @@ a.btn { text-decoration: none; }
 
 #autosave-status { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ink-muted); margin-left: auto; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 #toolbar > .btn, #toolbar > .brand, #mcp-status { flex-shrink: 0; }
-#toolbar #btn-chat.push-right { margin-left: auto; }
+#toolbar #btn-chat.push-right, #toolbar #btn-properties.push-right { margin-left: auto; }
 
 /* Nom du fichier, repris par l'enregistrement et les exports. Le pictogramme
    de document et l'extension en gris montrent que c'est un nom de fichier. */
@@ -219,6 +219,14 @@ a.btn { text-decoration: none; }
   background: var(--white); box-shadow: var(--elevation-1);
 }
 
+/* Profils de palette (src/palette-profiles.js) : bouton du bas de la palette. Un point
+   orange signale une palette réduite. */
+#canvas .djs-palette .entry.bpmn-pilot-palette-profile { display: flex; align-items: center; justify-content: center; position: relative; color: var(--night-800, currentColor); }
+#canvas .djs-palette .entry.bpmn-pilot-palette-profile.narrowed::after {
+  content: ''; position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--leyline-orange, #F08A24);
+}
+.djs-popup.bpmn-pilot-palette-profile .djs-popup-entry-icon { width: 16px; color: var(--accent); }
+
 /* Bascule de simulation de jetons de l'extension : masquée, la simulation se lance par le
    bouton Simulation de la barre d'outils, en mode expert. */
 #canvas .bts-toggle-mode { display: none !important; }
@@ -255,6 +263,21 @@ a.btn { text-decoration: none; }
 #canvas .bjsl-button-error .icon { color: var(--bio-danger-marker, var(--magenta)); }
 #canvas .bjsl-button:hover { border-color: var(--leyline-sky-deep); }
 #canvas .bjsl-button-inactive { color: var(--night-800); opacity: 0.7; }
+/* Barre du compteur (src/lint-navigator.js) : le compteur mène au constat suivant, l'œil masque
+   ou affiche les pastilles. La barre prend la place du compteur, centrée en bas du canevas. */
+#canvas .lint-bar {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10;
+  display: flex; align-items: center; gap: 6px; max-width: calc(100% - 40px);
+}
+#canvas .lint-bar .bjsl-button { position: static; transform: none; cursor: pointer; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#canvas .lint-bar .lint-where { margin-left: 0.35em; font-weight: 400; color: var(--ink-muted, var(--night-600)); overflow: hidden; text-overflow: ellipsis; }
+#canvas .lint-eye {
+  flex: none; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; cursor: pointer;
+  border-radius: 50%; background: var(--white); color: var(--night-800);
+  border: 1px solid var(--mist); box-shadow: var(--elevation-1);
+}
+#canvas .lint-eye:hover { border-color: var(--leyline-sky-deep); }
+#canvas .lint-eye[aria-pressed="true"] { opacity: 0.7; }
 
 /* Erreurs du processus lui-même : badge fixe en bas à gauche du canevas, hors du diagramme */
 #canvas .lint-process-badge { position: absolute; left: 20px; bottom: 44px; z-index: 500; }
@@ -305,7 +328,7 @@ a.btn { text-decoration: none; }
    validation montent au-dessus du filigrane et des boutons Votre avis et Confidentialité. */
 @container canvas (max-width: 560px) {
   #credit { display: none; }
-  #canvas .bjsl-button,
+  #canvas .lint-bar,
   #canvas .lint-process-badge { bottom: 148px; }
 }
 /* Boutons « Votre avis » et « Confidentialité », en bas à droite du canevas : même forme et
@@ -473,6 +496,26 @@ body #chat-log { padding: var(--space-4); gap: var(--space-3); font-size: 14px; 
 #chat-panel .chat-msg { border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); color: var(--ink); }
 #chat-panel .chat-msg.user { background: var(--accent-soft); border-bottom-right-radius: var(--radius-sm); }
 #chat-panel .chat-msg.assistant { background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: var(--radius-sm); }
+/* Réponse du Co-pilote rendue en Markdown (src/ai/markdown.js). */
+#chat-panel .chat-md { white-space: normal; }
+#chat-panel .chat-md > :first-child { margin-top: 0; }
+#chat-panel .chat-md > :last-child { margin-bottom: 0; }
+#chat-panel .chat-md p, #chat-panel .chat-md ul, #chat-panel .chat-md ol, #chat-panel .chat-md pre, #chat-panel .chat-md blockquote, #chat-panel .chat-md .md-table { margin: 0 0 var(--space-2); }
+#chat-panel .chat-md h4, #chat-panel .chat-md h5, #chat-panel .chat-md h6 { margin: var(--space-3) 0 var(--space-1); font-size: 13px; font-weight: 700; }
+#chat-panel .chat-md ul, #chat-panel .chat-md ol { padding-left: 1.3em; }
+#chat-panel .chat-md li + li { margin-top: 2px; }
+#chat-panel .chat-md li > ul, #chat-panel .chat-md li > ol { margin: 2px 0 0; }
+#chat-panel .chat-md strong { font-weight: 700; }
+#chat-panel .chat-md code { font-family: var(--font-family-monospace, ui-monospace, monospace); font-size: 12px; background: var(--surface-sunken); border-radius: var(--radius-sm); padding: 0 3px; }
+#chat-panel .chat-md pre { background: var(--surface-sunken); border-radius: var(--radius-sm); padding: var(--space-2); overflow-x: auto; white-space: pre; }
+#chat-panel .chat-md pre code { background: transparent; padding: 0; }
+#chat-panel .chat-md blockquote { border-left: 3px solid var(--line-strong); padding-left: var(--space-2); color: var(--ink-muted); }
+#chat-panel .chat-md hr { border: 0; border-top: 1px solid var(--line); margin: var(--space-2) 0; }
+#chat-panel .chat-md a { color: var(--accent); }
+#chat-panel .chat-md .md-table { overflow-x: auto; }
+#chat-panel .chat-md table { border-collapse: collapse; font-size: 12px; line-height: 1.35; overflow-wrap: normal; }
+#chat-panel .chat-md th, #chat-panel .chat-md td { border: 1px solid var(--line); padding: 3px 6px; text-align: left; vertical-align: top; }
+#chat-panel .chat-md th { background: var(--surface-sunken); font-weight: 600; }
 #chat-panel .chat-msg.notice { color: var(--ink-muted); font-size: 12px; line-height: 16px; background: transparent; border: 0; padding: 0 2px; }
 #chat-panel .chat-msg.error { color: var(--magenta); font-size: 12px; line-height: 16px; background: transparent; border: 1px solid var(--magenta); }
 #chat-panel .chat-tools span {
@@ -1667,7 +1710,7 @@ body.presenting.pres-idle #presentation-bar { opacity: 0; }
 
 /* Pendant la simulation, la commande de vitesse (en bas au centre) prend la place de la
    pastille « Aucun problème » de la vérification, qui la couvrait : le diagramme n'est pas modifiable à ce moment. */
-#canvas .bjs-container.simulation .bjsl-button { display: none; }
+#canvas .bjs-container.simulation .lint-bar { display: none; }
 
 /* Glissière de vitesse de la simulation (src/simulation-speed.js), dans le cadre de l'extension. */
 #canvas .bts-set-animation-speed .sim-speed { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; cursor: pointer; }
@@ -1678,6 +1721,13 @@ body.presenting.pres-idle #presentation-bar { opacity: 0; }
    vitesse ; la couche de couleurs passe au-dessus des formes sans capter les clics. */
 #canvas .bts-set-animation-speed { display: flex; align-items: center; }
 #canvas .bts-set-animation-speed.hidden { display: none; }
+#canvas .autopilot-bar { display: flex; padding: 4px 6px 4px 10px; border-left: 1px solid var(--line); }
+#canvas .autopilot-bar button {
+  font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; color: inherit; white-space: nowrap;
+}
+#canvas .autopilot-bar button:hover { border-color: var(--accent); }
+#canvas .autopilot-bar button.active { background: var(--accent); border-color: var(--accent); color: #FFFFFF; font-weight: 600; }
 #canvas .heatmap-bar { display: flex; gap: 4px; padding: 4px 6px 4px 10px; border-left: 1px solid var(--line); }
 #canvas .heatmap-bar button {
   font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
@@ -1707,6 +1757,7 @@ body.presenting.pres-idle #presentation-bar { opacity: 0; }
   background: #1F2937; color: #FFFFFF; font-size: 11px; font-weight: 600; line-height: 1;
   padding: 3px 6px; border-radius: 9px; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
+#canvas .heatmap-badge.blocked { background: #DC2626; }
 #canvas .heatmap-legend {
   position: absolute; left: 16px; bottom: 44px; z-index: 5; display: flex; flex-direction: column; gap: 4px;
   max-width: 300px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
@@ -1718,13 +1769,17 @@ body.presenting.pres-idle #presentation-bar { opacity: 0; }
 #canvas .heatmap-legend .heatmap-source, #canvas .heatmap-legend .heatmap-note { font-size: 11px; opacity: 0.8; }
 #canvas .heatmap-legend .heatmap-note.warn { color: #C2410C; opacity: 1; }
 @media (max-width: 560px) {
-  #canvas .heatmap-bar { border-left: 0; padding-left: 4px; }
+  #canvas .heatmap-bar, #canvas .autopilot-bar { border-left: 0; padding-left: 4px; }
+  /* Écran étroit : le cadre de la vitesse passe sur plusieurs lignes au lieu de déborder. */
+  #canvas .bts-set-animation-speed { flex-wrap: wrap; justify-content: center; width: max-content; max-width: calc(100% - 16px); row-gap: 2px; padding-bottom: 4px; }
+  #canvas .bts-set-animation-speed .sim-speed input { width: 110px; }
   #canvas .heatmap-legend { left: 8px; right: 8px; bottom: 72px; max-width: none; }
 }
 
 /* Mode expert (src/expert-mode.js) : hors du mode, les fonctions avancées sont masquées. */
 html:not(.expert) .expert-only,
 html:not(.expert) #canvas .heatmap-bar,
+html:not(.expert) #canvas .autopilot-bar,
 html:not(.expert) #canvas .heatmap-legend,
 html:not(.expert) [data-group-id="group-bpmn-pilot-simulation"] { display: none !important; }
 /* Modules du mode Expert (src/expert-modules.js) : chaque module éteint retire ses commandes.

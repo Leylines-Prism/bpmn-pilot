@@ -13,6 +13,10 @@
 //   - les événements en bordure ne se déclenchent pas ;
 //   - événement de fin de type Terminate : arrête l'instance.
 // Le résultat compte, pour chaque élément et chaque flux, le nombre de passages.
+// Il compte aussi les instances bloquées : quand plus aucun jeton ne peut avancer, des
+// jetons attendent encore sur une convergence (par exemple une convergence parallèle
+// derrière une divergence exclusive). blockedAt donne, par convergence, le nombre
+// d'instances qui y sont restées bloquées.
 // options.branchHint(passerelle, sortants, entrants) peut donner les poids d'une passerelle
 // exclusive (tables de décision DMN, src/dmn/decision-routing.js) ; null garde le tirage habituel.
 
@@ -87,9 +91,11 @@ export function runBatch(definitions, runs = 100, random = Math.random, { branch
   const flows = {}
   const add = (map, id) => { map[id] = (map[id] || 0) + 1 }
   const processes = simulatedProcesses(definitions)
-  if (!processes.length) return { nodes, flows, runs: 0, truncated: 0, source: 'batch' }
+  const blockedAt = {}
+  if (!processes.length) return { nodes, flows, runs: 0, truncated: 0, blocked: 0, blockedAt, source: 'batch' }
   const index = flowIndex(processes)
   let truncated = 0
+  let blocked = 0
 
   for (let run = 0; run < runs; run++) {
     for (const process of processes) {
@@ -97,9 +103,13 @@ export function runBatch(definitions, runs = 100, random = Math.random, { branch
       // (sans définition), sinon depuis le premier tout court.
       const starts = startsOf(process)
       const start = starts.find((s) => !(s.eventDefinitions || []).length) || starts[0]
-      const state = { steps: 0, terminated: false }
+      const state = { steps: 0, terminated: false, waiting: new Set() }
       runScope([start], state)
       if (state.steps >= MAX_STEPS) truncated++
+      else if (!state.terminated && state.waiting.size) {
+        blocked++
+        for (const id of state.waiting) blockedAt[id] = (blockedAt[id] || 0) + 1
+      }
     }
   }
 
@@ -132,7 +142,7 @@ export function runBatch(definitions, runs = 100, random = Math.random, { branch
       if (isA(node, 'bpmn:SubProcess') && !node.triggeredByEvent) {
         const inner = startsOf(node)
         if (inner.length) runScope([inner.find((s) => !(s.eventDefinitions || []).length) || inner[0]], state)
-        if (state.terminated) return
+        if (state.terminated || state.steps >= MAX_STEPS) return
       }
       if (isA(node, 'bpmn:EndEvent')) {
         if ((node.eventDefinitions || []).some((d) => isA(d, 'bpmn:TerminateEventDefinition'))) state.terminated = true
@@ -156,7 +166,10 @@ export function runBatch(definitions, runs = 100, random = Math.random, { branch
         if (flow.targetRef) queue.push(flow.targetRef)
       }
     }
+    // Plus rien à faire avancer : des jetons qui attendent encore sur une convergence n'en
+    // repartiront jamais.
+    if (!state.terminated) for (const [node, n] of joins) if (n > 0) state.waiting.add(node.id)
   }
 
-  return { nodes, flows, runs, truncated, source: 'batch' }
+  return { nodes, flows, runs, truncated, blocked, blockedAt, source: 'batch' }
 }

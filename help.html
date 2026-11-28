@@ -66,6 +66,7 @@
               <li><a href="#user-stories">User stories</a></li>
               <li><a href="#camunda-export">Camunda export</a></li>
               <li><a href="#dmn-decisions">Decision tables (DMN)</a></li>
+              <li><a href="#forms">Task forms</a></li>
               <li><a href="#experts-mcp">MCP agents in Expert mode</a></li>
             </ol>
           </li>
@@ -141,6 +142,15 @@
         <h2>Drawing</h2>
         <h3>The palette</h3>
         <p>At the top, the hand <span class="ico bpmn-icon-hand-tool" aria-hidden="true"></span>, lasso <span class="ico bpmn-icon-lasso-tool" aria-hidden="true"></span>, space <span class="ico bpmn-icon-space-tool" aria-hidden="true"></span> and connect <span class="ico bpmn-icon-connection-multi" aria-hidden="true"></span> tools. Below, the shapes: events, tasks, gateways, sub-processes, data, pools and lanes. <svg class="ico" viewBox="0 0 5.82 5.82" fill="currentColor" aria-hidden="true"><path d="M1.3 3.4c.3 0 .5-.2.5-.5s-.2-.4-.5-.4c-.2 0-.4.1-.4.4 0 .3.2.5.4.5zM3 3.4c.2 0 .4-.2.4-.5s-.2-.4-.4-.4c-.3 0-.5.1-.5.4 0 .3.2.5.5.5zM4.6 3.4c.2 0 .4-.2.4-.5s-.2-.4-.4-.4c-.3 0-.5.1-.5.4 0 .3.2.5.5.5z"/></svg>, at the bottom, opens the full list of elements, with a search.</p>
+        <h3 id="palette-profiles">Choose the elements offered (palette profiles)<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></h3>
+        <p><span class="uib"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Palette</span>, at the very bottom of the palette, chooses what the palette, the context menu and the <span class="uib"><svg class="ico" viewBox="0 0 5.82 5.82" fill="currentColor" aria-hidden="true"><path d="M1.3 3.4c.3 0 .5-.2.5-.5s-.2-.4-.5-.4c-.2 0-.4.1-.4.4 0 .3.2.5.4.5zM3 3.4c.2 0 .4-.2.4-.5s-.2-.4-.4-.4c-.3 0-.5.1-.5.4 0 .3.2.5.5.5zM4.6 3.4c.2 0 .4-.2.4-.5s-.2-.4-.4-.4c-.3 0-.5.1-.5.4 0 .3.2.5.5.5z"/></svg>Append element</span> and <span class="uib"><span class="ico bpmn-icon-screw-wrench" aria-hidden="true"></span>Change element</span> lists offer:</p>
+        <ul>
+          <li><strong>Full</strong>: every BPMN element, the starting setting.</li>
+          <li><strong>Essential</strong>: start event, task, exclusive gateway, end event. Enough for a first diagram without the rest of the BPMN vocabulary.</li>
+          <li><strong>Camunda 8</strong>: hides what the Camunda 8 engine does not run (complex gateway, transaction, cancel events), following the compatibility rules of Camunda Modeler. Useful before the <a href="#camunda-export">Camunda export</a>.</li>
+        </ul>
+        <p>An orange dot on the button flags a narrowed palette. The profile does not change the diagram: an element already drawn stays as it is, and the AI co-pilot keeps all its tools. The choice is kept in this browser.</p>
+        <figure><img src="/src/help/img/en-profils-palette.webp" width="559" height="650" alt="The Elements offered menu opened from the bottom of the palette, with the Full, Essential and Camunda 8 profiles, and next to it the palette narrowed to the Essential profile." loading="lazy" /><figcaption>Choosing the profile, and the Essential palette with its orange dot.</figcaption></figure>
         <h3>The context menu</h3>
         <p>It appears next to the selected element. For a task:</p>
         <ul>
@@ -272,7 +282,11 @@
       <section id="checking">
         <h2>Check and tidy up</h2>
         <h3>BPMN checks (bpmnlint)</h3>
-        <p><a href="https://github.com/bpmn-io/bpmnlint" target="_blank" rel="noopener">bpmnlint<svg class="icon-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a> checks the diagram as you draw. A red badge marks an error, an orange one a warning. Hover it to read the message and the rule name, which links to its explanation. The counter at the bottom left of the canvas hides or shows the badges.</p>
+        <p><a href="https://github.com/bpmn-io/bpmnlint" target="_blank" rel="noopener">bpmnlint<svg class="icon-inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a> checks the diagram as you draw. A red badge marks an error, an orange one a warning. Hover it to read the message and the rule name, which links to its explanation. The counter, at the bottom of the canvas, totals the whole diagram, collapsed subprocesses included, and says when findings are on another level ("level “Site rollout”"). A click goes to the next finding, errors first: it opens the right level, selects the element and shows its messages. The eye next to it hides or shows the badges.</p>
+        <div class="fig-pair">
+          <figure><p class="fig-title">Finding on another level</p><img src="/src/help/img/en-compteur-niveau.webp" width="1100" height="849" alt="The Manage the change subprocess open, with no badge, and the counter at the bottom: 1 error, level “Site rollout”, with the eye button next to it." loading="lazy" /><figcaption>The counter says where the error is.</figcaption></figure>
+          <figure><p class="fig-title">After a click</p><img src="/src/help/img/en-compteur-clic.webp" width="1100" height="849" alt="The Site rollout level open, the unnamed task selected with its red badge and its message: Element is missing label/name." loading="lazy" /><figcaption>The click opens the level and shows the faulty element.</figcaption></figure>
+        </div>
         <details class="faq">
           <summary>The 28 rules checked, with their explanation</summary>
           <div class="table-wrap">
@@ -490,7 +504,7 @@
 
       <section id="properties">
         <h2>Process panel<span class="ico" data-icon="panel" aria-hidden="true"></span></h2>
-        <p>The right-hand panel shows the properties of the selected element, or of the process when nothing is selected. The <span class="ico" data-icon="panel" aria-hidden="true"></span> button, right after <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>AI co-pilot</span> in the toolbar, hides it. Drag its left edge to widen it, double-click to restore the default width.</p>
+        <p>The right-hand panel shows the properties of the selected element, or of the process when nothing is selected. The <span class="ico" data-icon="panel" aria-hidden="true"></span> button, right before <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>AI co-pilot</span> in the toolbar, hides it. Drag its left edge to widen it, double-click to restore the default width.</p>
         <h3>Name, ID and Executable</h3>
         <p>The <span class="ui">General</span> group gives the displayed <span class="ui">Name</span>, the technical <span class="ui">ID</span> (unique, no spaces, to change only when an external tool requires it) and, for the process, the <span class="ui">Executable</span> box (<code>isExecutable</code>), useful only for a workflow engine. With pools, the process settings are in the pool's General group.</p>
         <h3>Other groups</h3>
@@ -632,7 +646,7 @@
         <p>Prompts to adapt, for every provider. The co-pilot answers in the prompt's language.</p>
         <figure><p class="fig-title">One prompt, one diagram</p><img src="/docs/prompt-example.png" width="1400" height="1083" alt="Diagram drawn by the co-pilot from the prompt: a Company pool with Employee, Manager, Purchasing and Accounting lanes, a Request approved? decision, and message flows to a Supplier pool." loading="lazy" /><figcaption>"Draw a purchase request: the employee enters the request, their manager accepts or rejects it. If accepted, purchasing orders from the supplier, then accounting pays the invoice. If rejected, the employee is told." One message, one pass.</figcaption></figure>
         <details class="faq prompts-list">
-          <summary>19 demo prompts, ready to copy and paste</summary>
+          <summary>20 demo prompts, ready to copy and paste</summary>
         <h3>Model</h3>
         <div class="prompt">
           <p class="prompt-title">From a description</p>
@@ -707,6 +721,11 @@
           <p class="prompt-text">Set a probability on each flow leaving an exclusive gateway, based on the labels and the context. List your assumptions.</p>
           <p class="prompt-tip">They feed the <span class="uib">Run</span> button of the heatmap.</p>
         </div>
+        <div class="prompt">
+          <p class="prompt-title">Task forms</p>
+          <p class="prompt-text">Write the form of each user task: one field per piece of data the person enters, with the right type and the allowed values. Use as keys the variables read by the next gateways and decision tables, then tell me what the data check still flags.</p>
+          <p class="prompt-tip">Needs the <a href="#forms">Task forms</a> module.</p>
+        </div>
 
         <h3>Structured prompts</h3>
         <p>For a sharper result on the first try: a role, a context, modeling rules and an expected deliverable. The <span class="uib">Copy</span> button keeps the line breaks.</p>
@@ -774,7 +793,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
 
       <div class="part-banner" id="expert-part">
         <p class="part-title"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert mode</p>
-        <p>Test a model and prepare it for execution: simulation, heatmap, report, event log, AI potential, compliance, Camunda, DMN. None of this is needed to draw.</p>
+        <p>Test a model and prepare it for execution: simulation, heatmap, report, event log, AI potential, compliance, Camunda, DMN, forms. None of this is needed to draw.</p>
       </div>
 
       <section id="bpmn-experts" class="expert-part">
@@ -782,14 +801,14 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p>The small switch right of the <span class="uib"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert</span> button, in the toolbar, turns the mode on or off in one click: the button turns blue, the expert sections show in the Process panel, and the browser remembers it. <span class="uib"><span class="ico" data-icon="expert" aria-hidden="true"></span>Expert</span> opens the menu of the modules turned on, and picking one of its commands also turns the mode on. Commands that go through the co-pilot stay greyed out until a model is set.</p>
         <figure><img src="/src/help/img/en-menu-expert.webp" width="600" height="403" alt="The blue Expert button and its open menu in three groups: simulation, analyses by activity, then Co-pilot analysis and the PDF, Markdown and Word buttons of the process report." loading="lazy" /><figcaption>The Expert menu in three groups: simulation, analyses by activity, process report.</figcaption></figure>
         <h3 id="modules">Choose modules<span class="ico" data-icon="modules" aria-hidden="true"></span></h3>
-        <p><span class="uib"><span class="ico" data-icon="modules" aria-hidden="true"></span>Choose modules…</span>, at the bottom of the menu, turns each feature on or off. The menu and the Process panel only show the modules turned on. By default, everything is on except the Camunda export and decision tables. The heatmap needs the simulation.</p>
-        <figure><img src="/src/help/img/en-modules-experts.webp" width="1040" height="2048" alt="The Expert modules window: Token simulation, Heatmap, Process report, Event log analysis, AI potential, Risks and compliance, User stories, Camunda export and Decision tables (DMN), each with its switch, a line of explanation and a link to the help." loading="lazy" /><figcaption>The Expert modules window: here, the Camunda export and decision tables are off.</figcaption></figure>
+        <p><span class="uib"><span class="ico" data-icon="modules" aria-hidden="true"></span>Choose modules…</span>, at the bottom of the menu, turns each feature on or off. The menu and the Process panel only show the modules turned on. By default, everything is on except the Camunda export, decision tables and task forms. The heatmap needs the simulation.</p>
+        <figure><img src="/src/help/img/en-modules-experts.webp" width="1040" height="2268" alt="The Expert modules window: Token simulation, Heatmap, Process report, Event log analysis, AI potential, Risks and compliance, User stories, Camunda export, Decision tables (DMN) and Task forms, each with its switch, a line of explanation and a link to the help." loading="lazy" /><figcaption>The Expert modules window: here, the Camunda export and decision tables are off.</figcaption></figure>
         <p>Turning a module off removes nothing from the file: values already entered stay. The co-pilot and MCP agents keep all their tools.</p>
       </section>
 
       <section id="simulation" class="expert-part">
         <h2>Simulation and heatmap<span class="ico" data-icon="play" aria-hidden="true"></span></h2>
-        <p><span class="uib"><span class="ico" data-icon="play" aria-hidden="true"></span>Simulation</span> puts a play button on each start event. Click it: a token follows the flows, and you pick the path at exclusive gateways. The slider at the bottom of the canvas sets the speed, the log lists the steps. The canvas is locked during the simulation: <span class="uib">Stop simulation</span> gives it back. Until then, the co-pilot commands of the Expert menu stay greyed out, since they write into the diagram.</p>
+        <p><span class="uib"><span class="ico" data-icon="play" aria-hidden="true"></span>Simulation</span> puts a play button on each start event. Click it: a token follows the flows, and you pick the path at exclusive gateways, or the <a href="#autopilot">autopilot</a> picks it for you. The slider at the bottom of the canvas sets the speed, the log lists the steps. The canvas is locked during the simulation: <span class="uib">Stop simulation</span> gives it back. Until then, the co-pilot commands of the Expert menu stay greyed out, since they write into the diagram.</p>
         <div class="fig-pair">
           <figure class="fig-anim"><p class="fig-title">Slowed down, then sped up</p><img src="/docs/token-simulation.gif" width="1280" height="720" alt="A token runs through the purchase process, at 0.5× then 3×" loading="lazy" /><figcaption>A token slowed down, then sped up with the speed slider.</figcaption></figure>
           <figure><p class="fig-title">A token on its way</p><img src="/src/help/img/en-simulation.webp" width="1060" height="440" alt="Simulation running: a token is on the first task, and the gateway button picks the path." loading="lazy" /><figcaption>A simulation running: the token moves from task to task.</figcaption></figure>
@@ -797,6 +816,9 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <h3 id="probabilities">Branch probabilities</h3>
         <p>On a flow leaving a gateway, the <span class="ui">Probability (%)</span> field of the <span class="ui">Token simulation</span> group sets its share. Flows without a value split the rest. At an inclusive gateway, each flow is drawn by its own probability.</p>
         <p><span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Propose probabilities</span> asks the co-pilot for them, based on labels and documentation. Its values carry "Proposed by the AI co-pilot, to review" until you change them or check <span class="ui">Keep the co-pilot's value</span>. The value is written to the <code>bpmnpilot:probability</code> attribute.</p>
+        <h3 id="autopilot">Gateway autopilot</h3>
+        <p><span class="uib">Autopilot</span>, in the speed frame, lets each gateway pick its branch by itself when a token arrives, with the same rules as <a href="#heatmap">Run N tokens</a>: from the flow probabilities, or from the <a href="#dmn-decisions">decision table</a> just before. An inclusive gateway takes each branch by its probability, at least one. Send several tokens in a row: the animation then shows the actual distribution, which you can follow on the heatmap. A click on a gateway's button still changes the branch, until the next token. The autopilot is off by default, and the choice is kept in this browser.</p>
+        <figure><img src="/src/help/img/en-pilote-auto.webp" width="1060" height="490" alt="Simulation with the Autopilot button on in the speed frame: the gateway picked its branch, colored, the other one greyed out." loading="lazy" /><figcaption>The autopilot picks the branch for each token.</figcaption></figure>
         <h3 id="process-goals">Process goals</h3>
         <p>In the same group, a goal sits on what it measures: the share of instances ending at an <strong>end event</strong> (at least 80% approved), or the number of passes per 100 instances on an <strong>activity</strong> (at most 15 document requests). After a token run, the <a href="#process-report">report</a> says whether it is met.</p>
         <figure><img src="/src/help/img/en-objectif.webp" width="300" height="426" alt="Token simulation group of the Process panel for the end event Service live: Goal, share of instances (%) set to 80, and Goal is a minimum (at least)." loading="lazy" /><figcaption>A goal on an end event.</figcaption></figure>
@@ -807,12 +829,14 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li><strong>Coverage:</strong> send a few tokens down different paths. What stays dashed grey is never reached.</li>
           <li><strong>Distribution:</strong> set the probabilities, enter a number of tokens (up to 10,000) and click <span class="uib">Run</span>. The result is instant.</li>
           <li>Read the badges: "31 · 31%" gives passes and share of instances, "131 · 1.3×" flags a loop.</li>
+          <li><strong>Deadlocks:</strong> a red "47 blocked" badge on a merge counts the instances that could never complete. A token waits there for a branch that was not taken, for example a parallel merge placed after an exclusive split. The legend gives the total, and the <a href="#process-report">report</a> turns it into an error finding with its improvement area.</li>
         </ol>
         <p>After a business rule task linked to a <a href="#dmn-decisions">decision table</a>, a gateway without probabilities splits tokens by the table's rules. The heatmap counts passes, not durations or costs. The PDF report includes it as long as the diagram does not change.</p>
         <div class="fig-pair">
           <figure class="fig-anim"><p class="fig-title">Computing the map</p><img src="/docs/heatmap.gif" width="1280" height="720" alt="The branch probability in the Process panel, then the heatmap after 200 tokens" loading="lazy" /><figcaption>A probability set on a branch, then 200 tokens computed at once.</figcaption></figure>
           <figure><p class="fig-title">Reading the map</p><img src="/src/help/img/en-heatmap.webp" width="1060" height="440" alt="Heatmap after 100 tokens: document check in red, run more than once per instance, less used branches in yellow, with each activity's badge and the legend." loading="lazy" /><figcaption>The map after 100 tokens: the document check, in red, is the busiest activity.</figcaption></figure>
         </div>
+        <figure><img src="/src/help/img/en-instances-bloquees.webp" width="1060" height="490" alt="Heatmap after 100 tokens on a process where an exclusive split leads to a parallel merge: red badge 100 blocked on the merge, and Ship in dashed grey, never reached." loading="lazy" /><figcaption>A parallel merge after an exclusive split: no instance completes.</figcaption></figure>
         <figure><img src="/src/help/img/en-exemple-simulation.webp" width="1600" height="840" alt="The heatmap after 1000 tokens: Run the site survey in red, reached again through the findings loop." loading="lazy" /><figcaption>The heatmap after 1000 tokens.</figcaption></figure>
       </section>
 
@@ -823,7 +847,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li>key figures and the diagram, with each element at issue circled;</li>
           <li>findings: <strong>Error</strong> in red, <strong>Warning</strong> in orange, <strong>To complete</strong> in yellow, with their source;</li>
           <li>improvement areas by priority, and <a href="#process-goals">goals</a> met or not;</li>
-          <li>after a simulation, the heatmap and its figures;</li>
+          <li>after a simulation, the heatmap and its figures, and the instances blocked on a merge;</li>
           <li>the six <a href="#ai-checks">checks</a>, the <a href="#dmn-decisions">decision tables</a>, activities by lane and the full sequence.</li>
         </ul>
         <p>It flags what is missing: gateways without a question, flows without an answer, activities without documentation. It grows with what you fill in, such as the <a href="#process-identity">process identity</a>, RACI, AI potential and risks. The Word document can be restyled in your organization's colors.</p>
@@ -913,6 +937,46 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <figure><img src="/src/help/img/en-dmn-task.webp" width="1300" height="600" alt="A Classify the change business rule task with its Table marker, and the Decision table (DMN) group of the Process panel: linked decision, table summary, Open the table and Unlink buttons." loading="lazy" /><figcaption>A task linked to its table: the marker on the canvas, the Decision table (DMN) group in the panel.</figcaption></figure>
         <figure><img src="/src/help/img/en-exemple-change.webp" width="1600" height="642" alt="Inside the Manage the change subprocess: RFC raised, Classify the change (business rule task), Level? gateway to Standard, Normal or CAB, then MW scheduling." loading="lazy" /><figcaption>The Manage the change subprocess, opened.</figcaption></figure>
         <figure><img src="/src/help/img/en-exemple-decision.webp" width="1600" height="535" alt="The Change approval level decision table in the DMN window: two inputs, one output, five rules." loading="lazy" /><figcaption>The approval level table.</figcaption></figure>
+        <h3 id="dmn-read">Read a table: When… Then…</h3>
+        <p>Each row is a rule. The <span class="ui">When</span> (and <span class="ui">And</span>) columns are the inputs, what the decision looks at. The <span class="ui">Then</span> columns are the outputs, what it decides. A rule applies when every input matches its cell. The <span class="ui">Annotations</span> column says why, with no effect on the result.</p>
+        <p>The <span class="ui">Dish of the day</span> example, taken from the official dmn-js examples, picks a dish from the season and the number of guests. With Winter and 12 guests, only rule 2 applies (<code>"Winter"</code>, <code>&gt; 8</code>): the dish is "Pasta".</p>
+        <figure><img src="/src/help/img/en-dmn-plat.webp" width="1408" height="387" alt="The Dish Decision table of the Dish of the day example: Season and How many guests inputs, Dish output, six annotated rules. The test bench on the right, with Winter and 12, highlights rule 2 and answers Dish = Pasta." loading="lazy" /><figcaption>The Dish of the day example on the test bench: Winter and 12 guests give rule 2.</figcaption></figure>
+        <h3 id="dmn-feel">Write a rule (FEEL)</h3>
+        <p>The <span class="ui">+</span> under the table adds a rule. Each cell is written in FEEL, the DMN expression language. The column type (string, number, boolean, date…) is set with the pencil button of its header, with its name and allowed values.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cell</th><th>Example</th><th>Matches</th></tr></thead>
+            <tbody>
+              <tr><td>Text</td><td><code>"Winter"</code></td><td>exactly Winter. The double quotes are required: without them, Winter would be a variable name.</td></tr>
+              <tr><td>List</td><td><code>"Winter","Spring"</code></td><td>any of the values</td></tr>
+              <tr><td>Number</td><td><code>12</code></td><td>exactly 12</td></tr>
+              <tr><td>Comparison</td><td><code>&lt;= 8</code>, <code>&gt; 1000</code></td><td>a number or a date above or below a threshold</td></tr>
+              <tr><td>Range</td><td><code>[10..30]</code>, <code>]1000..5000]</code></td><td>between two bounds, included with <code>[ ]</code>, excluded with <code>] [</code></td></tr>
+              <tr><td>Negation</td><td><code>not("Winter")</code></td><td>anything but Winter</td></tr>
+              <tr><td>Any</td><td><code>-</code></td><td>any value, empty included</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>An output is written the same way: <code>"Pasta"</code>, <code>10</code>, <code>true</code>.</p>
+        <h3 id="dmn-hit-policy">Hit policy</h3>
+        <p>It says what to do when several rules apply. It is chosen above the table.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Policy</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Unique</td><td>at most one rule may apply. Two rules together are an error in the table. The default.</td></tr>
+              <tr><td>First</td><td>the first rule that applies, from top to bottom. The order of the rows matters.</td></tr>
+              <tr><td>Priority</td><td>the rule whose output comes first in the output's allowed values.</td></tr>
+              <tr><td>Any</td><td>several rules may apply if they give the same output.</td></tr>
+              <tr><td>Collect</td><td>the list of the outputs of every rule that applies, or their sum, minimum, maximum or count.</td></tr>
+              <tr><td>Rule order</td><td>the list of the outputs, in row order.</td></tr>
+              <tr><td>Output order</td><td>the list of the outputs, in the order of the allowed values.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 id="dmn-empty">An empty table</h3>
+        <p>A table created from a task has a single <span class="ui">Input</span> column, a single <span class="ui">Output</span> column and no rule: the test bench cannot match anything. A box under the table recalls the steps and offers <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Fill in with the co-pilot</span>, <span class="uib"><span class="ico" data-icon="table" aria-hidden="true"></span>Open an example</span>, which shows Dish of the day without touching your diagram (<span class="uib"><span class="ico" data-icon="undo" aria-hidden="true"></span>Close the example</span> takes you back to your table), and the link to this help. It goes away with the first rule.</p>
+        <figure><img src="/src/help/img/en-dmn-table-vide.webp" width="1408" height="485" alt="An empty Classify the change table, with under it the This table has no rule yet box: the When… Then… reading, four steps, and the Fill in with the co-pilot, Open an example and Help on decision tables buttons." loading="lazy" /><figcaption>A table with no rule and its box.</figcaption></figure>
         <h3 id="dmn-link">Link a task to its table</h3>
         <p>Each business rule task carries a badge: <span class="uib"><span class="ico" data-icon="table" aria-hidden="true"></span>Table</span> opens the linked table, a dashed <span class="uib">+ Table</span> opens the <span class="ui">Decision table (DMN)</span> group, a red badge flags a missing decision. The group offers to create a table, link or import one, or have the co-pilot draft it. Once linked, it sums up the table and its findings.</p>
         <h3 id="dmn-window">The decision window</h3>
@@ -920,7 +984,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <p><span class="uib"><span class="ico" data-icon="undo" aria-hidden="true"></span>Back to the process</span> or <kbd>Esc</kbd> stores the changes in the diagram, in one undoable step.</p>
         <figure><img src="/src/help/img/en-dmn-table.webp" width="1408" height="364" alt="The decision window, full screen: Decision table and Requirements (DRD) tabs, the Assess the risk table with its Amount and Category inputs, its Risk output and three rules." loading="lazy" /><figcaption>The decision table in its window, edited with dmn-js.</figcaption></figure>
         <h3 id="dmn-test">Test and compare a table</h3>
-        <p><span class="uib"><span class="ico" data-icon="play" aria-hidden="true"></span>Test</span> opens a test bench: enter one value per input, <span class="uib">Evaluate</span> highlights the matching rules and gives the result. <span class="uib">One case per rule</span> checks that each rule can fire.</p>
+        <p><span class="uib"><span class="ico" data-icon="play" aria-hidden="true"></span>Test</span> opens a test bench: enter one value per input, <span class="uib">Evaluate</span> highlights the matching rules and gives the result. <span class="uib">One case per rule</span> checks that each rule can fire. On a table with no rule, it says so instead of an empty result.</p>
         <figure><img src="/src/help/img/en-dmn-bench.webp" width="1408" height="524" alt="The test bench to the right of the Assess the risk table: Amount 500, Category Individual, and the result of One case per rule, three cases as expected." loading="lazy" /><figcaption>The test bench: one case per rule, all as expected.</figcaption></figure>
         <p><span class="uib"><span class="ico" data-icon="compare" aria-hidden="true"></span>Compare</span> lists what changed since opening, or against a .dmn file, rule by rule.</p>
         <figure><img src="/src/help/img/en-dmn-compare.webp" width="1408" height="384" alt="The comparison to the right of the table: one changed rule, Risk from low to medium, highlighted in orange in the table." loading="lazy" /><figcaption>A rule changed since the window opened.</figcaption></figure>
@@ -933,7 +997,31 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <figure><img src="/src/help/img/en-dmn-sheet.webp" width="1408" height="300" alt="The Sheet menu open above the Assess the risk table: Export to Excel (.xlsx), Export to CSV, Import a sheet (.xlsx, .csv)." loading="lazy" /><figcaption>The Sheet menu of the decisions window.</figcaption></figure>
         <h3 id="dmn-copilot">With the AI co-pilot</h3>
         <div class="note">"Draft the decision table of the Assess risk task: request amount and customer category as inputs, risk level low, medium or high as output, one rule per case."</div>
-        <p>The co-pilot drafts the table and links it to the task. It can also derive it from an attached rate card or procedure. <span class="uib">✦ Explain and test with the co-pilot</span> has it summarize and try the table, without changing it.</p>
+        <p>The co-pilot drafts the table and links it to the task. It can also derive it from an attached rate card or procedure.</p>
+        <p><span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Fill in with the co-pilot</span>, in the window header and in the box of an empty table, hands it the table shown: it starts from the decision name, the task that calls it, its documentation and the rest of the process. It names the inputs and outputs, gives their allowed values, picks the hit policy, writes annotated rules, then tries them one by one. On a table that already has rules, it keeps them and adds the missing cases. The window closes while it works. Its changes are <a href="#assistant">marked</a> and undone with <kbd>Ctrl</kbd>+<kbd>Z</kbd>. With no AI model set, the button is greyed out and a <span class="ico" data-icon="help" aria-hidden="true"></span> says why.</p>
+        <p>In the <span class="ui">Decision table (DMN)</span> group, <span class="uib">✦ Draft it with the co-pilot</span> does the same for a task without a table, <span class="uib">✦ Fill in with the co-pilot</span> for a linked table still empty, and <span class="uib">✦ Explain and test with the co-pilot</span> has it summarize and try a filled table, without changing it. An MCP agent gets the same request with the <code>fill_decision_table</code> prompt.</p>
+      </section>
+
+      <section id="forms" class="expert-part">
+        <h2>Task forms<span class="ico" data-icon="form" aria-hidden="true"></span></h2>
+        <p>A user task asks a person for something: an amount, a category, an approval. The <span class="ui">Task forms</span> module describes what they enter, with form-js, the bpmn.io form editor that Camunda uses too. The form is stored in the .bpmn file, on the task. Turn the module on in <a href="#modules">Choose modules</a>: it is off by default.</p>
+        <figure><img src="/src/help/img/en-form-task.webp" width="1440" height="520" alt="The user task Enter the expense report with its Form badge, and the Form group of the Process panel: two fields, Amount and Category, the variables filled in, and the Edit the form, Export .form and Remove buttons." loading="lazy" /><figcaption>A task and its form: the badge on the canvas, the Form group in the panel.</figcaption></figure>
+        <h3 id="form-create">Create a form</h3>
+        <p>Each user task carries a badge: <span class="uib"><span class="ico" data-icon="form" aria-hidden="true"></span>Form</span> opens its form, the dashed <span class="uib">+ Form</span> opens the <span class="ui">Form</span> group of the panel. The group offers <span class="uib">+ Create a form</span>, <span class="uib">Import a .form file…</span> or <span class="uib">✦ Draft it with the co-pilot</span>. A plain task becomes a user task. A start event can also have a form, the one that starts the process: select it to see the group.</p>
+        <h3 id="form-edit">The form window</h3>
+        <p>The form opens full screen. Drag components from the palette (text field, number, date, checkbox, select, radio buttons, group…) and set them up on the right: label, <strong>key</strong>, required, values, display conditions. The key is the name of the process variable the field fills in: <code>amount</code>, <code>category</code>. The <span class="ui">Preview</span> tab shows the form as the person will see it: <span class="uib">Submit</span> shows the data it would fill in, or its errors.</p>
+        <p><span class="uib"><span class="ico" data-icon="undo" aria-hidden="true"></span>Back to the diagram</span> or <kbd>Esc</kbd> stores the changes in the diagram, as one step you can undo.</p>
+        <figure><img src="/src/help/img/en-form-editor.webp" width="1440" height="860" alt="The form window: the component palette on the left, the Expense report form in the middle with Amount and Category, the settings of the selected field on the right, and the Edit and Preview tabs." loading="lazy" /><figcaption>The form window, edited with form-js.</figcaption></figure>
+        <h3 id="form-data">Data check</h3>
+        <p>A branch that tests <code>Amount &gt; 500</code> reads the variable <code>amount</code>. As soon as the diagram has a form, validation flags, as a warning, a gateway or decision table that reads data no form placed before it fills in: in the engine, that variable would be empty. Conditions count whether they are written in the <span class="ui">Condition</span> field, in the flow label or in FEEL, and so do the inputs of a linked DMN table. The finding shows on the canvas, in the report and in <code>validate_diagram</code>.</p>
+        <h3 id="form-simulation">During the simulation</h3>
+        <p>In the <a href="#simulation">token simulation</a>, a token stops on a task that has a form, and the form opens on the right. <span class="uib">Submit and continue</span> stores your answers and sends the token on, <span class="uib">Skip</span> sends it on without entering anything. Your answers then pick the branches of exclusive gateways: the first true condition, otherwise the default flow. A gateway whose branches carry answers ("Transport", "Meal") reads the variable named after it (<code>category</code> for "Category"), as in the <a href="#export-camunda">Camunda export</a>. Answers start over at each reset.</p>
+        <figure><img src="/src/help/img/en-form-simulation.webp" width="1440" height="860" alt="Simulation running: the token waits on Enter the expense report, and the form open on the right shows Amount 742 and Category Meal, with the Skip and Submit and continue buttons." loading="lazy" /><figcaption>The form during the simulation: the answer Meal sends the token to the invoice check.</figcaption></figure>
+        <h3 id="form-files">Files and Camunda 8</h3>
+        <p>The form travels in the .bpmn (<code>bpmnpilot:taskForm</code>). For Camunda 8, the task also gets <code>zeebe:formDefinition</code> with the form id. <span class="uib"><span class="ico" data-icon="form" aria-hidden="true"></span>Task forms (.form files)</span>, in Export, saves the form as a .form file, or a .zip archive when there are several, to deploy with the process. <span class="uib">Export .form</span> does the same for a single form. A Camunda Modeler .form file can be imported from the group.</p>
+        <h3 id="form-copilot">With the AI co-pilot</h3>
+        <div class="note">"Write the form of the task Enter the expense report: amount, category (transport, meal, lodging), date of the expense and a required receipt. Reuse the variables read by the next gateways."</div>
+        <p>The co-pilot writes the form with the keys the process reads later. <span class="uib">✦ Review with the co-pilot</span> has it check an existing form, without changing it.</p>
       </section>
 
       <section id="experts-mcp" class="expert-part">
@@ -942,12 +1030,13 @@ To finish: check the diagram, fix what fails and sum up the process in five line
         <ul>
           <li><code>get_process_report</code>: the report in Markdown, with or without 100 simulated tokens;</li>
           <li><code>update_elements</code>: documentation, assignee, systems, RACI, AI potential, risks, controls and requirements, user stories and acceptance criteria, probabilities, and the process identity on the diagram root;</li>
-          <li><code>export_diagram</code>: besides the diagram, the report, the procedure sheets, the documentation page, the RACI matrix, the user stories, the decisions and the files for Camunda;</li>
+          <li><code>export_diagram</code>: besides the diagram, the report, the procedure sheets, the documentation page, the RACI matrix, the user stories, the decisions, the forms and the files for Camunda;</li>
           <li><code>set_report_commentary</code>: the process analysis;</li>
           <li><code>get_decisions</code>, <code>set_decision_table</code>, <code>link_decision</code>, <code>test_decision</code>: decision tables;</li>
+          <li><code>get_task_forms</code>, <code>set_task_form</code>: task forms, the variables they fill in and the data check;</li>
           <li><code>load_event_log</code>, <code>map_log_activities</code>, <code>apply_log_frequencies</code>, <code>check_conformance</code>, <code>get_log_summary</code>: the event log, never returning a case or resource name.</li>
         </ul>
-        <p>Five MCP prompts cover these functions: <code>propose_probabilities</code>, <code>rate_ai_potential</code> and <code>analyze_process</code> send the same request as <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Propose probabilities</span>, <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Which activities to hand to AI?</span> and <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilot analysis</span>; <code>assess_compliance</code> writes risks, controls and requirements; <code>model_from_event_log</code> draws the process from a log.</p>
+        <p>Six MCP prompts cover these functions: <code>propose_probabilities</code>, <code>rate_ai_potential</code> and <code>analyze_process</code> send the same request as <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Propose probabilities</span>, <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Which activities to hand to AI?</span> and <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Co-pilot analysis</span>; <code>assess_compliance</code> writes risks, controls and requirements; <code>model_from_event_log</code> draws the process from a log; <code>fill_decision_table</code> sends the same request as <span class="uib"><span class="ico" data-icon="assistant" aria-hidden="true"></span>Fill in with the co-pilot</span>, in the <a href="#dmn-copilot">decision window</a>.</p>
       </section>
 
       <div class="part-banner" id="install-part">
@@ -992,7 +1081,7 @@ To finish: check the diagram, fix what fails and sum up the process in five line
           <li>saves and exports on the server, found again from any browser;</li>
           <li>an MCP server: Claude Code, Claude Desktop or GitHub Copilot in VS Code draw in the open editor, style, tidy up, undo. The MCP badge in the toolbar gives the address and the settings to paste.</li>
         </ul>
-        <p>The MCP server also gives the agent modeling rules and ready-made prompts, in the agent's prompt menu or as commands (<code>/mcp__bpmn-pilot__review_diagram</code> in Claude Code): <code>model_process</code>, <code>model_collaboration</code>, <code>review_diagram</code>, <code>tidy_diagram</code>, <code>critique_description</code>, <code>add_agent_step</code>, <code>write_user_stories</code>, and for <a href="#bpmn-experts">Expert mode</a> <code>propose_probabilities</code>, <code>rate_ai_potential</code>, <code>analyze_process</code>, <code>assess_compliance</code>, <code>model_from_event_log</code>. The <a href="#prompt-examples">prompt examples</a> work too.</p>
+        <p>The MCP server also gives the agent modeling rules and ready-made prompts, in the agent's prompt menu or as commands (<code>/mcp__bpmn-pilot__review_diagram</code> in Claude Code): <code>model_process</code>, <code>model_collaboration</code>, <code>review_diagram</code>, <code>tidy_diagram</code>, <code>critique_description</code>, <code>add_agent_step</code>, <code>write_user_stories</code>, and for <a href="#bpmn-experts">Expert mode</a> <code>propose_probabilities</code>, <code>rate_ai_potential</code>, <code>analyze_process</code>, <code>assess_compliance</code>, <code>model_from_event_log</code>, <code>fill_decision_table</code>. The <a href="#prompt-examples">prompt examples</a> work too.</p>
         <h3 id="without-browser">Without an open browser (headless mode)</h3>
         <p>By default, the agent draws in an open editor tab. With <code>docker-compose.headless.yml</code> instead of <code>docker-compose.image.yml</code> (see the README), it works with no tab at all: a <code>renderer</code> service, a headless Chromium cut off from the internet and the API keys, opens the editor in an invisible tab, which closes after 5 minutes without a call. Each diagram drawn this way is saved on the server in <span class="uib"><span class="ico" data-icon="library" aria-hidden="true"></span>My diagrams</span>, under a name such as "Agent 2026-11-28 14h05".</p>
         <p>If you open the editor meanwhile, a banner says so. <span class="uib">Open</span> loads the diagram in your tab, and the agent carries on there. Without that click, it never touches the diagram in front of you. With the <code>returnFile</code> option, <code>export_diagram</code> returns the file to the agent.</p>

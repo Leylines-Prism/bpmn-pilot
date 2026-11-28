@@ -15,6 +15,7 @@ import GridModule from 'diagram-js-grid'
 import { CopyAsImageModule } from 'bpmn-js-copy-as-image'
 import lintConfig from './lint/lint-config.js'
 import { LintProcessBadgeModule } from './lint-process-badge.js'
+import { LintNavigatorModule } from './lint-navigator.js'
 import TranslateModule from './i18n/translate.js'
 import { lang, T } from './i18n/lang.js'
 import { translatePanelTitles } from './i18n/panel-titles.js'
@@ -45,12 +46,15 @@ import './brand/tokens.css'
 import './theme/leylines.css'
 import './doc/doc.css'
 import './dmn/dmn.css'
+import './forms/forms.css'
 import './sub-levels.css'
 import { setupThemeToggle } from './theme/theme-toggle.js'
 import { setupBrandLogo } from './theme/brand-logo.js'
 import { setupPanelToggle } from './panel-toggle.js'
 import { setupPresentation } from './presentation.js'
 import { setupSimulationSpeed } from './simulation-speed.js'
+import { setupSimulationAutopilot } from './simulation-autopilot.js'
+import PaletteProfilesModule from './palette-profiles.js'
 import { setupMining } from './mining/mining-ui.js'
 import { setupHeatmap } from './heatmap.js'
 import { setupExpertMode, setExpert, isExpert, EXPERT_EVENT } from './expert-mode.js'
@@ -62,6 +66,8 @@ import { GoalPanelModule } from './goal-panel.js'
 import bpmnPilotModdle from './bpmn-pilot-moddle.json'
 import zeebeModdle from 'zeebe-bpmn-moddle/resources/zeebe.json'
 import { DecisionPanelModule } from './dmn/decision-links.js'
+import { FormPanelModule } from './forms/form-links.js'
+import { setupForms } from './forms/setup.js'
 import { PanelOrderModule } from './panel-order.js'
 import { SubLevelPanelModule, setupSubLevels } from './sub-levels.js'
 import { setupDecisions } from './dmn/setup.js'
@@ -176,6 +182,7 @@ const modeler = new BpmnModeler({
     minimapModule,
     TokenSimulationModule,
     CreateAppendAnythingModule,
+    PaletteProfilesModule,
     BpmnColorPickerModule,
     CustomColorModule,
     LabelStyleModule,
@@ -183,11 +190,13 @@ const modeler = new BpmnModeler({
     NativeCopyPasteModule,
     LintModule,
     LintProcessBadgeModule,
+    LintNavigatorModule,
     GridModule,
     CopyAsImageModule,
     ProbabilityPanelModule,
     RulesPanelModule,
     DecisionPanelModule,
+    FormPanelModule,
     SubLevelPanelModule,
     AgentStepModule,
     GoalPanelModule,
@@ -557,6 +566,11 @@ async function buildDocument(format) {
     if (!xml) throw nothingToExport('This diagram has no decision yet: create one from a business rule task.', 'Ce diagramme n\'a pas encore de décision : créez-en une depuis une tâche de règle métier.')
     return { content: xml, name: baseName(), ext: 'dmn', type: 'application/xml' }
   }
+  if (format === 'forms') {
+    const file = await forms.exportFile()
+    if (!file) throw nothingToExport('This diagram has no form yet: create one from a user task or a start event (Expert > Task forms).', 'Ce diagramme n\'a pas encore de formulaire : créez-en un depuis une tâche utilisateur ou un événement de début (Expert > Formulaires des tâches).')
+    return file
+  }
   if (!hasShapes(modeler)) throw nothingToExport('The diagram is empty: nothing to export.', 'Le diagramme est vide : rien à exporter.')
   if (format === 'camunda8' || format === 'camunda7') {
     const target = format === 'camunda8' ? 8 : 7
@@ -605,10 +619,11 @@ async function buildDocument(format) {
 }
 
 // Message d'état après un export pour Camunda : conditions écrites, tâches converties, reste à faire.
-function camundaSummary({ target, conditions, converted, left }) {
+function camundaSummary({ target, conditions, converted, left, forms: linkedForms }) {
   let msg = T(`Exported for Camunda ${target}: ${conditions} condition(s) written`, `Exporté pour Camunda ${target} : ${conditions} condition(s) écrite(s)`)
   if (converted) msg += T(`, ${converted} assigned task(s) turned into user tasks`, `, ${converted} tâche(s) assignée(s) passée(s) en tâche utilisateur`)
   if (left) msg += T(`, ${left} branch condition(s) to write in Camunda Modeler`, `, ${left} condition(s) de branche à écrire dans Camunda Modeler`)
+  if (linkedForms) msg += T(`, ${linkedForms} linked form(s) to deploy with it (Export > Task forms)`, `, ${linkedForms} formulaire(s) lié(s) à déployer avec lui (Exporter > Formulaires des tâches)`)
   return msg
 }
 
@@ -654,6 +669,7 @@ document.getElementById('btn-save-encrypted').addEventListener('click', async ()
   }
 })
 // BPMN pour Camunda 8 ou 7 (mode Expert) : même diagramme, préparé pour le moteur.
+exportButton('btn-save-forms', 'forms', () => T('Forms export failed: ', 'Export des formulaires impossible : '))
 exportButton('btn-camunda-8', 'camunda8', () => T('Camunda export failed: ', 'Export Camunda impossible : '))
 exportButton('btn-camunda-7', 'camunda7', () => T('Camunda export failed: ', 'Export Camunda impossible : '))
 // Rapport de processus : dans le menu Expert, il active le mode s'il ne l'était pas.
@@ -682,6 +698,14 @@ const askCopilot = (text) => window.dispatchEvent(new CustomEvent('bpmn-pilot-co
 const decisions = setupDecisions({
   modeler,
   library,
+  download,
+  baseName,
+  setStatus: (msg) => { document.getElementById('autosave-status').textContent = msg },
+  askCopilot,
+})
+// Formulaires des tâches (mode Expert, module Formulaires).
+const forms = setupForms({
+  modeler,
   download,
   baseName,
   setStatus: (msg) => { document.getElementById('autosave-status').textContent = msg },
@@ -781,7 +805,7 @@ async function exportForAi({ format, name, returnFile = false }) {
     format,
     fileName: saved || `${base}.${file.ext}`,
     bytes,
-    ...(file.summary ? { camunda: { conditionsWritten: file.summary.conditions, tasksTurnedIntoUserTasks: file.summary.converted || 0, conditionsLeftToWrite: file.summary.left || 0 } } : {}),
+    ...(file.summary ? { camunda: { conditionsWritten: file.summary.conditions, tasksTurnedIntoUserTasks: file.summary.converted || 0, conditionsLeftToWrite: file.summary.left || 0, ...(file.summary.forms ? { linkedFormsToDeploy: file.summary.forms } : {}) } } : {}),
     ...(saved ? { savedOnServer: `exports/${saved}` } : {}),
     ...(serverError ? { serverSaveFailed: serverError } : {}),
     downloadOffered: true,
@@ -899,6 +923,8 @@ setupPresentation({ button: document.getElementById('btn-present'), modeler })
 setupSimulationSpeed(modeler)
 // Les tables de décision orientent les jetons calculés (src/dmn/decision-routing.js).
 const heatmap = setupHeatmap(modeler, { branchHint: () => decisions.routing() })
+// Pilote automatique : les passerelles choisissent leur branche pendant l'animation, selon les mêmes règles.
+setupSimulationAutopilot(modeler, { branchHint: () => decisions.routing() })
 
 // Poignée pour régler la largeur du panneau Processus.
 translatePanelTitles(document.getElementById('properties-panel'))

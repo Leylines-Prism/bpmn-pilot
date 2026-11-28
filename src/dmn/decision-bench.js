@@ -15,7 +15,9 @@ export function resultText(d, r) {
   if (r.error === 'any-conflict') return { error: true, text: T(`Rules ${r.matched.join(', ')} apply with different outputs, which the Any hit policy forbids.`, `Les règles ${r.matched.join(', ')} s'appliquent avec des sorties différentes, ce que la politique Toutes interdit.`) }
   if (!r.matched.length) return { error: false, none: true, text: T('No rule applies: the result is empty.', 'Aucune règle ne s\'applique : le résultat est vide.') }
   const rules = r.matched.length > 1 ? T(`Rules ${r.matched.join(', ')}`, `Règles ${r.matched.join(', ')}`) : T(`Rule ${r.matched[0]}`, `Règle ${r.matched[0]}`)
-  const fmt = (o) => Object.entries(o).map(([k, v]) => `${k} = ${show(v)}`).join(', ')
+  // Les sorties sont nommées par leur libellé (Plat), pas par leur variable (desiredDish).
+  const labels = Object.fromEntries((d.outputs || []).map((o) => [o.name, o.label || o.name]))
+  const fmt = (o) => Object.entries(o).map(([k, v]) => `${labels[k] || k} = ${show(v)}`).join(', ')
   const value = Array.isArray(r.result) ? `[${r.result.map((o) => `{ ${fmt(o)} }`).join(', ')}]` : typeof r.result === 'number' ? show(r.result) : fmt(r.result)
   return { error: false, text: `${rules} → ${value}` }
 }
@@ -80,6 +82,12 @@ export function createBench(container, { getDecision, onHits }) {
     if (fresh.inputs.length !== decision?.inputs.length) { await refresh(); return }
     decision = fresh
     casesBox.hidden = true
+    if (!decision.rules.length) {
+      say(T('This table has no rule yet, so nothing can apply. Add a rule with the + under the table, or fill it in with the co-pilot.',
+        'Cette table n\'a encore aucune règle : rien ne peut s\'appliquer. Ajoutez une règle avec le + sous la table, ou faites-la remplir par le Co-pilote.'), 'none')
+      onHits([])
+      return
+    }
     const values = [...form.querySelectorAll('input, select')].map((f) => f.value)
     try {
       const r = evaluateDecision(decision, values)

@@ -155,3 +155,50 @@ body.presenting .dmn-badge:not(:has(svg)), body.presenting .dmn-badge.broken,
   color: inherit; font: inherit; cursor: pointer;
 }
 .dmn-sheet-menu button:hover, .dmn-sheet-menu button:focus-visible { background: var(--surface-sunken); }
+
+/* Co-pilote dans la fenêtre DMN : bouton au contour Leylines, grisé sans modèle d'IA avec une
+   icône d'aide qui dit pourquoi (même règle que le menu Expert). */
+#dmn-dialog .dmn-copilot-wrap { position: relative; display: inline-flex; align-items: center; }
+#dmn-dialog .dmn-copilot-wrap[hidden] { display: none; }
+#dmn-dialog .btn.dmn-ai { border-color: transparent; background: linear-gradient(var(--surface-raised), var(--surface-raised)) padding-box, var(--leyline) border-box; }
+#dmn-dialog .btn.dmn-ai:disabled { opacity: 0.55; cursor: default; }
+#dmn-dialog .copilot-help {
+  display: none; position: relative; width: 18px; height: 18px; margin-left: 4px; cursor: help; border-radius: 50%; color: var(--ink-muted);
+}
+#dmn-dialog .copilot-help-icon { display: block; width: 100%; height: 100%; background-color: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+#dmn-dialog .dmn-copilot-wrap:has(> .btn:disabled) .copilot-help { display: block; }
+#dmn-dialog .copilot-help:hover, #dmn-dialog .copilot-help:focus-visible { color: var(--accent); }
+#dmn-dialog .copilot-help:hover::after, #dmn-dialog .copilot-help:focus-visible::after {
+  content: attr(aria-label); position: absolute; right: -6px; top: calc(100% + 8px); z-index: 30;
+  width: 260px; padding: 8px 10px; border-radius: var(--radius-sm, 8px);
+  background: var(--ink); color: var(--surface-raised); box-shadow: var(--elevation-1);
+  font-size: 12px; line-height: 1.4; font-weight: 400; white-space: normal; text-align: left;
+}
+
+/* Table sans règle : guide sous la table (zone de travail toujours claire). */
+#dmn-dialog .dmn-guide {
+  position: absolute; left: var(--space-3); right: var(--space-3); z-index: 2;
+  max-width: 760px; margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4);
+  border: 1px dashed #0F6FAD; border-radius: var(--radius-md); background: #F3F9FD; color: #22242A;
+  font-family: var(--font-sans); font-size: 14px; line-height: 21px;
+}
+#dmn-dialog .dmn-guide[hidden] { display: none; }
+#dmn-dialog .dmn-guide h3 { margin: 0 0 6px; font-size: 16px; line-height: 22px; font-weight: 600; }
+#dmn-dialog .dmn-guide p { margin: 0 0 6px; }
+#dmn-dialog .dmn-guide ol { margin: 0 0 var(--space-3); padding-left: 22px; }
+#dmn-dialog .dmn-guide li { margin: 3px 0; }
+#dmn-dialog .dmn-guide code { white-space: nowrap; padding: 0 4px; border-radius: 4px; background: #FFFFFF; border: 1px solid #D5DEE8; font-size: 13px; }
+#dmn-dialog .dmn-guide-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#dmn-dialog .dmn-guide .btn { background-color: #FFFFFF; color: #22242A; }
+#dmn-dialog .dmn-guide .btn.dmn-ai { background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, var(--leyline) border-box; }
+#dmn-dialog .dmn-guide .copilot-help { color: #5B6270; }
+
+/* En-tête sur une ligne : quand la fenêtre se resserre, les boutons secondaires ne gardent que
+   leur pictogramme (nom en bulle et pour les lecteurs d'écran), puis Tester et le Co-pilote. */
+#dmn-dialog { container: dmn-dialog / inline-size; }
+@container dmn-dialog (max-width: 1780px) {
+  #dmn-dialog .dmn-head :is(#dmn-compare, #dmn-library, #dmn-sheet, #dmn-export, #dmn-add) { font-size: 0; gap: 0; width: 34px; padding: 0; justify-content: center; }
+}
+@container dmn-dialog (max-width: 1240px) {
+  #dmn-dialog .dmn-head :is(#dmn-test, #dmn-copilot) { font-size: 0; gap: 0; width: 34px; padding: 0; justify-content: center; }
+}

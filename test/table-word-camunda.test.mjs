@@ -121,7 +121,7 @@ const GATEWAY = `<?xml version="1.0" encoding="UTF-8"?>
 
 test('Camunda 8 export: platform, executable, FEEL conditions from labels, Camunda user task', async () => {
   const { xml, summary } = await toCamunda(new BpmnModdle({ bpmnpilot: pilot }), GATEWAY, 8)
-  assert.deepEqual(summary, { processes: 1, conditions: 1, userTasks: 1, assignees: 1, converted: 0, left: 1 })
+  assert.deepEqual(summary, { processes: 1, conditions: 1, userTasks: 1, assignees: 1, converted: 0, left: 1, forms: 0 })
   assert.match(xml, /modeler:executionPlatform="Camunda Cloud"/)
   assert.match(xml, /modeler:executionPlatformVersion="8\.\d+\.\d+"/)
   assert.match(xml, /isExecutable="true"/)

@@ -18,9 +18,11 @@ test('export_diagram offers every format of the Export menu, and only those', ()
 })
 
 test('the server can store the file of each format', () => {
-  const ext = { camunda8: 'bpmn', camunda7: 'bpmn', 'doc-html': 'html', 'stories-md': 'md', 'raci-xlsx': 'xlsx' }
+  const ext = { forms: 'form', camunda8: 'bpmn', camunda7: 'bpmn', 'doc-html': 'html', 'stories-md': 'md', 'raci-xlsx': 'xlsx' }
   for (const f of TOOL_FORMATS) {
     const e = ext[f] || (f.includes('-') ? f.split('-')[1] : f)
     assert.ok(ExportStore.validFormat(e), `${f} → .${e}`)
   }
+  // Plusieurs formulaires partent en archive zip.
+  assert.ok(ExportStore.validFormat('zip'))
 })

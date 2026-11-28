@@ -60,6 +60,36 @@ export const EXPERT_ASKS = {
 }
 
 // Ligne ajoutée aux demandes du menu Expert quand elles servent de prompt MCP.
+// Remplir une table de décision DMN : bouton « Remplir avec le Co-pilote » de la fenêtre DMN et
+// « Rédiger avec le Co-pilote » du panneau (src/dmn/setup.js), et prompt MCP fill_decision_table.
+// task et decision : { id, name } ou rien ; rules : nombre de règles déjà écrites.
+export function decisionTableAsk({ task, decision, rules = 0 } = {}) {
+  const q = (x) => `"${x.name || x.id}"`
+  const qf = (x) => `« ${x.name || x.id} »`
+  const what = {
+    en: `Fill in the DMN decision table${decision ? ` of the decision ${decision.id} (${q(decision)})` : ''}${task ? `${decision ? ', called by' : ' of'} the business rule task ${task.id} (${q(task)})` : ''}, from its name, the task's documentation and the rest of the process.`,
+    fr: `Remplis la table de décision DMN${decision ? ` de la décision ${decision.id} (${qf(decision)})` : ''}${task ? `${decision ? ', appelée par' : ' de'} la tâche de règle métier ${task.id} (${qf(task)})` : ''}, d'après son nom, la documentation de la tâche et le reste du processus.`,
+  }
+  const state = !decision
+    ? { en: '', fr: '' }
+    : rules
+      ? { en: ` It already has ${rules} rule(s): keep them unless they are wrong, add the missing cases, and say what you changed.`,
+          fr: ` Elle a déjà ${rules} règle(s) : garde-les sauf si elles sont fausses, ajoute les cas manquants et dis ce que tu as changé.` }
+      : { en: ' It has no rule yet, and its columns may only carry default names (Input, Output): replace them.',
+          fr: ' Elle n\'a encore aucune règle, et ses colonnes ne portent peut-être que des noms par défaut (Entrée, Sortie) : remplace-les.' }
+  const target = { en: [decision && `decisionId ${decision.id}`, task && `linkTo ${task.id}`].filter(Boolean).join(' and '), fr: [decision && `decisionId ${decision.id}`, task && `linkTo ${task.id}`].filter(Boolean).join(' et ') }
+  return {
+    en: what.en + state.en +
+      ` Use set_decision_table${target.en ? ` with ${target.en}` : ''}: name the inputs and outputs in business words, give the allowed values of text inputs and outputs, ` +
+      'choose the hit policy, write rules that do not overlap unless the policy allows it and that cover every combination of allowed values, ' +
+      'and give each rule a short annotation that says why. Then check it with test_decision (one case per rule), sum up the table in a few lines and say what the user must confirm.',
+    fr: what.fr + state.fr +
+      ` Utilise set_decision_table${target.fr ? ` avec ${target.fr}` : ''} : nomme les entrées et sorties en termes métier, donne les valeurs prévues des entrées et sorties texte, ` +
+      'choisis la politique de résultat, écris des règles qui ne se chevauchent pas, sauf si la politique le permet, et qui couvrent toutes les combinaisons de valeurs prévues, ' +
+      'et donne à chaque règle une courte annotation qui dit pourquoi. Vérifie-la ensuite avec test_decision (un cas par règle), résume la table en quelques lignes et dis ce que l\'utilisateur doit confirmer.',
+  }
+}
+
 const OPEN_DIAGRAM = 'Work on the BPMN diagram open in the editor: read it with get_shapes first. Write in the language of the diagram\'s names. I can undo everything with Ctrl+Z.'
 
 export function buildPrompts(z) {
@@ -247,6 +277,21 @@ ${framework ? `Frameworks: ${framework}\n` : ''}
 - If the process identity (owner, version, status, scope) is empty, propose it in your answer and save it on the diagram root only once I confirm it.
 - Change nothing else in the diagram. Then list the three highest risks, and the activities that have a risk without a control.
 Write in the language of the diagram's names. I can undo everything with Ctrl+Z; the process report shows the compliance matrix.`,
+    },
+    {
+      name: 'fill_decision_table',
+      title: 'Fill in a decision table',
+      description:
+        'Writes the DMN decision table of a business rule task (inputs, outputs, hit policy, rules with annotations) from the task, its documentation and the process, links it to the task and tests it. Same request as the "Fill in with the co-pilot" button of the decision window.',
+      argsSchema: {
+        task: z.string().optional().describe('Name or id of the business rule task. Left empty, every business rule task without a decision or with an empty table'),
+      },
+      text: ({ task } = {}) =>
+        `${task
+          ? `Find the business rule task "${task}" with get_shapes, and its decision with get_decisions.`
+          : 'With get_shapes and get_decisions, find the business rule tasks that have no decision, or whose decision table has no rule, and do the following for each of them.'}
+${decisionTableAsk({}).en.replace('Fill in the DMN decision table, ', 'Fill in its DMN decision table, ').replace('Use set_decision_table:', 'Use set_decision_table, with decisionId when the task already has a decision and linkTo the task:')}
+${OPEN_DIAGRAM}`,
     },
     {
       name: 'model_from_event_log',

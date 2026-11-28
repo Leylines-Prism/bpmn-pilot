@@ -7,10 +7,10 @@ import { EXPERT_ASKS, buildPrompts } from '../src/ai/prompts.js'
 const prompts = buildPrompts(z)
 const byName = Object.fromEntries(prompts.map((p) => [p.name, p]))
 
-test('the twelve prompts are there, with unique names', () => {
-  assert.equal(prompts.length, 12)
+test('the thirteen prompts are there, with unique names', () => {
+  assert.equal(prompts.length, 13)
   assert.deepEqual(Object.keys(byName).sort(), [
-    'add_agent_step', 'analyze_process', 'assess_compliance', 'critique_description', 'model_collaboration', 'model_from_event_log',
+    'add_agent_step', 'analyze_process', 'assess_compliance', 'critique_description', 'fill_decision_table', 'model_collaboration', 'model_from_event_log',
     'model_process', 'propose_probabilities', 'rate_ai_potential', 'review_diagram', 'tidy_diagram', 'write_user_stories',
   ])
   for (const p of prompts) assert.ok(p.title && p.description, p.name)
@@ -83,4 +83,28 @@ test('assess_compliance names the frameworks only when given, and keeps what is 
 test('model_from_event_log goes from the log summary to the conformance check', () => {
   const text = byName.model_from_event_log.text()
   for (const tool of ['load_event_log', 'get_log_summary', 'layout_diagram', 'map_log_activities', 'check_conformance', 'apply_log_frequencies']) assert.match(text, new RegExp(tool))
+})
+
+test('fill_decision_table names the task when given, and asks for set_decision_table and test_decision', () => {
+  const p = byName.fill_decision_table
+  assert.equal(z.object(p.argsSchema).safeParse({}).success, true)
+  assert.match(p.text({ task: 'Classify the change' }), /"Classify the change"/)
+  assert.match(p.text({}), /no decision, or whose decision table has no rule/)
+  for (const t of [p.text({}), p.text({ task: 'X' })]) {
+    assert.match(t, /set_decision_table/)
+    assert.match(t, /test_decision/)
+  }
+})
+
+test('decisionTableAsk adapts to an empty table and to a table with rules, in both languages', async () => {
+  const { decisionTableAsk } = await import('../src/ai/prompts.js')
+  const task = { id: 'Task_1', name: 'Classer le change' }
+  const decision = { id: 'Decision_1', name: 'Classer le change' }
+  const empty = decisionTableAsk({ task, decision, rules: 0 })
+  assert.match(empty.en, /decisionId Decision_1 and linkTo Task_1/)
+  assert.match(empty.fr, /decisionId Decision_1 et linkTo Task_1/)
+  assert.match(empty.fr, /aucune règle/)
+  const some = decisionTableAsk({ task, decision, rules: 3 })
+  assert.match(some.en, /already has 3 rule/)
+  assert.match(some.fr, /garde-les/)
 })

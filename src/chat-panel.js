@@ -23,6 +23,7 @@ import { isLocalAddress } from './ai/local-address.js'
 import { addDialogClose } from './dialog-close.js'
 import { setChatModel } from './copilot-analysis.js'
 import { MIC_ICON, setupVoiceInput, voiceSupported } from './voice-input.js'
+import { renderMarkdownInto } from './ai/markdown.js'
 
 const TOOL_LABELS = {
   get_shapes: T('reading the diagram', 'lecture du diagramme'),
@@ -48,6 +49,8 @@ const TOOL_LABELS = {
   set_decision_table: T('decision table', 'table de décision'),
   link_decision: T('decision link', 'lien de décision'),
   test_decision: T('testing the table', 'essai de la table'),
+  get_task_forms: T('reading the forms', 'lecture des formulaires'),
+  set_task_form: T('task form', 'formulaire de tâche'),
   load_event_log: T('loading the event log', 'chargement du journal'),
   get_log_summary: T('reading the event log', 'lecture du journal'),
   map_log_activities: T('matching log steps', 'correspondance des étapes'),
@@ -205,8 +208,8 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
   toggleModel.hidden = true
   toggle.append(toggleModel)
   // À droite de la barre, juste après le badge MCP (version docker), ou en tête
-  // du groupe de droite quand il n'y a pas de badge (version en ligne). Le bouton
-  // du panneau Processus le suit, puis l'état de la sauvegarde.
+  // du groupe de droite quand il n'y a pas de badge (version en ligne), puis
+  // l'état de la sauvegarde.
   const badge = document.getElementById('mcp-status')
   const autosave = document.getElementById('autosave-status')
   const anchor = document.getElementById('btn-properties') || autosave
@@ -216,6 +219,16 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
     toggle.classList.add('push-right')
     autosave.style.marginLeft = '8px'
   } else document.getElementById('btn-expert').after(toggle)
+  // Le bouton du panneau Processus passe à gauche du Co-pilote : les deux panneaux de droite
+  // s'ouvrent depuis le même groupe, le Co-pilote au bord, comme son panneau.
+  const panelButton = document.getElementById('btn-properties')
+  if (panelButton && toggle.previousElementSibling !== panelButton) {
+    toggle.before(panelButton)
+    if (toggle.classList.contains('push-right')) {
+      toggle.classList.remove('push-right')
+      panelButton.classList.add('push-right')
+    }
+  }
 
   const log = panel.querySelector('#chat-log')
   const form = panel.querySelector('#chat-form')
@@ -750,6 +763,8 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
     const reply = add('assistant')
     reply.hidden = true // affichée au premier texte ou au premier outil
     let tools = null
+    let replyBody = null
+    let replyText = ''
     let gotText = false
     let toolSinceText = false
     let failed = false
@@ -780,13 +795,17 @@ export function createChatPanel({ mode, chatUrl, bridge, tools }) {
       } else if (event.type === 'text') {
         reply.hidden = false
         // Un paragraphe par étape : le texte qui suit des appels d'outils repart à la ligne.
-        const hasText = [...reply.childNodes].some((n) => n.nodeType === Node.TEXT_NODE)
-        const chunk = (toolSinceText && hasText ? '\n\n' : '') + event.text
+        replyText += (toolSinceText && replyText ? '\n\n' : '') + event.text
         gotText = true
         toolSinceText = false
-        // Le texte s'ajoute avant la ligne des outils.
-        if (tools) reply.insertBefore(document.createTextNode(chunk), tools)
-        else reply.append(chunk)
+        // Le texte (Markdown rendu, src/ai/markdown.js) se place avant la ligne des outils.
+        if (!replyBody) {
+          replyBody = document.createElement('div')
+          replyBody.className = 'chat-md'
+          if (tools) reply.insertBefore(replyBody, tools)
+          else reply.append(replyBody)
+        }
+        renderMarkdownInto(replyBody, replyText)
       } else if (event.type === 'tool') {
         usage.tools++
         reply.hidden = false

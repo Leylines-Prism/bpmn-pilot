@@ -7,10 +7,18 @@ import fr from './fr.js'
 
 const missing = new Set()
 
+// Textes qui finissent par une liste variable (« … : montant, client ») : le début se traduit,
+// la liste reste telle quelle.
+const PREFIXES = Object.keys(fr).filter((k) => k.endsWith(': '))
+
 function translate(template, replacements) {
   replacements = replacements || {}
 
-  const translated = fr[template]
+  let translated = fr[template]
+  if (translated === undefined) {
+    const prefix = PREFIXES.find((p) => template.startsWith(p))
+    if (prefix) translated = fr[prefix] + template.slice(prefix.length)
+  }
 
   if (translated === undefined && import.meta.env.DEV && !missing.has(template)) {
     missing.add(template)

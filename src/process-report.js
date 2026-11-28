@@ -320,6 +320,19 @@ export async function buildReport(modeler, { name = '', simulation = null, lint 
     }
   }
 
+  // Instances bloquées par la série de jetons : un jeton attend une branche qui ne viendra pas.
+  if (simulation?.runs && simulation.blocked) {
+    for (const [id, count] of Object.entries(simulation.blockedAt || {})) {
+      const element = findAny(definitions, id)
+      if (!element) continue
+      add({
+        kind: 'blocked', level: 'error', element, count, source: 'simulation',
+        title: T('Instances blocked on a merge', 'Instances bloquées sur une convergence'),
+        detail: blockedDetail(quoted([element]), count, simulation.runs),
+      })
+    }
+  }
+
   // Objectifs chiffrés, mesurés par la dernière série de jetons.
   const goals = nodes.filter((n) => goalOf(n)).map((n) => {
     const goal = goalOf(n)
@@ -412,7 +425,7 @@ export async function buildReport(modeler, { name = '', simulation = null, lint 
     const level = list[0].level
     const elements = [...new Map(list.flatMap((f) => f.elements || (f.element ? [f.element] : [])).map((e) => [e.id, e])).values()]
     const axis = axisFor(kind, list, elements, { quoted, simulation })
-    if (axis) axes.push({ ...axis, level, source: kind === 'rework' ? 'simulation' : kind === 'goal' ? 'goal' : kind === 'ai-probability' ? 'copilot' : 'check' })
+    if (axis) axes.push({ ...axis, level, source: kind === 'rework' || kind === 'blocked' ? 'simulation' : kind === 'goal' ? 'goal' : kind === 'ai-probability' ? 'copilot' : 'check' })
   }
   axes.sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level))
 
@@ -624,7 +637,7 @@ export async function buildReport(modeler, { name = '', simulation = null, lint 
       .filter((d) => d.markdown),
     realLife,
     simulation: simulation?.runs
-      ? { runs: simulation.runs, source: simulation.source, truncated: simulation.truncated || 0, nodes: { ...simulation.nodes }, flows: { ...simulation.flows } }
+      ? { runs: simulation.runs, source: simulation.source, truncated: simulation.truncated || 0, blocked: simulation.blocked || 0, blockedAt: { ...(simulation.blockedAt || {}) }, nodes: { ...simulation.nodes }, flows: { ...simulation.flows } }
       : null,
     heat,
     goals: goals.map((g) => ({
@@ -710,6 +723,7 @@ function lintDetail(rule) {
     'end-event-required': T('Every process and sub-process needs an end event.', 'Chaque processus et sous-processus a besoin d\'un événement de fin.'),
     'bpmnpilot/agent-review': T('The result of the AI agent reaches an end without a person seeing it.', 'Le résultat de l\'agent IA atteint une fin sans qu\'une personne le voie.'),
     'bpmnpilot/agent-escalation': T('Nothing in the diagram says what happens if the AI agent fails or takes too long.', 'Rien dans le diagramme ne dit ce qui se passe si l\'agent IA échoue ou tarde.'),
+    'bpmnpilot/form-data': T('A branch or a decision table reads data that no form before it asks for: in the engine, the variable would be empty.', 'Une branche ou une table de décision lit une donnée qu\'aucun formulaire placé avant elle ne demande : dans le moteur, la variable serait vide.'),
   }
   return details[rule] || T(`bpmnlint rule ${rule}.`, `Règle bpmnlint ${rule}.`)
 }
@@ -728,6 +742,14 @@ function axisFor(kind, list, elements, { quoted, simulation }) {
       title: T('Give the loop a way out', 'Donner une issue à la boucle'),
       change: T(`Add a path from ${quoted(elements)} to an end event, for example an exclusive gateway that limits repetitions.`,
         `Ajouter depuis ${quoted(elements)} un chemin vers un événement de fin, par exemple une passerelle exclusive qui limite les répétitions.`),
+      effect: T('Every instance can complete.', 'Toutes les instances peuvent se terminer.'),
+    }
+  }
+  if (kind === 'blocked') {
+    return {
+      title: n === 1 ? T(`Unblock ${quoted(elements)}`, `Débloquer ${quoted(elements)}`) : T('Unblock the merges', 'Débloquer les convergences'),
+      change: T(`Match each merge with the split that opens its branches: a parallel merge after a parallel split, an exclusive merge after an exclusive split. Here: ${quoted(elements)}.`,
+        `Accorder chaque convergence avec la divergence qui ouvre ses branches : convergence parallèle après une divergence parallèle, exclusive après une divergence exclusive. Ici : ${quoted(elements)}.`),
       effect: T('Every instance can complete.', 'Toutes les instances peuvent se terminer.'),
     }
   }
@@ -805,6 +827,14 @@ function axisFor(kind, list, elements, { quoted, simulation }) {
       change: T(`Attach a timer, error or escalation boundary event to ${quoted(elements)}, leading to a person.`,
         `Accrocher à ${quoted(elements)} un événement en bordure (minuterie, erreur ou escalade) qui mène à une personne.`),
       effect: T('A failed or stalled agent does not block the instance.', 'Un agent en échec ou bloqué n\'arrête pas l\'instance.'),
+    }
+  }
+  if (kind === 'lint:bpmnpilot/form-data') {
+    return {
+      title: T('Ask for the data the process reads', 'Demander les données que lit le processus'),
+      change: T(`Add the missing fields to a form placed before ${quoted(elements)}, with the same key as the variable.`,
+        `Ajouter les champs manquants à un formulaire placé avant ${quoted(elements)}, avec la même clé que la variable.`),
+      effect: T('Every branch and decision reads data someone filled in.', 'Chaque branche et chaque décision lit une donnée que quelqu\'un a remplie.'),
     }
   }
   if (kind === 'lint:fake-join') {
@@ -893,6 +923,7 @@ export function reportToMarkdown(r) {
     }
     lines.push('', `${T('**Never reached**:', '**Jamais atteints** :')} ${h.never.length ? mdCell(h.never.join(' · ')) : T('none', 'aucun')}.`)
     if (r.simulation.truncated) lines.push('', truncatedText(r.simulation.truncated))
+    if (r.simulation.blocked) lines.push('', blockedText(r.simulation.blocked, r.simulation.runs))
   }
   if (r.realLife) {
     const m = r.realLife
@@ -1024,6 +1055,13 @@ const realLifeIntro = (m) => T(
 const conformanceText = (m) => T(
   `${Math.round((m.total ? m.fitting / m.total : 1) * 100)} % of cases follow the diagram (${num(m.fitting)} of ${num(m.total)}), fitness ${m.fitness.toFixed(2)}.`,
   `${Math.round((m.total ? m.fitting / m.total : 1) * 100)} % des dossiers suivent le schéma (${num(m.fitting)} sur ${num(m.total)}), conformité ${m.fitness.toFixed(2).replace('.', ',')}.`)
+// Une convergence où des jetons attendent pour toujours : la branche attendue n'a pas été prise.
+const blockedDetail = (where, count, runs) => T(
+  `${num(count)} of ${num(runs)} instances (${Math.round((count / runs) * 100)} %) stay blocked on ${where}: a token waits there for a branch that was not taken, so the instance never completes.`,
+  `${num(count)} instances sur ${num(runs)} (${Math.round((count / runs) * 100)} %) restent bloquées sur ${where} : un jeton y attend une branche qui n'a pas été prise, et l'instance ne se termine jamais.`)
+const blockedText = (n, runs) => T(
+  `${num(n)} of ${num(runs)} instances (${Math.round((n / runs) * 100)} %) stayed blocked on a merge: see the findings.`,
+  `${num(n)} instances sur ${num(runs)} (${Math.round((n / runs) * 100)} %) sont restées bloquées sur une convergence : voir les constats.`)
 const truncatedText = (n) => T(`${num(n)} instance(s) stopped after 5,000 steps: check for a loop without exit.`, `${num(n)} instance(s) arrêtée(s) après 5 000 étapes : vérifiez qu'aucune boucle n'est sans sortie.`)
 const branchText = (b) => [b.branch, b.target].filter(Boolean).join(' → ')
 const probabilityText = (b) => (b.probability === null ? T('shared', 'partagée') : `${num(b.probability)} %${b.ai ? T(' (AI, to review)', ' (IA, à revoir)') : ''}`)
@@ -1295,6 +1333,11 @@ export async function reportToPdf(modeler, r) {
     if (sim.truncated) {
       doc.setTextColor(...hex(COLORS.warning.strong))
       doc.text(pdfText(truncatedText(sim.truncated)), M, y)
+      y += 6
+    }
+    if (sim.blocked) {
+      doc.setTextColor(...hex(COLORS.warning.strong))
+      doc.text(pdfText(blockedText(sim.blocked, sim.runs)), M, y)
       y += 6
     }
     const h = r.heat

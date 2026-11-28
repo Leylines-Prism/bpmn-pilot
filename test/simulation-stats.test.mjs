@@ -84,3 +84,33 @@ test('the probability attribute survives a round trip', async () => {
   const { xml } = await moddle.toXML(defs)
   assert.match(xml, /bpmnpilot:probability="42.5"/)
 })
+
+test('a parallel merge after an exclusive split counts blocked instances', async () => {
+  const defs = await load(process(`
+    <bpmn:startEvent id="S" />
+    <bpmn:exclusiveGateway id="X" />
+    <bpmn:task id="A" /><bpmn:task id="B" />
+    <bpmn:parallelGateway id="J" />
+    <bpmn:endEvent id="End" />
+    ${flow('s-x', 'S', 'X')}${flow('x-a', 'X', 'A', 50)}${flow('x-b', 'X', 'B', 50)}
+    ${flow('a-j', 'A', 'J')}${flow('b-j', 'B', 'J')}${flow('j-end', 'J', 'End')}`))
+  const r = runBatch(defs, 200, seeded(3))
+  assert.equal(r.blocked, 200)
+  assert.deepEqual(r.blockedAt, { J: 200 })
+  assert.equal(r.nodes.End, undefined)
+})
+
+test('a well-formed process has no blocked instance, a terminate end does not block', async () => {
+  const defs = await load(process(`
+    <bpmn:startEvent id="S" />
+    <bpmn:parallelGateway id="F" />
+    <bpmn:task id="A" /><bpmn:task id="B" />
+    <bpmn:parallelGateway id="J" />
+    <bpmn:endEvent id="End" />
+    <bpmn:endEvent id="Stop"><bpmn:terminateEventDefinition /></bpmn:endEvent>
+    ${flow('s-f', 'S', 'F')}${flow('f-a', 'F', 'A')}${flow('f-b', 'F', 'B')}
+    ${flow('a-j', 'A', 'J')}${flow('b-stop', 'B', 'Stop')}${flow('j-end', 'J', 'End')}`))
+  const r = runBatch(defs, 50, seeded(4))
+  assert.equal(r.blocked, 0)
+  assert.deepEqual(r.blockedAt, {})
+})

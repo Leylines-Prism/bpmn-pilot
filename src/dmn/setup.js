@@ -8,6 +8,7 @@ import { openDecisionEditor } from './decision-editor.js'
 import { setupDmnSwitch, setDmn, isDmnShown } from './dmn-switch.js'
 import { routingHint } from './decision-routing.js'
 import { ruleTasks } from './decision-store.js'
+import { decisionTableAsk } from '../ai/prompts.js'
 
 export function setupDecisions({ modeler, library, download, baseName, setStatus, askCopilot }) {
   const service = createDecisionService(modeler)
@@ -41,6 +42,37 @@ export function setupDecisions({ modeler, library, download, baseName, setStatus
         libraryRef = { place: saved.place, id: saved.id }
         return saved.message
       },
+      fillWithCopilot: (decision) => fillWithCopilot(decision, task || callerOf(decision.id)),
+      openExample: (shownId) => openExample(() => open({ decisionId: shownId || decisionId, task, view: 'table' })),
+    })
+  }
+
+  // Tâche qui appelle une décision, quand la fenêtre a été ouverte sans tâche.
+  const callerOf = (decisionId) => elementRegistry.filter((e) => e.type === 'bpmn:BusinessRuleTask').find((e) => service.decisionRefOf(e) === decisionId)
+
+  function fillWithCopilot(decision, task) {
+    const ask = decisionTableAsk({
+      task: task ? { id: task.id, name: nameOf(task) } : null,
+      decision: { id: decision.id, name: decision.name },
+      rules: decision.rules?.length || 0,
+    })
+    askCopilot(T(ask.en, ask.fr))
+  }
+
+  // Exemple « Plat du jour » (src/dmn/example-dish.js), ouvert à part : rien n'est enregistré, et
+  // la fermeture ramène à la table de l'utilisateur.
+  async function openExample(back) {
+    const { exampleDishXml, EXAMPLE_DECISION } = await import('./example-dish.js')
+    await openDecisionEditor({
+      xml: exampleDishXml(),
+      decisionId: EXAMPLE_DECISION,
+      view: 'table',
+      mode: 'example',
+      title: T('Dish of the day', 'Plat du jour'),
+      subtitle: T('Example from the dmn-js examples: try it with Test, nothing is saved', 'Exemple tiré des exemples dmn-js : essayez-le avec Tester, rien n\'est enregistré'),
+      fileName: () => T('Dish of the day - example', 'Plat du jour - exemple'),
+      download,
+      onClose: back,
     })
   }
 
@@ -114,14 +146,12 @@ export function setupDecisions({ modeler, library, download, baseName, setStatus
     importFromLibrary,
     listLibraryModels: () => library.listDecisionModels(),
     labels: () => ({ inputLabel: T('Input', 'Entrée'), outputLabel: T('Output', 'Sortie') }),
-    copilotReady: () => !document.getElementById('btn-ai-probabilities')?.disabled,
-    askCopilot: (task) => askCopilot(T(
-      `Write the DMN decision table of the business rule task ${task.id} ("${nameOf(task)}"), from its label, its documentation and the rest of the process. ` +
-        'Use set_decision_table with linkTo set to this task: name the inputs and outputs in business words, give the allowed values of text inputs and outputs, ' +
-        'choose the hit policy, and write rules that do not overlap unless the policy allows it. Then sum up the table in a few lines and say what the user must confirm.',
-      `Rédige la table de décision DMN de la tâche de règle métier ${task.id} (« ${nameOf(task)} »), d'après son libellé, sa documentation et le reste du processus. ` +
-        'Utilise set_decision_table avec linkTo sur cette tâche : nomme les entrées et sorties en termes métier, donne les valeurs prévues des entrées et sorties texte, ' +
-        'choisis la politique de résultat, et écris des règles qui ne se chevauchent pas, sauf si la politique le permet. Résume ensuite la table en quelques lignes et dis ce que l\'utilisateur doit confirmer.')),
+    copilotReady: () => document.documentElement.classList.contains('copilot-ready'),
+    askCopilot: (task) => {
+      const ask = decisionTableAsk({ task: { id: task.id, name: nameOf(task) } })
+      askCopilot(T(ask.en, ask.fr))
+    },
+    fillWithCopilot: (task, decision) => fillWithCopilot(decision, task),
     explainWithCopilot: (task, decision) => askCopilot(T(
       `Explain in plain words, in a few lines, the DMN decision table ${decision.id} ("${decision.name || decision.id}") called by the task ${task.id} ("${nameOf(task)}"). ` +
         'Then check it with test_decision: one case per rule, then two or three edge cases (limits of ranges, values no rule covers). ' +
@@ -177,5 +207,5 @@ export function setupDecisions({ modeler, library, download, baseName, setStatus
     return routingHint(summary, (bo) => links.get(bo) || '', variable)
   }
 
-  return { service, open, openDecisionModel, importDmnFile, report, links, routing }
+  return { service, open, openDecisionModel, openExample, importDmnFile, report, links, routing }
 }

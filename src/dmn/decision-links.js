@@ -41,6 +41,14 @@ function useSummary() {
   return summary
 }
 
+// Bouton du Co-pilote : grisé sans modèle d'IA, avec une ligne qui dit pourquoi.
+function aiButton(busy, onClick, label) {
+  const ready = actions.copilotReady()
+  return html`<button type="button" class="dmn-button ai" disabled=${busy || !ready} onClick=${onClick}
+      title=${ready ? '' : T('Connect an AI model to the co-pilot to use this function', 'Connectez un modèle d\'IA au Co-pilote pour utiliser cette fonction')}>${label}</button>
+    ${ready ? null : html`<p class="dmn-message">${T('Needs an AI model: Co-pilot > Options.', 'Demande un modèle d\'IA : Co-pilote IA > Options.')}</p>`}`
+}
+
 function DecisionEntry({ element, id }) {
   const summary = useSummary()
   const [busy, setBusy] = useState(false)
@@ -83,8 +91,9 @@ function DecisionEntry({ element, id }) {
           <span class="dmn-ico" dangerouslySetInnerHTML=${{ __html: TABLE_ICON }}></span>${T('Open the table', 'Ouvrir la table')}</button>` : null}
         <button type="button" class="dmn-button" disabled=${busy} onClick=${() => run(() => actions.service.unlink(element))}>${T('Unlink', 'Délier')}</button>
       </div>
-      ${decision && actions.copilotReady() ? html`<button type="button" class="dmn-button ai" disabled=${busy} onClick=${() => actions.explainWithCopilot(element, decision)}>
-        ${T('✦ Explain and test with the co-pilot', '✦ Expliquer et tester avec le Co-pilote')}</button>` : null}
+      ${decision && decision.kind === 'table' && !decision.rules.length
+        ? aiButton(busy, () => actions.fillWithCopilot(element, decision), T('✦ Fill in with the co-pilot', '✦ Remplir avec le Co-pilote'))
+        : decision ? aiButton(busy, () => actions.explainWithCopilot(element, decision), T('✦ Explain and test with the co-pilot', '✦ Expliquer et tester avec le Co-pilote')) : null}
       ${message ? html`<p class="dmn-message">${message}</p>` : null}
     </div>`
   }
@@ -106,8 +115,7 @@ function DecisionEntry({ element, id }) {
           <option value="">${T('Choose a decision model…', 'Choisir un modèle de décision…')}</option>
           ${libraryModels.map((r) => html`<option value=${r.key}>${r.name}</option>`)}
         </select>` : null}
-      ${actions.copilotReady() ? html`<button type="button" class="dmn-button ai" disabled=${busy} onClick=${() => actions.askCopilot(element)}>
-        ${T('✦ Draft it with the co-pilot', '✦ Rédiger avec le Co-pilote')}</button>` : null}
+      ${aiButton(busy, () => actions.askCopilot(element), T('✦ Draft it with the co-pilot', '✦ Rédiger avec le Co-pilote'))}
     </div>
     ${message ? html`<p class="dmn-message">${message}</p>` : null}
   </div>`

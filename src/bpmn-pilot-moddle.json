@@ -101,6 +101,14 @@
       ]
     },
     {
+      "name": "TaskForm",
+      "superClass": ["Element"],
+      "meta": { "allowedIn": ["bpmn:UserTask", "bpmn:StartEvent"] },
+      "properties": [
+        { "name": "schema", "isBody": true, "type": "String" }
+      ]
+    },
+    {
       "name": "DecisionModel",
       "superClass": ["Element"],
       "meta": { "allowedIn": ["bpmn:Process", "bpmn:Collaboration"] },

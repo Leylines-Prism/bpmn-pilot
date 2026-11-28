@@ -171,7 +171,7 @@ editor tabs, and its log goes to the error output. Directory checks use this mod
 | `get_shapes` | lists the diagram's shapes and connections (id, type, name, position, links) |
 | `get_diagram_xml` | returns the diagram as BPMN 2.0 XML |
 | `get_diagram_image` | returns a PNG image of the diagram, as drawn on the canvas, so the model can check the layout or show it (with OpenAI-compatible providers, Mistral included, the built-in AI co-pilot cannot receive it) |
-| `export_diagram` | produces a file like the Export menu: the diagram (`bpmn`, `svg`, `png`, `pdf`) or one of its documents (`dmn` decisions, `camunda8` and `camunda7` BPMN, process report `report-pdf`, `report-md`, `report-docx`, procedure sheets `sheets-pdf`, `sheets-md`, `sheets-docx`, `doc-html` documentation page, `stories-md` user stories, `raci-xlsx` RACI matrix). Only the encrypted file stays out of it: a password has no place with an agent. The file is saved in `EXPORTS_DIR`, never replacing another one, and the editor shows a Download button: nothing is downloaded unless the user clicks it. With `returnFile`, the file is also returned to the client (PNG as an image, BPMN, SVG, DMN, Markdown and HTML as text, PDF, Word and Excel as an embedded resource, 10 MB at most) |
+| `export_diagram` | produces a file like the Export menu: the diagram (`bpmn`, `svg`, `png`, `pdf`) or one of its documents (`dmn` decisions, `forms` task forms as a .form file or a .zip, `camunda8` and `camunda7` BPMN, process report `report-pdf`, `report-md`, `report-docx`, procedure sheets `sheets-pdf`, `sheets-md`, `sheets-docx`, `doc-html` documentation page, `stories-md` user stories, `raci-xlsx` RACI matrix). Only the encrypted file stays out of it: a password has no place with an agent. The file is saved in `EXPORTS_DIR`, never replacing another one, and the editor shows a Download button: nothing is downloaded unless the user clicks it. With `returnFile`, the file is also returned to the client (PNG as an image, BPMN, SVG, DMN, .form, Markdown and HTML as text, PDF, Word and Excel as an embedded resource, 10 MB at most) |
 | `set_diagram_xml` | replaces the whole diagram. Unreadable XML, or XML without a drawn diagram, is rejected and the diagram stays unchanged |
 | `add_shapes` | adds shapes, after an element (`after`, automatic placement and connection), at a position, or to the right of the diagram. Also adds pools (`Participant`) and their lanes (`Lane`), and places a shape in a lane with `parent`. With `attachTo`, adds a boundary event (timer, error…) on a task |
 | `connect_shapes` | connects two shapes. The connection type follows the bpmn-js BPMN rules |
@@ -194,6 +194,8 @@ editor tabs, and its log goes to the error output. Directory checks use this mod
 | `set_decision_table` | creates a DMN decision table, or replaces one, in the decision model of the diagram, and can link a task to it (`linkTo`). The link is written for BPMN-Pilot and for Camunda 8 (`zeebe:calledDecision`) |
 | `link_decision` | links a task to a decision of the diagram, or unlinks it |
 | `test_decision` | evaluates a decision table on input cases without changing it: rules that apply and result under the hit policy. Without cases, one case per rule, to check that each rule fires |
+| `get_task_forms` | lists the forms of user tasks and start events (fields, keys, types, required, allowed values, variables filled in), the user tasks without a form, and the data check: gateways and decision tables that read a variable no earlier form fills in |
+| `set_task_form` | writes the form of a user task or start event from a list of fields (or a full form-js schema), stored in the diagram file with the Camunda 8 link (`zeebe:formDefinition`). A plain task becomes a user task |
 
 A call that fails halfway is undone entirely: the diagram is never left half changed.
 
@@ -206,7 +208,7 @@ the tools and give modeling rules: start and end events, verb + object for tasks
 events, a question on each exclusive gateway, no implicit split or join, the happy path from left to right.
 Most of them match what `validate_diagram` checks. The built-in chat sends the same text.
 
-The server also offers twelve MCP prompts (`src/ai/prompts.js`), which the user picks in their client. The first three of the Expert block send the same request as the matching Expert menu commands of the AI co-pilot:
+The server also offers thirteen MCP prompts (`src/ai/prompts.js`), which the user picks in their client. The first three of the Expert block send the same request as the matching Expert menu commands of the AI co-pilot:
 
 | Prompt | Arguments | Purpose |
 |---|---|---|
@@ -222,6 +224,7 @@ The server also offers twelve MCP prompts (`src/ai/prompts.js`), which the user 
 | `analyze_process` | none | runs 100 tokens, reads the report and saves its analysis with `set_report_commentary` (Expert > Co-pilot analysis) |
 | `assess_compliance` | `framework` (optional) | writes the risks, controls and requirements of each activity, and proposes the process identity |
 | `model_from_event_log` | none | draws the process from the loaded event log, then checks the log against it (fitness, deviations, real shares) |
+| `fill_decision_table` | `task` (optional) | writes the DMN decision table of a business rule task (inputs, outputs, hit policy, annotated rules), links it and tests it with `test_decision` (decision window > Fill in with the co-pilot) |
 
 ## Saved diagrams
 

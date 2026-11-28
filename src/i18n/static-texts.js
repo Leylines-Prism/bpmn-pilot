@@ -11,6 +11,7 @@ const FR = {
   '#btn-open-menu': { text: 'Ouvrir', title: 'Ouvrir un fichier, coller du XML, construire depuis un tableau ou une grille, ou comparer avec un fichier' },
   '#btn-open': { text: 'Fichier .bpmn, .xml ou chiffré…', title: 'Ouvrir un diagramme BPMN 2.0 depuis votre ordinateur, ou un fichier chiffré .bpmn.enc' },
   '#btn-open-dmn': { text: 'Fichier .dmn (décisions)…', title: 'Ajouter les décisions d\'un fichier DMN au diagramme ouvert, pour les lier à ses tâches de règle métier' },
+  '#btn-save-forms': { text: 'Formulaires des tâches (fichiers .form)', title: 'Les formulaires des tâches de ce diagramme en fichiers form-js (.form, ou un .zip qui les réunit), à déployer avec le processus dans Camunda 8' },
   '#btn-save-dmn': { text: 'Décisions (fichier .dmn)', title: 'Les décisions de ce diagramme en fichier DMN 1.3, pour Camunda Modeler ou un moteur de décision' },
   '#btn-expert-modules': { text: 'Choisir les modules…', title: 'Allumer ou éteindre chaque fonction experte' },
   '#btn-dmn-drd': { text: 'Décisions du diagramme…', title: 'Ouvrir les décisions de ce diagramme et leur diagramme d\'exigences' },

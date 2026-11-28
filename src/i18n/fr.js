@@ -420,6 +420,8 @@ export default {
   // Règles maison bpmnpilot/agent-review et agent-escalation (src/lint/agent-steps.js)
   'AI agent step without human review: route its result to a user or manual task': "Étape d'agent IA sans revue humaine : faites passer son résultat par une tâche utilisateur ou manuelle",
   'AI agent step without an exit if the agent fails: add a timer, error or escalation boundary event': "Étape d'agent IA sans sortie si l'agent échoue : ajoutez un événement en bordure de minuterie, d'erreur ou d'escalade",
+  // Règle maison bpmnpilot/form-data (src/lint/form-data.js) : la liste des variables suit les deux-points.
+  'Reads process data that no form before it fills in: ': 'Lit des données du processus qu\'aucun formulaire placé avant ne remplit : ',
   // bpmn-js-token-simulation
   'Token Simulation': 'Simulation de jetons',
   'Play Simulation': 'Lancer la simulation',

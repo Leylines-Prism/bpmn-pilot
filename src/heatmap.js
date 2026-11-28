@@ -78,7 +78,7 @@ export function setupHeatmap(modeler, { branchHint = () => null } = {}) {
   let counted = '' // empreinte de la structure au moment des comptes (src/copilot-analysis.js)
 
   function empty(source) {
-    return { nodes: {}, flows: {}, runs: 0, truncated: 0, source }
+    return { nodes: {}, flows: {}, runs: 0, truncated: 0, blocked: 0, blockedAt: {}, source }
   }
   const current = () => batch || live
   const hasData = (r) => r && r.runs > 0
@@ -227,6 +227,15 @@ export function setupHeatmap(modeler, { branchHint = () => null } = {}) {
         badge.textContent = heatBadge(n, result)
         overlays.add(el, 'heatmap', { position: { top: -11, right: el.width > 60 ? 8 : -12 }, html: badge })
       }
+      // Convergence où des instances restent bloquées : pastille rouge en haut à droite du losange.
+      const stuck = result.blockedAt?.[el.id]
+      if (stuck) {
+        const badge = document.createElement('div')
+        badge.className = 'heatmap-badge blocked'
+        badge.textContent = T(`${num(stuck)} blocked`, `${num(stuck)} bloquée${stuck > 1 ? 's' : ''}`)
+        badge.title = T('Instances whose token waits here for a branch that was not taken', 'Instances dont un jeton attend ici une branche qui n\'a pas été prise')
+        overlays.add(el, 'heatmap', { position: { top: -14, left: el.width - 6 }, html: badge })
+      }
     }
     renderLegend(result, max)
   }
@@ -278,6 +287,7 @@ export function setupHeatmap(modeler, { branchHint = () => null } = {}) {
       <span class="heatmap-scale" style="background: linear-gradient(90deg, ${gradient})"></span>
       <span class="heatmap-ticks"><span>1</span><span>${num(max)}</span></span>
       <span class="heatmap-note">${T('Flow width follows the count. Dashed grey: never reached.', 'Épaisseur des flux selon le nombre de passages. Gris pointillé : jamais atteint.')}</span>
+      ${result.blocked ? `<span class="heatmap-note warn">${T(`${num(result.blocked)} instance(s) out of ${num(result.runs)} stayed blocked on a merge (red badge): a token waits there for a branch that was not taken.`, `${num(result.blocked)} instance(s) sur ${num(result.runs)} bloquée(s) sur une convergence (pastille rouge) : un jeton y attend une branche qui n'a pas été prise.`)}</span>` : ''}
       ${result.truncated ? `<span class="heatmap-note warn">${T(`${num(result.truncated)} instance(s) stopped after 5,000 steps: check for a loop without exit.`, `${num(result.truncated)} instance(s) arrêtée(s) après 5 000 étapes : vérifiez qu'aucune boucle n'est sans sortie.`)}</span>` : ''}`
     legend.querySelector('.heatmap-source').textContent = source
   }

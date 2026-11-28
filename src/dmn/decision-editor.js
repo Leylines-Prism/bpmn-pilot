@@ -22,6 +22,7 @@ let dialog = null
 let current = null // { modeler, baseline, mode, onSave, onClose, ... }
 let bench = null
 let compare = null
+const watched = new WeakSet() // vues dmn-js dont on suit les changements (guide de la table vide)
 
 async function loadDmnJs() {
   const [{ default: DmnModeler }, { default: frDmn }] = await Promise.all([
@@ -54,6 +55,7 @@ function build() {
         <button type="button" role="tab" data-view="drd">${T('Requirements (DRD)', 'Exigences (DRD)')}</button>
       </div>
       <span class="dmn-grow"></span>
+      <span class="dmn-copilot-wrap"><button type="button" class="btn dmn-ai" id="dmn-copilot" data-icon="assistant">${T('Fill in with the co-pilot', 'Remplir avec le Co-pilote')}</button><span class="copilot-help" role="img" tabindex="0" aria-label="${T('Connect an AI model to the co-pilot to use this function', 'Connectez un modèle d\'IA au Co-pilote pour utiliser cette fonction')}"><span class="copilot-help-icon" data-icon="help"></span></span></span>
       <button type="button" class="btn" id="dmn-test" data-icon="play" aria-pressed="false" title="${T('Try input values on this table and see which rules apply', 'Essayer des valeurs d\'entrée sur cette table et voir les règles qui s\'appliquent')}">${T('Test', 'Tester')}</button>
       <button type="button" class="btn" id="dmn-compare" data-icon="compare" aria-pressed="false" title="${T('See what changed in the decisions since the window opened, or compared with a .dmn file', 'Voir ce qui a changé dans les décisions depuis l\'ouverture de la fenêtre, ou par rapport à un fichier .dmn')}">${T('Compare', 'Comparer')}</button>
       <button type="button" class="btn" id="dmn-add" data-icon="new" hidden></button>
@@ -67,7 +69,7 @@ function build() {
         </div>
         <input type="file" id="dmn-sheet-file" accept=".xlsx,.csv,.tsv,.txt" hidden />
       </div>
-      <button type="button" class="btn" id="dmn-export" data-icon="save">${T('Export .dmn', 'Exporter .dmn')}</button>
+      <button type="button" class="btn" id="dmn-export" data-icon="save" title="${T('Download these decisions as a .dmn file', 'Télécharger ces décisions en fichier .dmn')}">${T('Export .dmn', 'Exporter .dmn')}</button>
       <button type="button" class="btn icon-only dmn-close" aria-label="${T('Close', 'Fermer')}" title="${T('Close (Esc)', 'Fermer (Échap)')}">×</button>
     </div>
     <p class="dmn-status" id="dmn-status" role="status"></p>
@@ -109,6 +111,7 @@ function build() {
     current.download(xml, `${current.fileName()}.dmn`, 'application/xml')
   })
   setupSheet()
+  dialog.querySelector('#dmn-copilot').addEventListener('click', () => fillWithCopilot())
   dialog.querySelector('#dmn-library').addEventListener('click', async () => {
     if (!current?.saveToLibrary) return
     say('')
@@ -176,6 +179,89 @@ function setupSheet() {
       say(T(`Cannot import "${f.name}": ${err.message}`, `Import de « ${f.name} » impossible : ${err.message}`), true)
     }
   })
+}
+
+// Décision de la table affichée, lue dans le XML de la fenêtre.
+async function shownDecision() {
+  const view = current?.modeler.getActiveView()
+  if (!view || view.type !== 'decisionTable') return null
+  return decisionFromXml(await currentXml(), view.element.id)
+}
+
+// Remplir avec le Co-pilote : la fenêtre se ferme (les changements vont dans le diagramme), puis
+// le Co-pilote reçoit la demande, avec la décision, la tâche qui l'appelle et ses règles actuelles.
+async function fillWithCopilot() {
+  if (!current?.fillWithCopilot || !copilotReady()) return
+  const d = await shownDecision()
+  if (!d) return
+  const ask = current.fillWithCopilot
+  await close()
+  ask(d)
+}
+
+const copilotReady = () => document.documentElement.classList.contains('copilot-ready')
+
+// Table sans règle : un guide sous la table dit comment la lire et l'écrire, et propose le
+// Co-pilote, un exemple tout fait et l'aide. Il disparaît dès la première règle.
+function guideHtml() {
+  const ex = (s) => `<code>${s}</code>`
+  return `
+    <h3>${T('This table has no rule yet', 'Cette table n\'a encore aucune règle')}</h3>
+    <p>${T('A decision table reads row by row: <strong>When</strong> the inputs match the entries of a row, <strong>Then</strong> the outputs take the values of that row.',
+      'Une table de décision se lit ligne par ligne : <strong>Quand</strong> les entrées correspondent aux cases d\'une ligne, <strong>Alors</strong> les sorties prennent les valeurs de cette ligne.')}</p>
+    <ol>
+      <li>${T('Name the columns: click the edit button of <strong>Input</strong> and <strong>Output</strong> to give them business names, such as Impact and Category, and their type.',
+        'Nommez les colonnes : le bouton crayon de <strong>Entrée</strong> et de <strong>Sortie</strong> leur donne un nom métier, par exemple Impact et Catégorie, et un type.')}</li>
+      <li>${T('Add a rule with the <strong>+</strong> under the table, then write each cell in FEEL: ', 'Ajoutez une règle avec le <strong>+</strong> sous la table, puis écrivez chaque case en FEEL : ')}
+        ${ex(T('"High"', '"Fort"'))} ${T('text between double quotes', 'texte entre guillemets')}, ${ex('&lt; 1000')}, ${ex('[1..10]')}, ${ex('-')} ${T('for any value', 'pour « peu importe »')}.</li>
+      <li>${T('Choose the hit policy above the table: Unique (default) forbids two rules that apply together.', 'Choisissez la politique de résultat au-dessus de la table : Unique, par défaut, interdit que deux règles s\'appliquent ensemble.')}</li>
+      <li>${T('<strong>Test</strong> opens the test bench: enter a value per input, Evaluate highlights the rule that applies.', '<strong>Tester</strong> ouvre le banc d\'essai : saisissez une valeur par entrée, Évaluer surligne la règle retenue.')}</li>
+    </ol>
+    <div class="dmn-guide-actions">
+      <span class="dmn-copilot-wrap"><button type="button" class="btn dmn-ai" data-guide="copilot" data-icon="assistant">${T('Fill in with the co-pilot', 'Remplir avec le Co-pilote')}</button><span class="copilot-help" role="img" tabindex="0" aria-label="${T('Connect an AI model to the co-pilot to use this function', 'Connectez un modèle d\'IA au Co-pilote pour utiliser cette fonction')}"><span class="copilot-help-icon" data-icon="help"></span></span></span>
+      <button type="button" class="btn" data-guide="example" data-icon="table">${T('Open an example', 'Ouvrir un exemple')}</button>
+      <a class="btn" data-icon="help" href="${T('help.html#dmn-decisions', 'aide.html#decisions-dmn')}" target="_blank" rel="noopener">${T('Help on decision tables', 'Aide sur les tables de décision')}</a>
+    </div>`
+}
+
+function setupGuide(body) {
+  const guide = document.createElement('section')
+  guide.className = 'dmn-guide'
+  guide.hidden = true
+  guide.innerHTML = guideHtml()
+  guide.querySelector('[data-guide="copilot"]').addEventListener('click', () => fillWithCopilot())
+  guide.querySelector('[data-guide="example"]').addEventListener('click', () => current?.openExample?.(current.decisionId))
+  body.append(guide)
+  return guide
+}
+
+// Montre le guide quand la table affichée n'a aucune règle, et règle les boutons du Co-pilote.
+function refreshGuide() {
+  if (!current) return
+  const view = current.modeler.getActiveView()
+  const onTable = view?.type === 'decisionTable'
+  let rows = -1
+  if (onTable) {
+    try { rows = current.modeler.getActiveViewer().get('sheet').getRoot().rows.length } catch { rows = -1 }
+  }
+  const guide = dialog.querySelector('.dmn-guide')
+  if (guide) {
+    guide.hidden = !(onTable && rows === 0)
+    // Le conteneur de dmn-js occupe toute la hauteur : le guide se place sous la table, par-dessus.
+    const table = !guide.hidden && dialog.querySelector('#dmn-body .tjs-table')
+    if (table) {
+      const body = dialog.querySelector('#dmn-body')
+      guide.style.top = `${table.getBoundingClientRect().bottom - body.getBoundingClientRect().top + body.scrollTop + 16}px`
+    }
+    guide.querySelector('[data-guide="example"]').hidden = !current.openExample
+    guide.querySelector('[data-guide="copilot"]').closest('.dmn-copilot-wrap').hidden = !current.fillWithCopilot
+  }
+  const button = dialog.querySelector('#dmn-copilot')
+  button.closest('.dmn-copilot-wrap').hidden = !onTable || !current.fillWithCopilot
+  button.title = rows > 0
+    ? T('The co-pilot completes this table from the task and the process, keeping your rules; the window closes while it works', 'Le Co-pilote complète cette table d\'après la tâche et le processus, en gardant vos règles ; la fenêtre se ferme pendant qu\'il travaille')
+    : T('The co-pilot writes the inputs, outputs and rules of this table from the task and the process; the window closes while it works', 'Le Co-pilote écrit les entrées, les sorties et les règles de cette table d\'après la tâche et le processus ; la fenêtre se ferme pendant qu\'il travaille')
+  for (const b of dialog.querySelectorAll('#dmn-copilot, [data-guide="copilot"]')) b.disabled = !copilotReady()
 }
 
 // Surligne dans la table de dmn-js les règles retenues par le banc d'essai (n° à partir de 1).
@@ -247,6 +333,13 @@ function syncTabs() {
   dialog.querySelector('#dmn-sheet').hidden = !onTable
   if (side === 'bench') setSide(onTable ? 'bench' : null)
   else if (side === 'compare') setSide('compare')
+  // Le guide suit les règles ajoutées ou retirées dans la table affichée.
+  const viewer = current.modeler.getActiveViewer()
+  if (viewer && !watched.has(viewer)) {
+    watched.add(viewer)
+    viewer.get('eventBus').on('elements.changed', () => { refreshGuide() })
+  }
+  refreshGuide()
   // Pas de table à montrer : l'onglet Table de décision ne mène nulle part.
   dialog.querySelector('.dmn-tabs [data-view="table"]').disabled = !current.modeler.getViews().some((v) => v.type !== 'drd')
 }
@@ -267,10 +360,13 @@ export async function openDecisionEditor(options) {
     literalExpression: { additionalModules: [translateModule] },
     boxedExpression: { additionalModules: [translateModule] },
   })
+  setupGuide(body)
   current = { ...options, modeler }
   const back = dialog.querySelector('#dmn-back')
-  back.textContent = options.mode === 'library' ? T('Close', 'Fermer') : T('Back to the process', 'Retour au processus')
-  back.title = options.mode === 'library'
+  back.textContent = options.mode === 'example' ? T('Close the example', 'Fermer l\'exemple') : options.mode === 'library' ? T('Close', 'Fermer') : T('Back to the process', 'Retour au processus')
+  back.title = options.mode === 'example'
+    ? T('Close the example and go back to your table; nothing is saved', 'Fermer l\'exemple et revenir à votre table ; rien n\'est enregistré')
+    : options.mode === 'library'
     ? T('Close the decision model; unsaved changes are lost', 'Fermer le modèle de décision ; les changements non enregistrés sont perdus')
     : T('Close and keep the changes in the diagram (Ctrl+Z in the editor undoes them)', 'Fermer en gardant les changements dans le diagramme (Ctrl+Z dans l\'éditeur les annule)')
   dialog.querySelector('#dmn-subtitle').textContent = options.subtitle || ''

@@ -118,6 +118,9 @@ servez : l'éditeur reste sobre pour les autres (voir la
 - **Tables de décision DMN** : chaque tâche de règle métier se relie à une
   table de décision modifiable et à son diagramme d'exigences (dmn-js), rangées dans le .bpmn avec le lien Camunda 8
   (`zeebe:calledDecision`), contrôlées (chevauchements, valeurs non couvertes), et rédigées par le co-pilote ou un agent MCP à la demande.
+- **Formulaires des tâches** : chaque tâche utilisateur ou événement de début reçoit un formulaire form-js, rangé
+  dans le .bpmn avec le lien Camunda 8 (`zeebe:formDefinition`), un contrôle que chaque branche lit une donnée
+  remplie par un formulaire, et les formulaires remplis pendant la simulation de jetons, où les réponses choisissent la branche.
 
 Sur un processus d'achat interne à quatre couloirs :
 
@@ -594,6 +597,11 @@ Chaque fonction s'allume à part dans **Expert** > **Choisir les modules…**.
   les contrôles des tables (chevauchements en politique Unique, valeurs non couvertes, textes sans guillemets), un banc d'essai
   (règles qui s'appliquent, un cas par règle), la comparaison de deux versions, des jetons calculés qui suivent les tables aux passerelles,
   et les outils MCP `get_decisions`, `set_decision_table`, `link_decision`, `test_decision`.
+- **Formulaires des tâches** : formulaires des tâches utilisateur et des événements de début, édités avec form-js
+  (palette, aperçu avec les données envoyées), import et export .form (un .zip quand il y en a plusieurs),
+  `zeebe:formDefinition` pour Camunda 8, un contrôle des données (une passerelle ou une table de décision lit une
+  variable qu'aucun formulaire placé avant ne remplit), des formulaires remplis pendant la simulation de jetons pour
+  choisir les branches, et les outils MCP `get_task_forms`, `set_task_form`.
 
 ## En quoi il diffère de draw.io ou Lucidchart
 
@@ -640,10 +648,8 @@ mais tout est lu.
 
 [![Serveur MCP bpmn-pilot : note de qualité et de maintenance sur Glama](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot/badges/card.svg)](https://glama.ai/mcp/servers/Leylines-Prism/bpmn-pilot)
 
-<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://alternativeto.net/static/badges/badge-compact-dark.svg">
-  <img src="https://alternativeto.net/static/badges/badge-compact-light.svg" alt="BPMN-Pilot sur AlternativeTo" width="171" height="58">
-</picture></a>
+<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-light.svg#gh-light-mode-only" alt="BPMN-Pilot sur AlternativeTo" width="171" height="58"></a>
+<a href="https://alternativeto.net/software/bpmn-pilot/about/?utm_source=badge&utm_medium=referral"><img src="https://alternativeto.net/static/badges/badge-compact-dark.svg#gh-dark-mode-only" alt="BPMN-Pilot sur AlternativeTo" width="171" height="58"></a>
 
 ## Soutenir le développement
 
